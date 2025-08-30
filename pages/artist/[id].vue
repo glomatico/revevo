@@ -68,7 +68,7 @@ const isLoadingGeneral = ref<boolean>(true);
 const isLoadingVideos = ref<boolean>(false);
 const pageIndex = ref<number>(parseInt((route.query.p as string) || '0', 10));
 const artist = ref<Artist | null>(null);
-const artistVideos = ref<VideoSearchResult | null>(null);
+const artistVideos = ref<ArtistVideoResult | null>(null);
 
 const artistVideosOffset = computed<number>(() => pageIndex.value * 32);
 

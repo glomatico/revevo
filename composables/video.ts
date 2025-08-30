@@ -1,12 +1,79 @@
+import type { VideoResponse } from ".";
+
 export const useVideo = () => {
   const config = useRuntimeConfig();
   const baseUrl = config.public.apiBaseUrl;
   const token = config.public.apiToken;
+  const graphqlApiUrl = `${baseUrl}/graphql`;
   const captionsApiUrl = `${baseUrl}/captions`;
 
-  const getCaptions = async (videoId: string): Promise<string | null> => {
+  const getVideo = async (
+    id: string,
+  ): Promise<Video | null> => {
+    const query = `
+      query GetVideo($id: String!) {
+        video(id: $id) {
+          id
+          title
+          thumbnail
+          genre
+          artists {
+            role
+            artist {
+              name
+              thumbnail
+            }
+          }
+          explicit
+          lyricVideo
+          hls
+          dash
+          created
+          duration
+          copyright
+          copyrightYear
+          label
+          viewCounts {
+            total
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      id,
+    };
+
     try {
-      const response = await fetch(`${captionsApiUrl}/${videoId}?token=${token}`, {
+      const response = await fetch(graphqlApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        })
+      });
+
+      if (!response.ok) {
+        console.error('Error when fetching video:', response.statusText);
+        return null;
+      }
+
+      const result: VideoResponse = await response.json();
+      return result.data.video;
+    } catch (err) {
+      console.error('Exception when video:', err);
+      return null;
+    }
+  };
+
+  const getCaptions = async (videoId: string): Promise<string | null> => {
+    console.log(`${captionsApiUrl}/${videoId}?token=${token}`);
+    try {
+      const response = await fetch(`${captionsApiUrl}/${videoId}.vtt?token=${token}`, {
         method: 'GET',
       });
 
@@ -23,6 +90,7 @@ export const useVideo = () => {
   }
 
   return {
+    getVideo,
     getCaptions,
   };
 }
