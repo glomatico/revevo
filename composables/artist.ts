@@ -2,6 +2,7 @@ export const useArtist = () => {
   const config = useRuntimeConfig();
   const baseUrl = config.public.apiBaseUrl;
   const token = config.public.apiToken;
+  const graphqlApiUrl = `${baseUrl}/graphql`;
 
   const getArtist = async (
     id: string,
@@ -51,7 +52,7 @@ export const useArtist = () => {
     };
 
     try {
-      const response = await fetch(baseUrl, {
+      const response = await fetch(graphqlApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +119,7 @@ export const useArtist = () => {
     };
 
     try {
-      const response = await fetch(baseUrl, {
+      const response = await fetch(graphqlApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
