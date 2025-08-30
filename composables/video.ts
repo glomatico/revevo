@@ -1,4 +1,4 @@
-export const useCaptions = () => {
+export const useVideo = () => {
   const config = useRuntimeConfig();
   const baseUrl = config.public.apiBaseUrl;
   const token = config.public.apiToken;
