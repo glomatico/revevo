@@ -1,7 +1,5 @@
 <template>
-  <div class="text-center">
-    <v-pagination v-model="page" :length="length" rounded="circle" @update:model-value="onPageChange"></v-pagination>
-  </div>
+  <v-pagination v-model="page" :length="length" rounded="circle" @update:model-value="onPageChange"></v-pagination>
 </template>
 
 <script lang="ts" setup>
