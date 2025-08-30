@@ -71,7 +71,6 @@ export const useVideo = () => {
   };
 
   const getCaptions = async (videoId: string): Promise<string | null> => {
-    console.log(`${captionsApiUrl}/${videoId}?token=${token}`);
     try {
       const response = await fetch(`${captionsApiUrl}/${videoId}.vtt?token=${token}`, {
         method: 'GET',
