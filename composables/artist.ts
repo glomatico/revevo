@@ -82,7 +82,7 @@ export const useArtist = () => {
     offset = 0,
     limit = 32,
     explicit = true,
-  ): Promise<VideoSearchResult | null> => {
+  ): Promise<ArtistVideoResult | null> => {
     const query = `
       query GetArtistVideos($id: String!, $limit: Int, $offset: Int, $explicit: Boolean) {
         artist(id: $id) {

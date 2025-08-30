@@ -15,10 +15,10 @@ const emit = defineEmits<{
 }>();
 
 const length = ref<number>(Math.ceil(props.itemsCount / 32));
-const page = ref<number>(props.pageIndex + 1);
+const page = ref<number>(props.pageIndex);
 
 const onPageChange = (newPage: number) => {
-  const pageIndex = newPage - 1;
+  const pageIndex = newPage;
   emit('pageChange', pageIndex);
 };
 </script>
