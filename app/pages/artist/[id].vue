@@ -1,53 +1,75 @@
 <template>
-  <div v-if="isLoadingGeneral">
-    <v-container>
-      <LoadingSpinner />
-    </v-container>
-  </div>
+  <v-container v-if="isLoadingGeneral">
+    <v-row>
+      <v-col>
+        <LoadingSpinner />
+      </v-col>
+    </v-row>
+  </v-container>
 
-  <div v-else-if="!artist">
-    <v-container>
-      <v-alert type="error">Failed to load artist information.</v-alert>
-    </v-container>
-  </div>
+  <v-container v-else-if="!artist">
+    <v-row>
+      <v-col>
+        <v-alert type="error">Failed to load artist information.</v-alert>
+      </v-col>
+    </v-row>
+  </v-container>
 
   <div v-else>
     <v-container>
-      <ArtistBanner :artist="artist" />
+      <v-row>
+        <v-col>
+          <ArtistBanner :artist="artist" />
+        </v-col>
+      </v-row>
     </v-container>
-    <v-divider />
-    <v-container>
-      <div v-if="isLoadingVideos">
-        <LoadingSpinner />
-      </div>
 
-      <div v-else-if="!artistVideos">
-        <v-alert type="error">Failed to load artist videos.</v-alert>
-      </div>
+    <v-divider thickness="2" />
 
-      <div v-else>
-        <v-row v-if="artistVideos.items.length === 0">
+    <v-container v-if="isLoadingVideos">
+      <v-row>
+        <v-col>
+          <LoadingSpinner />
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <v-container v-else-if="!artistVideos">
+      <v-row>
+        <v-col>
+          <v-alert type="error">Failed to load artist videos.</v-alert>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <div v-else>
+      <v-container v-if="artistVideos.items.length === 0">
+        <v-row>
           <v-col cols="12">
             <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
           </v-col>
         </v-row>
+      </v-container>
 
-        <v-row v-else>
+      <v-container v-else>
+        <v-row>
           <v-col v-for="video in artistVideos.items" :key="video.id" cols="12" sm="6" md="4" lg="3">
             <ArtistVideoThumbnail :video="video" />
           </v-col>
         </v-row>
+      </v-container>
 
-        <v-divider class="my-4" />
+      <v-divider thickness="2" />
 
+      <v-container>
         <v-row>
           <v-col cols="12">
             <ArtistPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex"
               @page-change="onPageChange" />
           </v-col>
         </v-row>
-      </div>
-    </v-container>
+      </v-container>
+    </div>
   </div>
 </template>
 
