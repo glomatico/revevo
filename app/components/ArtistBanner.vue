@@ -6,7 +6,7 @@
           <v-img :src="artist.thumbnail" :alt="`Profile avatar of ${artist.name}.`" />
         </v-avatar>
       </v-col>
-      <v-col cols="12" sm="auto" class="align-self-center">
+      <v-col cols="12" sm="auto" class="align-self-center text-center text-sm-left">
         <h1>{{ artist.name }}</h1>
         <h3 class="font-weight-regular">{{ artist.viewCounts.total.toLocaleString() }} views • {{
           artist.videos.itemsCount.toLocaleString() }}

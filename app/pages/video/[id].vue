@@ -1,12 +1,12 @@
 <template>
-  <div v-if="isLoadingGeneral">
+  <v-container v-if="isLoadingGeneral">
     <LoadingSpinner />
-  </div>
-  <div v-else-if="!video">
-    <v-container>
-      <v-alert type="error">Failed to load video information.</v-alert>
-    </v-container>
-  </div>
+  </v-container>
+
+  <v-container v-else-if="!video">
+    <v-alert type="error">Failed to load video information.</v-alert>
+  </v-container>
+
   <div v-else>
     <VideoPlayer :stream-url="video.hls" :captions-url="`/api/captions/${videoId}`" />
   </div>
