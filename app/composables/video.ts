@@ -20,6 +20,7 @@ export const useVideo = () => {
           artists {
             role
             artist {
+              id
               name
               thumbnail
             }
@@ -28,6 +29,10 @@ export const useVideo = () => {
           lyricVideo
           hls
           dash
+          mp4 {
+            quality
+            url
+          }
           created
           duration
           copyright

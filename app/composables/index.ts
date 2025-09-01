@@ -20,9 +20,7 @@ export interface Video {
   lyricsVideo: boolean;
   hls: string;
   dash: string;
-  // mp4: VideoMp4[];
-  // captions: VideoCaption[];
-  // clips: VideoClip[];
+  mp4: VideoMp4[];
   created: string;
   copyright: string;
   copyrightYear: number;
@@ -33,7 +31,13 @@ export interface Video {
   artists: VideoArtist[];
 }
 
+export interface VideoMp4 {
+  quality: string;
+  url: string;
+}
+
 export interface VideoArtist {
+  id: string;
   role: string;
   artist: Artist;
 }
