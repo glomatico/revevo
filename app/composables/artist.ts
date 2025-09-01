@@ -77,12 +77,12 @@ export const useArtist = () => {
     }
   };
 
-  const getArtistVideos = async (
+  const getArtistVideography = async (
     id: string,
     offset = 0,
     limit = 32,
     explicit = true,
-  ): Promise<ArtistVideoResult | null> => {
+  ): Promise<ArtistVideos | null> => {
     const query = `
       query GetArtistVideos($id: String!, $limit: Int, $offset: Int, $explicit: Boolean) {
         artist(id: $id) {
@@ -136,7 +136,7 @@ export const useArtist = () => {
         return null;
       }
 
-      const result: ArtistVideosResponse = await response.json();
+      const result: ArtistVideographyResponse = await response.json();
       return result.data.artist?.videos || null;
     } catch (err) {
       console.error('Exception when fetching artist videos:', err);
@@ -146,6 +146,6 @@ export const useArtist = () => {
 
   return {
     getArtist,
-    getArtistVideos
+    getArtistVideos: getArtistVideography
   };
 };

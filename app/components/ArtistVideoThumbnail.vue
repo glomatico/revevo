@@ -13,6 +13,6 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-  video: ArtistVideo;
+  video: Video;
 }>();
 </script>

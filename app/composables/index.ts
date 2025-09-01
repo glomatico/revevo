@@ -2,33 +2,23 @@ export interface ViewCounts {
   total: number;
 }
 
-export interface ArtistVideo {
-  id: string;
-  title: string;
-  thumbnail: string;
-  explicit: boolean;
-  duration: number;
-  viewCounts: ViewCounts;
-  artists: VideoArtist[];
-}
-
 export interface Video {
   id: string;
   title: string;
   thumbnail: string;
-  genre: string;
-  lyricsVideo: boolean;
-  hls: string;
-  dash: string;
-  mp4: VideoMp4[];
-  created: string;
-  copyright: string;
-  copyrightYear: number;
-  label: string;
   explicit: boolean;
   duration: number;
   viewCounts: ViewCounts;
   artists: VideoArtist[];
+  genre: string | null;
+  lyricsVideo: boolean | null;
+  hls: string | null;
+  dash: string | null;
+  mp4: VideoMp4[] | null;
+  created: string | null;
+  copyright: string | null;
+  copyrightYear: number | null;
+  label: string | null;
 }
 
 export interface VideoMp4 {
@@ -42,8 +32,8 @@ export interface VideoArtist {
   artist: Artist;
 }
 
-export interface ArtistVideoResult {
-  items: ArtistVideo[];
+export interface ArtistVideos {
+  items: Video[];
   itemsCount: number;
 }
 
@@ -52,7 +42,7 @@ export interface Artist {
   name: string;
   thumbnail: string;
   viewCounts: ViewCounts;
-  videos: ArtistVideoResult;
+  videos: ArtistVideos;
 }
 
 export interface ArtistResponse {
@@ -61,10 +51,10 @@ export interface ArtistResponse {
   };
 }
 
-export interface ArtistVideosResponse {
+export interface ArtistVideographyResponse {
   data: {
     artist: {
-      videos: ArtistVideoResult;
+      videos: ArtistVideos;
     } | null;
   };
 }
