@@ -1,5 +1,5 @@
 <template>
-  <video ref="videoHtml" width="100%" height="720px" controls>
+  <video ref="videoHtml" controls class="d-flex w-100" height="400px" style="background-color: black;">
     <track kind="subtitles" :src="captionsUrl" default />
   </video>
 </template>
