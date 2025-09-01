@@ -1,7 +1,9 @@
 <template>
-  <video ref="videoHtml" controls class="d-flex w-100" height="400px" style="background-color: black;">
-    <track kind="subtitles" :src="captionsUrl" default />
-  </video>
+  <v-container fluid class="pa-0">
+    <video ref="videoHtml" controls class="video-player">
+      <track kind="subtitles" :src="captionsUrl" srclang="en" label="English" default />
+    </video>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
@@ -55,3 +57,14 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.video-player {
+  height: 1920px;
+  width: 100%;
+  object-fit: contain;
+  background-color: #000;
+  max-height: 70vh;
+  min-height: 180px;
+}
+</style>
