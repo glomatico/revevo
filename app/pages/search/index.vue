@@ -18,12 +18,13 @@
           <v-card-title>
             <h2>{{ searchResults.itemsCount }} results for "{{ query }}"</h2>
           </v-card-title>
+
+          <v-row>
+            <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
+              <GenericVideoThumbnail :video="video" />
+            </v-col>
+          </v-row>
         </v-card-item>
-        <v-row>
-          <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
-            <GenericVideoThumbnail :video="video" />
-          </v-col>
-        </v-row>
       </v-card>
     </v-container>
 
