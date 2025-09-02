@@ -7,7 +7,7 @@
     <v-alert type="error">Failed to load artist information.</v-alert>
   </v-container>
 
-  <div v-else>
+  <template v-else>
     <v-container>
       <v-row>
         <v-col cols="12">
@@ -39,7 +39,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </div>
+  </template>
 </template>
 
 <script lang="ts" setup>
