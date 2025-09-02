@@ -10,7 +10,7 @@
         <tr>
           <td>Artists</td>
           <td>
-            <ArtistLink :video-artists="video.artists" :use-chips="true" />
+            <ArtistLinkChip :video-artists="video.artists" add-avatar use-chips />
           </td>
         </tr>
         <tr>

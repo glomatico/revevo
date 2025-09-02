@@ -1,12 +1,13 @@
 <template>
-  <div>
-    <p class="text-truncate text-subtitle-2">
-      <span v-for="(artist, index) in artistsFiltered" :key="artist.artist.name" class="text-truncate text-wrap">
-        <NuxtLink :to="`/artist/${artist.artist.id}`" class="text-decoration-none">
-          {{ artist.artist.name + (index == artistsFiltered.length - 1 ? '' : ',&nbsp;') }}
-        </NuxtLink>
-      </span>
-    </p>
+  <div class="d-flex ga-2">
+    <v-chip v-for="(artist, index) in artistsFiltered" :key="artist.artist.name" :to="`/artist/${artist.artist.id}`">
+      <v-avatar v-if="addAvatar" class="mr-1">
+        <v-img :src="artist.artist.thumbnail" :alt="`Avatar for ${artist.artist.name}`" />
+      </v-avatar>
+      <p>
+        {{ artist.artist.name }}
+      </p>
+    </v-chip>
   </div>
 </template>
 

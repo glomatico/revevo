@@ -11,12 +11,7 @@
             {{ video.title }}
           </v-card-title>
 
-          <NuxtLink :to="`/artist/${mainArtist.id}`" class="d-flex align-center mb-1 pa-0 text-decoration-none">
-            <v-avatar size="20" class="mr-1">
-              <v-img :src="mainArtist.thumbnail" :alt="`${mainArtist.name} avatar`" />
-            </v-avatar>
-            <p class="text-caption text-truncate">{{ mainArtist.name }}</p>
-          </NuxtLink>
+          <ArtistLink :video-artists="video.artists" main-only />
 
           <v-card-subtitle class="pa-0 text-caption">
             {{ video.viewCounts.total.toLocaleString() }} views • {{ formatDuration(video.duration) }}
