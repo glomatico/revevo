@@ -45,6 +45,16 @@ export interface Artist {
   videos: ArtistVideos;
 }
 
+export interface ContinuousPlay {
+  id: string;
+  title: string;
+  items: ContinuousPlayItem[];
+}
+
+export interface ContinuousPlayItem {
+  video: Video;
+}
+
 export interface ArtistResponse {
   data: {
     artist: Artist | null;
@@ -64,6 +74,13 @@ export interface VideoResponse {
     video: Video | null;
   };
 }
+
+export interface ContinuousPlayResponse {
+  data: {
+    continuousPlay: ContinuousPlay | null;
+  };
+}
+
 
 export const formatDuration = (milliseconds: number): string => {
   let totalSeconds = Math.floor(milliseconds / 1000);
