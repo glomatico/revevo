@@ -1,8 +1,8 @@
 <template>
   <v-card flat>
     <v-card-item>
-      <v-card-title>
-        <h2>{{ video.title }}</h2>
+      <v-card-title class="text-h4 text-wrap text-break">
+        {{ video.title }}
       </v-card-title>
     </v-card-item>
     <v-table fixed-header>
