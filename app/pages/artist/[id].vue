@@ -64,7 +64,7 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            <ArtistPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex"
+            <AppPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex"
               @page-change="onPageChange" />
           </v-col>
         </v-row>
@@ -74,6 +74,7 @@
 </template>
 
 <script lang="ts" setup>
+
 const { getArtist, getArtistVideos } = useArtist();
 const route = useRoute();
 const router = useRouter();
