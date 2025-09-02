@@ -4,15 +4,13 @@
       Welcome!
     </h1>
     <p>
-      Welcome to Revevo - a project that aims to bring the classic Vevo website back to life.
+      Welcome to Revevo - a music video streaming website that recreates the old Vevo experience using their
+      still-active internal APIs.
     </p>
     <p>
-      The original Vevo website shut down years ago, but their internal servers are still online (although not fully up
-      to date). Using the still-active
-      APIs
-      from the Vevo TV
-      app, Revevo reconstructs the old Vevo experience: music videos, curated playlists, and artist pages, all
-      rebuilt for a desktop/mobile web experience.
+      Although the official Vevo website shut down years ago, many parts of its backend remain online. Revevo bridges
+      that gap by using the APIs from the Vevo TV app to reconstruct the original platform, featuring music videos,
+      curated playlists, and artist pages. All rebuilt for both desktop and mobile browsers.
     </p>
     <p>
       Go ahead and start searching for your favorite videos using the search bar above!
