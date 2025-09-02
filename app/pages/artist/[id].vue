@@ -1,15 +1,15 @@
 <template>
-  <v-container v-if="isLoadingGeneral">
-    <LoadingSpinner />
-  </v-container>
+  <v-container>
+    <v-row>
+      <v-col v-if="isLoadingGeneral" cols="12">
+        <LoadingSpinner />
+      </v-col>
 
-  <v-container v-else-if="!artist">
-    <v-alert type="error">Failed to load artist information.</v-alert>
-  </v-container>
+      <v-col v-else-if="!artist" cols=12>
+        <v-alert type="error">Failed to load artist information.</v-alert>
+      </v-col>
 
-  <template v-else>
-    <v-container>
-      <v-row>
+      <template v-else>
         <v-col cols="12">
           <ArtistBanner :artist="artist" />
         </v-col>
@@ -37,9 +37,10 @@
         <v-col cols="12">
           <AppPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
         </v-col>
-      </v-row>
-    </v-container>
-  </template>
+
+      </template>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
