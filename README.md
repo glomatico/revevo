@@ -1,75 +1,33 @@
-# Nuxt Minimal Starter
+# Revevo
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A music video streaming website that recreates the old Vevo experience using their still-active internal APIs.
 
-## Setup
+Although the official Vevo website shut down years ago, many of its backend services remain online and functional. Revevo bridges that gap by using the APIs from the Vevo TV app to reconstruct the original platform, featuring music videos, curated playlists, and artist pages. All rebuilt for both desktop and mobile browsers.
 
-Make sure to install dependencies:
+## Technologies Used
 
-```bash
-# npm
-npm install
+- [Nuxt 4](https://nuxt.com/) - The web framework used for building the application.
+- [Vuetify](https://vuetifyjs.com/) - The UI library used for styling and components.
 
-# pnpm
-pnpm install
+## Running Locally
 
-# yarn
-yarn install
+1. Clone the repository:
+   ```bash
+   https://github.com/glomatico/revevo
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd revevo
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-# bun
-bun install
-```
+## Online deployment
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+The website is deployed online at [revevo.glomatico.com](https://revevo.glomatico.com).
