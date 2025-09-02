@@ -1,54 +1,30 @@
 <template>
   <v-container v-if="isLoadingGeneral">
-    <v-row>
-      <v-col>
-        <LoadingSpinner />
-      </v-col>
-    </v-row>
+    <LoadingSpinner />
   </v-container>
 
   <v-container v-else-if="!artist">
-    <v-row>
-      <v-col>
-        <v-alert type="error">Failed to load artist information.</v-alert>
-      </v-col>
-    </v-row>
+    <v-alert type="error">Failed to load artist information.</v-alert>
   </v-container>
 
   <div v-else>
     <v-container>
-      <v-row>
-        <v-col>
-          <ArtistBanner :artist="artist" />
-        </v-col>
-      </v-row>
+      <ArtistBanner :artist="artist" />
     </v-container>
 
     <v-divider thickness="2" />
 
     <v-container v-if="isLoadingVideos">
-      <v-row>
-        <v-col>
-          <LoadingSpinner />
-        </v-col>
-      </v-row>
+      <LoadingSpinner />
     </v-container>
 
     <v-container v-else-if="!artistVideos">
-      <v-row>
-        <v-col>
-          <v-alert type="error">Failed to load artist videos.</v-alert>
-        </v-col>
-      </v-row>
+      <v-alert type="error">Failed to load artist videos.</v-alert>
     </v-container>
 
     <div v-else>
       <v-container v-if="artistVideos.items.length === 0">
-        <v-row>
-          <v-col cols="12">
-            <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
-          </v-col>
-        </v-row>
+        <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
       </v-container>
 
       <v-container v-else>
@@ -62,12 +38,7 @@
       <v-divider thickness="2" />
 
       <v-container>
-        <v-row>
-          <v-col cols="12">
-            <AppPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex"
-              @page-change="onPageChange" />
-          </v-col>
-        </v-row>
+        <AppPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
       </v-container>
     </div>
   </div>
