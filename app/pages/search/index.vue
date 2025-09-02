@@ -1,36 +1,39 @@
 <template>
-  <v-container v-if="isLoading">
-    <LoadingSpinner />
-  </v-container>
-
-  <v-container v-else-if="!searchResults">
-    <v-alert type="error">Failed to load search results.</v-alert>
-  </v-container>
-
-  <div v-else>
-    <v-container v-if="searchResults.items.length === 0">
-      <v-alert type="info">No results found for "{{ query }}"</v-alert>
-    </v-container>
-
-    <v-container v-else>
-      <v-row>
-        <v-col cols="12">
-          <p class="text-h5">
-            {{ searchResults.itemsCount }} results for "{{ query }}"
-          </p>
+  <v-container>
+    <v-row>
+      <v-col v-if="isLoading" cols="12">
+        <LoadingSpinner />
+      </v-col>
+      <v-col v-else-if="!searchResults" cols="12">
+        <v-alert type="error">Failed to load search results.</v-alert>
+      </v-col>
+      <template v-else>
+        <v-col v-if="searchResults.items.length === 0" cols="12">
+          <v-alert type="info">No results found for "{{ query }}"</v-alert>
         </v-col>
-        <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
-          <GenericVideoThumbnail :video="video" />
+
+        <template v-else>
+          <v-col cols="12">
+            <p class="text-h5">
+              {{ searchResults.itemsCount }} results for "{{ query }}"
+            </p>
+          </v-col>
+
+          <v-divider thickness="2" />
+
+          <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
+            <GenericVideoThumbnail :video="video" />
+          </v-col>
+        </template>
+
+        <v-divider thickness="2" />
+
+        <v-col>
+          <AppPagination :items-count="searchResults.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
         </v-col>
-      </v-row>
-    </v-container>
-
-    <v-divider thickness="2" />
-
-    <v-container>
-      <AppPagination :items-count="searchResults.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
-    </v-container>
-  </div>
+      </template>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
