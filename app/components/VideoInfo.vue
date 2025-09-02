@@ -44,6 +44,7 @@
       </tr>
     </tbody>
   </v-table>
+  <VideoExtraInfo :video="video" />
 </template>
 
 <script lang="ts" setup>
