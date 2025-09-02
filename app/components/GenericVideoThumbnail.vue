@@ -5,7 +5,7 @@
         <v-img :src="video.thumbnail" :alt="`Thumbnail for ${video.title}`" :aspect-ratio="16 / 9" />
       </v-col>
       <v-col cols="7">
-        <v-card-text class="pa-2">
+        <v-card-item>
           <v-card-title class="text-truncate pa-0 text-body-2" :title="video.title">
             <v-icon v-if="video.explicit" class="alpha-e-box mr-1" size="16" icon="mdi-alpha-e-box" />
             {{ video.title }}
@@ -21,7 +21,7 @@
           <v-card-subtitle class="pa-0 text-caption">
             {{ video.viewCounts.total.toLocaleString() }} views • {{ formatDuration(video.duration) }}
           </v-card-subtitle>
-        </v-card-text>
+        </v-card-item>
       </v-col>
     </v-row>
   </v-card>
