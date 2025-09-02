@@ -6,9 +6,9 @@ export const useSearch = () => {
 
   const searchVideos = async (
     query: string,
-    explicit: boolean = false,
     offset: number = 0,
     limit: number = 25,
+    explicit: boolean = false,
   ): Promise<VideoSearchResult | null> => {
     const graphqlQuery = `
       query SearchVideos($query: String!, $explicit: Boolean, $offset: Int, $limit: Int) {
@@ -34,7 +34,7 @@ export const useSearch = () => {
           }
         }
       }
-    `; // <-- Make sure this is closed
+    `;
 
     const variables = {
       query,
@@ -51,7 +51,7 @@ export const useSearch = () => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          query: graphqlQuery, // <-- Use "query" not "graphqlQuery"
+          query: graphqlQuery,
           variables,
         })
       });
