@@ -15,7 +15,7 @@
     <v-container v-else>
       <v-row>
         <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
-          <RelatedVideoThumbnail :video="video" />
+          <GenericVideoThumbnail :video="video" />
         </v-col>
       </v-row>
     </v-container>
