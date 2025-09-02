@@ -15,34 +15,35 @@
     </v-row>
   </v-container>
 
-  <div v-else>
+  <template v-else>
     <VideoPlayer :stream-url="video.hls!" :captions-url="`/api/captions/${videoId}`" />
+
     <v-container>
       <v-row>
         <v-col cols="12" md="8">
           <VideoInfo :video="video" />
         </v-col>
+
         <v-col cols="12" md="4">
-          <div v-if="isLoadingContinuousPlay">
-            <LoadingSpinner />
-          </div>
-          <div v-else-if="!continuousPlay">
-            <v-alert type="info">No related videos found.</v-alert>
-          </div>
-          <div v-else>
-            <v-col>
+          <LoadingSpinner v-if="isLoadingContinuousPlay" />
+
+          <v-alert v-else-if="!continuousPlay" type="info">No related videos found.</v-alert>
+
+          <v-row v-else>
+            <v-col cols="12">
               <p class="text-h5">
                 Up next
               </p>
             </v-col>
+
             <v-col v-for="item in continuousPlay.items" :key="item.video.id" cols="12">
               <GenericVideoThumbnail :video="item.video" />
             </v-col>
-          </div>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
-  </div>
+  </template>
 </template>
 
 <script lang="ts" setup>
