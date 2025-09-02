@@ -93,8 +93,63 @@ export const useVideo = () => {
     }
   }
 
+  const getContinuousPlay = async (
+    id: string,
+  ): Promise<ContinuousPlay | null> => {
+    const query = `
+      query GetContinuousVideos($videoId: String!) {
+        continuousPlay(videoId: $videoId) {
+          id
+          title
+          items {
+            video {
+              id
+              title
+              thumbnail
+              duration
+              explicit
+              viewCounts {
+                total
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      videoId: id,
+    };
+
+    try {
+      const response = await fetch(graphqlApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        })
+      });
+
+      if (!response.ok) {
+        console.error('Error when fetching related videos:', response.statusText);
+        return null;
+      }
+
+      const result: ContinuousPlayResponse = await response.json();
+      return result.data.continuousPlay;
+    } catch (err) {
+      console.error('Exception when fetching related videos:', err);
+      return null;
+    }
+  };
+
   return {
     getVideo,
     getCaptions,
+    getContinuousPlay,
   };
 }
