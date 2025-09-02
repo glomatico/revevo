@@ -2,7 +2,7 @@
 
 A music video streaming website that recreates the old Vevo experience using their still-active internal APIs.
 
-Although the official Vevo website shut down years ago, many of its backend services remain online and functional. Revevo bridges that gap by using the APIs from the Vevo TV app to reconstruct the original platform, featuring music videos, curated playlists, and artist pages. All rebuilt for both desktop and mobile browsers.
+Although the official Vevo website shut down years ago, many parts of its backend remain online. Revevo bridges that gap by using the APIs from the Vevo TV app to reconstruct the original platform, featuring music videos, curated playlists, and artist pages. All rebuilt for both desktop and mobile browsers.
 
 ## Technologies Used
 
@@ -13,7 +13,7 @@ Although the official Vevo website shut down years ago, many of its backend serv
 
 1. Clone the repository:
    ```bash
-   https://github.com/glomatico/revevo
+   git clone https://github.com/glomatico/revevo
    ```
 2. Navigate to the project directory:
    ```bash
@@ -30,4 +30,4 @@ Although the official Vevo website shut down years ago, many of its backend serv
 
 ## Online deployment
 
-The website is deployed online at [revevo.glomatico.com](https://revevo.glomatico.com).
+The website is deployed at [revevo.glomatico.com](https://revevo.glomatico.com).
