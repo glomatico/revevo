@@ -55,6 +55,11 @@ export interface ContinuousPlayItem {
   video: Video;
 }
 
+export interface VideoSearchResult {
+  itemsCount: number;
+  items: Video[];
+}
+
 export interface ArtistResponse {
   data: {
     artist: Artist | null;
@@ -78,6 +83,12 @@ export interface VideoResponse {
 export interface ContinuousPlayResponse {
   data: {
     continuousPlay: ContinuousPlay | null;
+  };
+}
+
+export interface VideoSearchResultResponse {
+  data: {
+    videoSearch: VideoSearchResult | null;
   };
 }
 
