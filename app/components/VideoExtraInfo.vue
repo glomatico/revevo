@@ -24,7 +24,7 @@
         </tbody>
         <tbody v-if="video.mp4" v-for="([key, value]) in Object.entries(video.mp4)" :key="key">
           <tr>
-            <td>MP4 ({{ value.quality }})</td>
+            <td>MP4 Stream URL ({{ value.quality }})</td>
             <td>
               <CopyableReadOnlyField :value="value.url" />
             </td>
