@@ -13,19 +13,16 @@
     </v-container>
 
     <v-container v-else>
-      <v-card flat>
-        <v-card-item>
-          <v-card-title>
-            <h2>{{ searchResults.itemsCount }} results for "{{ query }}"</h2>
-          </v-card-title>
-
-          <v-row>
-            <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
-              <GenericVideoThumbnail :video="video" />
-            </v-col>
-          </v-row>
-        </v-card-item>
-      </v-card>
+      <v-row>
+        <v-col cols="12">
+          <p class="text-h5">
+            {{ searchResults.itemsCount }} results for "{{ query }}"
+          </p>
+        </v-col>
+        <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
+          <GenericVideoThumbnail :video="video" />
+        </v-col>
+      </v-row>
     </v-container>
 
     <v-divider thickness="2" />
