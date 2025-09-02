@@ -1,10 +1,18 @@
 <template>
   <v-container v-if="isLoadingVideo">
-    <LoadingSpinner />
+    <v-row>
+      <v-col>
+        <LoadingSpinner />
+      </v-col>
+    </v-row>
   </v-container>
 
   <v-container v-else-if="!video">
-    <v-alert type="error">Failed to load video information.</v-alert>
+    <v-row>
+      <v-col>
+        <v-alert type="error">Failed to load video information.</v-alert>
+      </v-col>
+    </v-row>
   </v-container>
 
   <div v-else>
@@ -14,14 +22,23 @@
         <v-col cols="12" md="8">
           <VideoInfo :video="video" />
         </v-col>
-        <v-col>
+        <v-col cols="12" md="4">
           <div v-if="isLoadingContinuousPlay">
             <LoadingSpinner />
           </div>
           <div v-else-if="!continuousPlay">
             <v-alert type="info">No related videos found.</v-alert>
           </div>
-          <RelatedVideosSection v-else :continuous-play="continuousPlay" />
+          <div v-else>
+            <v-col>
+              <p class="text-h5">
+                Up next
+              </p>
+            </v-col>
+            <v-col v-for="item in continuousPlay.items" :key="item.video.id" cols="12">
+              <GenericVideoThumbnail :video="item.video" />
+            </v-col>
+          </div>
         </v-col>
       </v-row>
     </v-container>
