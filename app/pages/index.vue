@@ -24,4 +24,12 @@
 </template>
 
 <script lang="ts" setup>
+useSeoMeta({
+  title: 'Revevo',
+  ogTitle: 'Revevo',
+  description: 'A music video streaming website that recreates the old Vevo experience using their still-active internal APIs.',
+  ogDescription: 'A music video streaming website that recreates the old Vevo experience using their still-active internal APIs.',
+  ogImage: 'https://img.vevo.com/images/defaultbackstageassets/vevo.png?width=720&height=720',
+  twitterCard: 'summary_large_image',
+})
 </script>
