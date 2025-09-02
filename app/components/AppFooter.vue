@@ -1,5 +1,5 @@
 <template>
-  <v-footer color="primary">
+  <v-footer class="app-footer" color="primary">
     <v-container>
       <v-row justify="space-between">
         <p>Made by Glomatico.</p>
@@ -12,3 +12,9 @@
 
 <script lang="ts" setup>
 </script>
+
+<style scoped>
+.app-footer {
+  max-height: 64px;
+}
+</style>
