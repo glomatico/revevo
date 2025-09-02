@@ -7,7 +7,7 @@ export const useSearch = () => {
   const searchVideos = async (
     query: string,
     offset: number = 0,
-    limit: number = 25,
+    limit: number = 32,
     explicit: boolean = false,
   ): Promise<VideoSearchResult | null> => {
     const graphqlQuery = `
