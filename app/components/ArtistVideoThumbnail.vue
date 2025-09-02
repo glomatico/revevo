@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" :link="true" hover :to="`/video/${video.id}`">
-    <v-img :src="video.thumbnail" :alt="`Thumbnail for ${video.title}`" height="150px" cover />
+    <v-img :src="video.thumbnail" :alt="`Thumbnail for ${video.title}`" height="144px" cover />
     <v-card-text class="pa-2">
       <v-card-title class="text-truncate text-center" :title="video.title">
         <v-icon v-if="video.explicit" class="alpha-e-box" size="24" icon="mdi-alpha-e-box" />
