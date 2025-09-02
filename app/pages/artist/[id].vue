@@ -9,38 +9,36 @@
 
   <div v-else>
     <v-container>
-      <ArtistBanner :artist="artist" />
+      <v-row>
+        <v-col cols="12">
+          <ArtistBanner :artist="artist" />
+        </v-col>
+
+        <v-divider thickness="2" />
+
+        <v-col v-if="isLoadingVideos" cols="12">
+          <LoadingSpinner />
+        </v-col>
+
+        <v-col v-else-if="!artistVideos" cols="12">
+          <v-alert type="error">Failed to load artist videos.</v-alert>
+        </v-col>
+
+        <v-col v-else-if="artistVideos.items.length === 0" cols="12">
+          <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
+        </v-col>
+
+        <v-col v-else v-for="video in artistVideos.items" :key="video.id" cols="12" sm="6" md="4" lg="3">
+          <ArtistVideoThumbnail :video="video" />
+        </v-col>
+
+        <v-divider thickness="2" />
+
+        <v-col cols="12">
+          <AppPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
+        </v-col>
+      </v-row>
     </v-container>
-
-    <v-divider thickness="2" />
-
-    <v-container v-if="isLoadingVideos">
-      <LoadingSpinner />
-    </v-container>
-
-    <v-container v-else-if="!artistVideos">
-      <v-alert type="error">Failed to load artist videos.</v-alert>
-    </v-container>
-
-    <div v-else>
-      <v-container v-if="artistVideos.items.length === 0">
-        <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
-      </v-container>
-
-      <v-container v-else>
-        <v-row>
-          <v-col v-for="video in artistVideos.items" :key="video.id" cols="12" sm="6" md="4" lg="3">
-            <ArtistVideoThumbnail :video="video" />
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <v-divider thickness="2" />
-
-      <v-container>
-        <AppPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
-      </v-container>
-    </div>
   </div>
 </template>
 
