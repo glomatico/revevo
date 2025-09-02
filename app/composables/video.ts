@@ -111,6 +111,14 @@ export const useVideo = () => {
               viewCounts {
                 total
               }
+              artists {
+                role
+                artist {
+                  id
+                  name
+                  thumbnail
+                }
+              }
             }
           }
         }
