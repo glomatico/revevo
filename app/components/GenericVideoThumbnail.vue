@@ -15,7 +15,7 @@
             <v-avatar size="20" class="mr-1">
               <v-img :src="mainArtist.thumbnail" :alt="`${mainArtist.name} avatar`" />
             </v-avatar>
-            <span class="text-caption text-truncate text-black">{{ mainArtist.name }}</span>
+            <p class="text-caption text-truncate">{{ mainArtist.name }}</p>
           </NuxtLink>
 
           <v-card-subtitle class="pa-0 text-caption">
