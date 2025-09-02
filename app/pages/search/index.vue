@@ -23,7 +23,7 @@
     <v-divider thickness="2" />
 
     <v-container>
-      <AppPagination :items-count="searchResults.itemsCount" :page-index="1" />
+      <AppPagination :items-count="searchResults.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
     </v-container>
   </div>
 </template>
@@ -35,7 +35,10 @@ const { searchVideos } = useSearch();
 
 const query = computed<string>(() => (route.query.q as string) || '');
 const isLoading = ref<boolean>(true);
+const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const searchResults = ref<VideoSearchResult | null>(null);
+
+const searchResultsOffset = computed<number>(() => (pageIndex.value - 1) * 32);
 
 const goRootIfNoQuery = async () => {
   if (!query.value.trim()) {
@@ -46,12 +49,30 @@ const goRootIfNoQuery = async () => {
 const loadSearchResults = async () => {
   isLoading.value = true;
   try {
-    searchResults.value = await searchVideos(query.value);
+    searchResults.value = await searchVideos(query.value, searchResultsOffset.value);
   } catch (error) {
     console.error('Error loading search results:', error);
   } finally {
     isLoading.value = false;
   }
+};
+
+const onPageChange = async (newPageIndex: number) => {
+  pageIndex.value = newPageIndex;
+
+  const newQuery = { ...route.query };
+  if (newPageIndex === 1) {
+    delete newQuery.p;
+  } else {
+    newQuery.p = newPageIndex.toString();
+  }
+
+  await router.push({
+    path: route.path,
+    query: newQuery
+  });
+
+  loadSearchResults();
 };
 
 watch(() => route.query.q, async () => {
