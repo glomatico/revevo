@@ -103,4 +103,8 @@ const onPageChange = async (newPageIndex: number) => {
 onMounted(async () => {
   loadArtist();
 });
+
+useHead(() => ({
+  title: artist.value ? `${artist.value.name} - Revevo` : 'Revevo'
+}));
 </script>

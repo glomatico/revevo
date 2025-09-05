@@ -82,4 +82,8 @@ onMounted(async () => {
   await loadVideo();
   await loadContinuousPlay();
 });
+
+useHead(() => ({
+  title: video.value ? `${video.value.title} - Revevo` : 'Revevo'
+}));
 </script>
