@@ -1,11 +1,12 @@
 <template>
   <div class="d-flex ga-2">
-    <v-chip v-for="(artist, index) in artistsFiltered" :key="artist.artist.name" :to="`/artist/${artist.artist.id}`">
+    <v-chip v-for="artist in artistsFiltered" :key="artist.basicMeta.name"
+      :to="`/artist/${artist.basicMeta.urlSafeName}`">
       <v-avatar v-if="addAvatar" class="mr-1">
-        <v-img :src="artist.artist.thumbnail" :alt="`Avatar for ${artist.artist.name}`" />
+        <v-img :src="artist.basicMeta.thumbnailUrl" :alt="`Avatar for ${artist.basicMeta.name}`" />
       </v-avatar>
       <p>
-        {{ artist.artist.name }}
+        {{ artist.basicMeta.name }}
       </p>
     </v-chip>
   </div>
@@ -13,16 +14,16 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-  videoArtists: VideoArtist[];
+  videoArtists: Artist[];
   mainOnly?: boolean;
   addAvatar?: boolean;
 }>();
 
-const artistsFiltered = ref<VideoArtist[]>([]);
+const artistsFiltered = ref<Artist[]>([]);
 
 onMounted(async () => {
   if (props.mainOnly) {
-    artistsFiltered.value = props.videoArtists.filter(artist => artist.role === 'main');
+    artistsFiltered.value = props.videoArtists.filter(artist => artist.basicMeta.role === 'main');
   } else {
     artistsFiltered.value = props.videoArtists;
   }
