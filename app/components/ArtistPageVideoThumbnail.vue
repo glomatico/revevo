@@ -1,5 +1,5 @@
 <template>
-  <v-card :link="true" hover :to="`/video/${video.id}`">
+  <v-card :link="true" hover :to="`/video/${video.basicMetaV3.isrc}`">
     <v-img :src="video.basicMetaV3.thumbnailUrl" :alt="`Thumbnail for ${video.basicMetaV3.title}`" cover
       :aspect-ratio="16 / 9" />
     <v-card-item>

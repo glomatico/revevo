@@ -51,7 +51,6 @@ export interface VideoList {
 };
 
 export interface Video {
-  id: string;
   basicMetaV3: BasicVideoMetaV3;
   likes: number | null;
   streamsV3: StreamsV3[] | null;
@@ -60,6 +59,7 @@ export interface Video {
 };
 
 export interface BasicVideoMetaV3 {
+  isrc: string;
   title: string;
   thumbnailUrl: string;
   releaseDate: string | null;
