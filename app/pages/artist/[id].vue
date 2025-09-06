@@ -18,31 +18,45 @@
           <ArtistPageBanner :artist="artist" />
         </v-col>
 
-        <v-divider thickness="2" />
-
-        <v-col v-if="isLoadingVideos" cols="12">
-          <LoadingSpinner />
-        </v-col>
-
-        <v-col v-else-if="!artistVideos" cols="12">
-          <v-alert type="error">Failed to load artist videos.</v-alert>
-        </v-col>
-
-        <v-col v-else-if="artistVideos.data.length === 0" cols="12">
-          <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
-        </v-col>
-
-        <v-col v-else v-for="video in artistVideos.data" cols="12" sm="6" md="4" lg="3">
-          <ArtistPageVideoThumbnail :video="video" />
+        <v-col cols="12">
+          <ArtistPageTabs :initial-value="currentTab" @tab-change="onTabChange" />
         </v-col>
 
         <v-divider thickness="2" />
 
         <v-col cols="12">
-          <AppPagination :items-count="artistVideos?.paging.total!" :page-index="pageIndex"
-            @page-change="onPageChange" />
-        </v-col>
+          <v-tabs-window v-model="currentTab">
+            <v-tabs-window-item value="videos">
+              <v-row>
+                <v-col v-if="isLoadingVideos" cols="12">
+                  <LoadingSpinner />
+                </v-col>
 
+                <v-col v-else-if="!artistVideos" cols="12">
+                  <v-alert type="error">Failed to load artist videos.</v-alert>
+                </v-col>
+
+                <v-col v-else-if="artistVideos.data.length === 0" cols="12">
+                  <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
+                </v-col>
+
+                <v-col v-else v-for="video in artistVideos.data" cols="12" sm="6" md="4" lg="3">
+                  <ArtistPageVideoThumbnail :video="video" />
+                </v-col>
+
+                <v-divider thickness="2" />
+
+                <v-col cols="12">
+                  <AppPagination :items-count="artistVideos?.paging.total!" :page-index="pageIndex"
+                    @page-change="onPageChange" />
+                </v-col>
+              </v-row>
+            </v-tabs-window-item>
+            <v-tabs-window-item value="about">
+              <ArtistPageAbout :artist="artist" />
+            </v-tabs-window-item>
+          </v-tabs-window>
+        </v-col>
       </template>
     </v-row>
   </v-container>
@@ -58,6 +72,7 @@ const artistId = route.params.id as string;
 
 const isLoadingGeneral = ref<boolean>(true);
 const isLoadingVideos = ref<boolean>(false);
+const currentTab = ref<string>((route.query.t as string) || 'videos');
 const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const artist = ref<Artist | null>(null);
 const artistVideos = ref<VideoList | null>(null);
@@ -103,6 +118,22 @@ const onPageChange = async (newPageIndex: number) => {
   });
 
   loadArtistVideos();
+};
+
+const onTabChange = async (newCurrentTab: string) => {
+  currentTab.value = newCurrentTab;
+
+  const newQuery = { ...route.query };
+  if (newCurrentTab === 'videos') {
+    delete newQuery.t;
+  } else {
+    newQuery.t = newCurrentTab;
+  }
+
+  await router.push({
+    path: route.path,
+    query: newQuery
+  });
 };
 
 onMounted(async () => {
