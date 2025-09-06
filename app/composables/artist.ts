@@ -51,10 +51,7 @@ export const useArtist = () => {
               }
               paging {
                 total
-                size
                 pages
-                page
-                next
               }
             }
           }
@@ -128,10 +125,7 @@ export const useArtist = () => {
               }
               paging {
                 total
-                size
                 pages
-                page
-                next
               }
             }
           }
