@@ -81,10 +81,8 @@ const groupCreditsByRole = (credits: CreditsV3[]): { role: string; name: string 
     return [];
   }
 
-  // Use Map for better performance and type safety
   const roleMap = new Map<string, string[]>();
 
-  // Group credits by role
   credits.forEach((credit) => {
     if (!credit?.role || !credit?.name) return;
 
@@ -92,7 +90,7 @@ const groupCreditsByRole = (credits: CreditsV3[]): { role: string; name: string 
     roleMap.set(credit.role, [...existingNames, credit.name]);
   });
 
-  // Convert to array format with sorted roles for consistent display
+
   return Array.from(roleMap.entries())
     .map(([role, names]) => ({
       role,
