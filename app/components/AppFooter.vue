@@ -15,6 +15,6 @@
 
 <style scoped>
 .app-footer {
-  max-height: 64px;
+  max-height: 48px;
 }
 </style>
