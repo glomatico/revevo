@@ -109,8 +109,8 @@ export const useArtist = () => {
           videoData(size: $videosSize, page: $videosPage, sort: $videosSort) {
             videos {
               data {
-                id
                 basicMetaV3 {
+                  isrc
                   title
                   thumbnailUrl
                   duration
