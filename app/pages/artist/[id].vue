@@ -11,7 +11,7 @@
 
       <template v-else>
         <v-col cols="12">
-          <ArtistBanner :artist="artist" />
+          <ArtistPageBanner :artist="artist" />
         </v-col>
 
         <v-divider thickness="2" />
@@ -24,18 +24,19 @@
           <v-alert type="error">Failed to load artist videos.</v-alert>
         </v-col>
 
-        <v-col v-else-if="artistVideos.items.length === 0" cols="12">
+        <v-col v-else-if="artistVideos.data.length === 0" cols="12">
           <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
         </v-col>
 
-        <v-col v-else v-for="video in artistVideos.items" :key="video.id" cols="12" sm="6" md="4" lg="3">
-          <ArtistVideoThumbnail :video="video" />
+        <v-col v-else v-for="video in artistVideos.data" :key="video.id" cols="12" sm="6" md="4" lg="3">
+          <ArtistPageVideoThumbnail :video="video" />
         </v-col>
 
         <v-divider thickness="2" />
 
         <v-col cols="12">
-          <AppPagination :items-count="artist.videos.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
+          <AppPagination :items-count="artistVideos?.paging.total!" :page-index="pageIndex"
+            @page-change="onPageChange" />
         </v-col>
 
       </template>
@@ -45,7 +46,7 @@
 
 <script lang="ts" setup>
 
-const { getArtist, getArtistVideos } = useArtist();
+const { getArtists, getArtistsVideos } = useArtist();
 const route = useRoute();
 const router = useRouter();
 
@@ -55,26 +56,26 @@ const isLoadingGeneral = ref<boolean>(true);
 const isLoadingVideos = ref<boolean>(false);
 const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const artist = ref<Artist | null>(null);
-const artistVideos = ref<ArtistVideos | null>(null);
-
-const artistVideosOffset = computed<number>(() => (pageIndex.value - 1) * 32);
+const artistVideos = ref<VideoList | null>(null);
 
 const loadArtist = async () => {
   isLoadingGeneral.value = true;
   try {
-    artist.value = await getArtist(artistId, artistVideosOffset.value);
+    const artists = await getArtists(artistId, pageIndex.value);
+    artist.value = artists ? artists[0] as Artist : null;
   } catch (error) {
     console.error('Error fetching artist:', error);
   } finally {
     isLoadingGeneral.value = false;
   }
-  artistVideos.value = artist.value?.videos || null;
+  artistVideos.value = artist.value?.videoData?.videos!;
 };
 
 const loadArtistVideos = async () => {
   try {
     isLoadingVideos.value = true;
-    artistVideos.value = await getArtistVideos(artistId, artistVideosOffset.value);
+    const artistsVideos = await getArtistsVideos(artistId, pageIndex.value);
+    artistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)?.videoData?.videos!;
   } catch (error) {
     console.error('Error fetching artist videos:', error);
   } finally {
@@ -105,6 +106,6 @@ onMounted(async () => {
 });
 
 useHead(() => ({
-  title: artist.value ? `${artist.value.name} - Revevo` : 'Revevo'
+  title: artist.value ? `${artist.value.basicMeta.name} - Revevo` : 'Revevo'
 }));
 </script>

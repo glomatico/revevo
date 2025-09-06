@@ -1,97 +1,107 @@
-export interface ViewCounts {
-  total: number;
-}
-
-export interface Video {
-  id: string;
-  title: string;
-  thumbnail: string;
-  explicit: boolean;
-  duration: number;
-  viewCounts: ViewCounts;
-  artists: VideoArtist[];
-  genre: string | null;
-  lyricsVideo: boolean | null;
-  hls: string | null;
-  dash: string | null;
-  mp4: VideoMp4[] | null;
-  created: string | null;
-  copyright: string | null;
-  copyrightYear: number | null;
-  label: string | null;
-}
-
-export interface VideoMp4 {
-  quality: string;
-  url: string;
-}
-
-export interface VideoArtist {
-  id: string;
-  role: string;
-  artist: Artist;
-}
-
-export interface ArtistVideos {
-  items: Video[];
-  itemsCount: number;
-}
+export interface TokenData {
+  access_token: string;
+  legacy_token: string;
+  token_type: string;
+  scope: string;
+  expires_in: number;
+  refresh_token: string;
+  user_id: string;
+};
 
 export interface Artist {
   id: string;
+  basicMeta: BasicArtistMeta;
+  likes: number | null;
+  videoData: ArtistVideos | null;
+  relatedArtists: BasicArtistMeta[] | null;
+};
+
+export interface BasicArtistMeta {
   name: string;
-  thumbnail: string;
-  viewCounts: ViewCounts;
-  videos: ArtistVideos;
-}
+  thumbnailUrl: string;
+  urlSafeName: string | null;
+  views: Views | null;
+  genres: string[] | null;
+  role: string | null;
+  links: Link[] | null;
+  bio: Bio | null;
+};
 
-export interface ContinuousPlay {
+export interface Link {
+  type: string;
+  url: string;
+};
+
+export interface Bio {
+  text: string | null;
+  source: string | null;
+  birthCity: string | null;
+  birthName: string | null;
+  origin: string | null;
+  dateOfBirth: string | null;
+};
+
+export interface ArtistVideos {
+  videos: VideoList;
+};
+
+export interface VideoList {
+  data: Video[];
+  paging: Paging;
+};
+
+export interface Video {
   id: string;
+  basicMetaV3: BasicVideoMetaV3;
+  likes: number | null;
+  streamsV3: StreamsV3[] | null;
+  relatedVideos: VideoList | null;
+  views: Views | null;
+};
+
+export interface BasicVideoMetaV3 {
   title: string;
-  items: ContinuousPlayItem[];
-}
+  thumbnailUrl: string;
+  releaseDate: string | null;
+  copyright: string | null;
+  credits: CreditsV3[] | null;
+  genres: string[] | null;
+  labels: string | null;
+  duration: number | null;
+  explicit: boolean | null;
+  artists: Artist[] | null;
+  errorCode: string | null;
+};
 
-export interface ContinuousPlayItem {
-  video: Video;
-}
+export interface CreditsV3 {
+  role: string;
+  name: string;
+};
 
-export interface VideoSearchResult {
-  itemsCount: number;
-  items: Video[];
-}
+export interface StreamsV3 {
+  format: string;
+  quality: string;
+  url: string;
+};
+
+export interface Views {
+  viewsTotal: number;
+  youTubeId: string | null;
+};
+
+export interface Paging {
+  total: number;
+  size: number;
+  pages: number;
+  page: number;
+  next: string;
+};
 
 export interface ArtistResponse {
   data: {
-    artist: Artist | null;
-  };
-}
-
-export interface ArtistVideographyResponse {
-  data: {
-    artist: {
-      videos: ArtistVideos;
-    } | null;
-  };
-}
-
-export interface VideoResponse {
-  data: {
-    video: Video | null;
-  };
-}
-
-export interface ContinuousPlayResponse {
-  data: {
-    continuousPlay: ContinuousPlay | null;
-  };
-}
-
-export interface VideoSearchResultResponse {
-  data: {
-    videoSearch: VideoSearchResult | null;
-  };
-}
-
+    artists: Artist[] | null;
+  } | null;
+};
 
 export const formatDuration = (milliseconds: number): string => {
   let totalSeconds = Math.floor(milliseconds / 1000);

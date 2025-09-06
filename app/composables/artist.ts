@@ -1,54 +1,77 @@
 export const useArtist = () => {
   const config = useRuntimeConfig();
-  const baseUrl = config.public.apiBaseUrl;
-  const token = config.public.apiToken;
-  const graphqlApiUrl = `${baseUrl}/graphql`;
+  const graphqlApiUrl = config.public.graphqlApiUrl;
+  const token = useCookie<string | null>('token').value;
 
-  const getArtist = async (
-    id: string,
-    videosOffset = 0,
-    videosLimit = 32,
-    explicit = true,
-  ): Promise<Artist | null> => {
+  const getArtists = async (
+    artistIds: string[] | string,
+    videosPage: number = 1,
+    videosSize: number = 32,
+    videosSort: string = "viewsTotal",
+  ): Promise<Artist[] | null> => {
     const query = `
-      query GetArtist($id: String!, $videosLimit: Int, $videosOffset: Int, $explicit: Boolean) {
-        artist(id: $id) {
-          id
-          name
-          thumbnail
-          viewCounts {
-            total
+      query Artist($artistIds: [String]!, $videosSize: Int, $videosPage: Int, $videosSort: String) {
+        artists(ids: $artistIds) {
+          basicMeta {
+            name
+            thumbnailUrl
+            genres
+            bio {
+              text
+              source
+              birthCity
+              birthName
+              origin
+              dateOfBirth
+            }
+            links {
+              type
+              url
+            }
+            views {
+              viewsTotal
+            }
           }
-          videos(limit: $videosLimit, offset: $videosOffset, explicit: $explicit) {
-            itemsCount
-            items {
-              id
-              title
-              thumbnail
-              explicit
-              duration
-              viewCounts {
-                total
-              }
-              artists {
-                role
-                artist {
-                  id
-                  name
-                  thumbnail
+          videoData(size: $videosSize, page: $videosPage, sort: $videosSort) {
+            videos {
+              data {
+                id
+                basicMetaV3 {
+                  title
+                  thumbnailUrl
+                  duration
+                  explicit
+                }
+                basicMeta {
+                  duration
+                }
+                views {
+                  viewsTotal
                 }
               }
+              paging {
+                total
+                size
+                pages
+                page
+                next
+              }
             }
+          }
+          relatedArtists {
+            name
+            urlSafeName
+            thumbnailUrl
           }
         }
       }
     `;
 
     const variables = {
-      id,
-      videosLimit,
-      videosOffset,
-      explicit,
+      artistIds: Array.isArray(artistIds) ? artistIds : [artistIds],
+      videosSize,
+      videosPage,
+      videosSort,
     };
 
     try {
@@ -70,40 +93,45 @@ export const useArtist = () => {
       }
 
       const result: ArtistResponse = await response.json();
-      return result.data.artist;
+      return result.data!.artists;
     } catch (err) {
-      console.error('Exception when fetching artist:', err);
+      console.error('Exception when fetching artists:', err);
       return null;
     }
   };
 
-  const getArtistVideography = async (
-    id: string,
-    offset = 0,
-    limit = 32,
-    explicit = true,
-  ): Promise<ArtistVideos | null> => {
+  const getArtistsVideos = async (
+    artistIds: string[] | string,
+    videosPage: number = 1,
+    videosSize: number = 32,
+    videosSort: string = "viewsTotal",
+  ): Promise<Artist[] | null> => {
     const query = `
-      query GetArtistVideos($id: String!, $limit: Int, $offset: Int, $explicit: Boolean) {
-        artist(id: $id) {
-          videos(limit: $limit, offset: $offset, explicit: $explicit) {
-            itemsCount
-            items {
-              id
-              title
-              thumbnail
-              explicit
-              duration
-              viewCounts {
-                total
-              }
-              artists {
-                role
-                artist {
-                  id
-                  name
-                  thumbnail
+      query Artist($artistIds: [String]!, $videosSize: Int, $videosPage: Int, $videosSort: String) {
+        artists(ids: $artistIds) {
+          videoData(size: $videosSize, page: $videosPage, sort: $videosSort) {
+            videos {
+              data {
+                id
+                basicMetaV3 {
+                  title
+                  thumbnailUrl
+                  duration
+                  explicit
                 }
+                basicMeta {
+                  duration
+                }
+                views {
+                  viewsTotal
+                }
+              }
+              paging {
+                total
+                size
+                pages
+                page
+                next
               }
             }
           }
@@ -112,10 +140,10 @@ export const useArtist = () => {
     `;
 
     const variables = {
-      id,
-      limit,
-      offset,
-      explicit,
+      artistIds: Array.isArray(artistIds) ? artistIds : [artistIds],
+      videosSize,
+      videosPage,
+      videosSort,
     };
 
     try {
@@ -132,20 +160,20 @@ export const useArtist = () => {
       });
 
       if (!response.ok) {
-        console.error('Error when fetching artist videos:', response.statusText);
+        console.error('Error when fetching artists videos:', response.statusText);
         return null;
       }
 
-      const result: ArtistVideographyResponse = await response.json();
-      return result.data.artist?.videos || null;
+      const result: ArtistResponse = await response.json();
+      return result.data!.artists;
     } catch (err) {
-      console.error('Exception when fetching artist videos:', err);
+      console.error('Exception when fetching artists videos:', err);
       return null;
     }
   };
 
   return {
-    getArtist,
-    getArtistVideos: getArtistVideography
+    getArtists,
+    getArtistsVideos,
   };
 };
