@@ -16,7 +16,7 @@
   </v-container>
 
   <template v-else>
-    <VideoPlayer :stream-url="video.hls!" :captions-url="`/api/captions/${videoId}`" />
+    <VideoPlayer :stream-url="streamUrl!" :captions-url="`/api/captions/${videoId}`" />
 
     <v-container>
       <v-row>
@@ -25,19 +25,15 @@
         </v-col>
 
         <v-col cols="12" md="4">
-          <LoadingSpinner v-if="isLoadingContinuousPlay" />
-
-          <v-alert v-else-if="!continuousPlay" type="info">No related videos found.</v-alert>
-
-          <v-row v-else>
+          <v-row>
             <v-col cols="12">
               <p class="text-h5">
                 Up next
               </p>
             </v-col>
 
-            <v-col v-for="item in continuousPlay.items" :key="item.video.id" cols="12">
-              <GenericVideoThumbnail :video="item.video" />
+            <v-col v-for="item in video.relatedVideos?.data" :key="item.basicMetaV3.isrc" cols="12">
+              <VideoThumbnail :video="item" />
             </v-col>
           </v-row>
         </v-col>
@@ -48,42 +44,32 @@
 
 <script lang="ts" setup>
 const route = useRoute();
-const { getVideo, getContinuousPlay } = useVideo();
+const { getVideos } = useVideo();
 
 const videoId = ref<string>(route.params.id as string);
 const isLoadingVideo = ref<boolean>(true);
 const video = ref<Video | null>(null);
-const continuousPlay = ref<ContinuousPlay | null>(null);
-const isLoadingContinuousPlay = ref<boolean>(true);
+const streamUrl = ref<string | null>(null);
 
 const loadVideo = async () => {
   isLoadingVideo.value = true;
   try {
-    video.value = await getVideo(videoId.value);
+    const videos = (await getVideos(videoId.value))!.data;
+    video.value = videos ? videos[0]! : null;
   } catch (error) {
     console.error('Error loading video:', error);
   } finally {
     isLoadingVideo.value = false;
   }
-};
 
-const loadContinuousPlay = async () => {
-  try {
-    continuousPlay.value = await getContinuousPlay(videoId.value);
-    continuousPlay.value?.items.shift();
-  } catch (error) {
-    console.error('Error loading continuous play videos:', error);
-  } finally {
-    isLoadingContinuousPlay.value = false;
-  }
+  streamUrl.value = video.value?.streamsV3!.find(s => s.format === 'hls')?.url || null;
 };
 
 onMounted(async () => {
   await loadVideo();
-  await loadContinuousPlay();
 });
 
 useHead(() => ({
-  title: video.value ? `${video.value.title} - Revevo` : 'Revevo'
+  title: video.value ? `${video.value.basicMetaV3.title} - Revevo` : 'Revevo'
 }));
 </script>

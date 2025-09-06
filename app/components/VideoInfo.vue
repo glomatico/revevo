@@ -17,16 +17,16 @@
               <ArtistLinkChip :video-artists="video.basicMetaV3.artists!" add-avatar use-chips />
             </td>
           </tr>
-          <tr>
+          <tr v-if="video.views?.viewsTotal">
             <td>Views</td>
-            <td>{{ video.views?.viewsTotal.toLocaleString() }}</td>
+            <td>{{ video.views.viewsTotal.toLocaleString() }}</td>
           </tr>
           <tr>
             <td>Release date</td>
             <td>{{ new Date(video.basicMetaV3.releaseDate!).toLocaleString() }}</td>
           </tr>
           <tr>
-            <td>Genre</td>
+            <td>Genres</td>
             <td>
               {{ video.basicMetaV3.genres!.join(', ') || 'N/A' }}
             </td>
@@ -35,13 +35,18 @@
             <td>Explicit</td>
             <td>{{ video.basicMetaV3.explicit ? 'Yes' : 'No' }}</td>
           </tr>
+          <tr v-if="video.views?.youTubeId">
+            <td>YouTube URL</td>
+            <td>
+              <a :href="`https://www.youtube.com/watch?v=${video.views.youTubeId}`" target="_blank"
+                rel="noopener noreferrer">
+                https://www.youtube.com/watch?v={{ video.views.youTubeId }}
+              </a>
+            </td>
+          </tr>
           <tr>
             <td>Copyright</td>
             <td>{{ video.basicMetaV3.copyright }}</td>
-          </tr>
-          <tr>
-            <td>Label</td>
-            <td>{{ video.basicMetaV3.labels }}</td>
           </tr>
           <tr>
             <td>Duration</td>
@@ -55,7 +60,7 @@
       </v-table>
     </v-col>
     <v-col cols="12">
-      <VideoExtraInfo :video="video" />
+      <VideoStreamUrls :video="video" />
     </v-col>
   </v-row>
 </template>

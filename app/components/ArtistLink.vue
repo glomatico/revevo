@@ -1,9 +1,9 @@
 <template>
   <div>
-    <p class="text-truncate text-subtitle-2">
-      <span v-for="(artist, index) in artistsFiltered" :key="artist.artist.name" class="text-truncate text-wrap">
-        <NuxtLink :to="`/artist/${artist.artist.id}`" class="text-decoration-none">
-          {{ artist.artist.name + (index == artistsFiltered.length - 1 ? '' : ',&nbsp;') }}
+    <p>
+      <span v-for="(artist, index) in artistsFiltered" :key="artist.basicMeta.name" class="text-truncate text-wrap">
+        <NuxtLink :to="`/artist/${artist.basicMeta.urlSafeName}`" class="text-decoration-none">
+          {{ artist.basicMeta.name + (index == artistsFiltered.length - 1 ? '' : ',&nbsp;') }}
         </NuxtLink>
       </span>
     </p>
@@ -12,16 +12,15 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-  videoArtists: VideoArtist[];
+  videoArtists: Artist[];
   mainOnly?: boolean;
-  addAvatar?: boolean;
 }>();
 
-const artistsFiltered = ref<VideoArtist[]>([]);
+const artistsFiltered = ref<Artist[]>([]);
 
 onMounted(async () => {
   if (props.mainOnly) {
-    artistsFiltered.value = props.videoArtists.filter(artist => artist.role === 'main');
+    artistsFiltered.value = props.videoArtists.filter(artist => artist.basicMeta.role === 'main');
   } else {
     artistsFiltered.value = props.videoArtists;
   }

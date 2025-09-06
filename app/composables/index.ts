@@ -66,7 +66,6 @@ export interface BasicVideoMetaV3 {
   copyright: string | null;
   credits: CreditsV3[] | null;
   genres: string[] | null;
-  labels: string | null;
   duration: number | null;
   explicit: boolean | null;
   artists: Artist[] | null;
@@ -100,6 +99,12 @@ export interface Paging {
 export interface ArtistResponse {
   data: {
     artists: Artist[] | null;
+  } | null;
+};
+
+export interface VideoResponse {
+  data: {
+    videos: VideoList | null;
   } | null;
 };
 

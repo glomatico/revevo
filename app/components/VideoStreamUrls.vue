@@ -1,34 +1,22 @@
 <template>
-  <v-btn block variant="text" @click="isExtraInfoDialogVisible = true">Show extra info</v-btn>
+  <v-btn block variant="text" @click="isExtraInfoDialogVisible = true">Show Stream URLs</v-btn>
   <v-dialog v-model="isExtraInfoDialogVisible" max-width="600px">
     <v-card>
       <v-row>
         <v-col cols="12">
           <v-card-title>
-            Extra Info
+            Stream URLs
           </v-card-title>
         </v-col cols="12">
         <v-col>
           <v-table fixed-header>
-            <tbody>
-              <tr v-if="video.hls">
-                <td>HLS Stream URL</td>
-                <td>
-                  <CopyableReadOnlyField :value="video.hls" />
-                </td>
-              </tr>
-            </tbody>
-            <tbody v-if="video.dash">
+            <tbody v-for="value in video.streamsV3" :key="value.url">
               <tr>
-                <td>DASH Stream URL</td>
-                <td>
-                  <CopyableReadOnlyField :value="video.dash" />
+                <td>{{ value.format }}
+                  <template v-if="value.quality">
+                    ({{ value.quality }})
+                  </template>
                 </td>
-              </tr>
-            </tbody>
-            <tbody v-if="video.mp4" v-for="([key, value]) in Object.entries(video.mp4)" :key="key">
-              <tr>
-                <td>MP4 Stream URL ({{ value.quality }})</td>
                 <td>
                   <CopyableReadOnlyField :value="value.url" />
                 </td>
