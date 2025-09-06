@@ -1,7 +1,8 @@
 export const useVideo = () => {
   const config = useRuntimeConfig();
-  const token = useCookie<string | null>('token').value;
   const graphqlApiUrl = config.public.graphqlApiUrl;
+  const captionsApiUrl = config.public.captionsApiUrl;
+  const captionsApiToken = config.public.captionsToken;
 
   const getVideos = async (
     videoIds: string[] | string,
@@ -85,7 +86,7 @@ export const useVideo = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
         },
         body: JSON.stringify({
           query,
@@ -106,7 +107,26 @@ export const useVideo = () => {
     }
   };
 
+  const getCaptions = async (videoId: string): Promise<string | null> => {
+    try {
+      const response = await fetch(`${captionsApiUrl}/${videoId}.vtt?token=${captionsApiToken}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error fetching captions: ${response.statusText}`);
+      }
+
+      const data = await response.text();
+      return data || null;
+    } catch (err) {
+      console.error('Failed to fetch captions:', err);
+      return null;
+    }
+  };
+
   return {
     getVideos,
+    getCaptions,
   };
 }

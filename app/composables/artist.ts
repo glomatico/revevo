@@ -1,7 +1,6 @@
 export const useArtist = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
-  const token = useCookie<string | null>('token').value;
 
   const getArtists = async (
     artistIds: string[] | string,
@@ -77,7 +76,7 @@ export const useArtist = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
         },
         body: JSON.stringify({
           query,
@@ -147,7 +146,7 @@ export const useArtist = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
         },
         body: JSON.stringify({
           query,
