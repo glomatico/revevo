@@ -55,6 +55,9 @@
             <v-tabs-window-item value="about">
               <ArtistPageAbout :artist="artist" />
             </v-tabs-window-item>
+            <v-tabs-window-item value="related">
+              <ArtistPageRelatedArtists :artist="artist" />
+            </v-tabs-window-item>
           </v-tabs-window>
         </v-col>
       </template>

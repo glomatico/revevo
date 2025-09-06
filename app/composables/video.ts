@@ -1,5 +1,3 @@
-import type { VideoResponse } from ".";
-
 export const useVideo = () => {
   const config = useRuntimeConfig();
   const baseUrl = config.public.apiBaseUrl;
