@@ -31,6 +31,12 @@
               {{ video.basicMetaV3.genres!.join(', ') || 'N/A' }}
             </td>
           </tr>
+          <tr v-for="(item, index) in groupCreditsByRole(video.basicMetaV3.credits!)" :key="index">
+            <td>{{ item.role }}</td>
+            <td>
+              {{ item.name }}
+            </td>
+          </tr>
           <tr>
             <td>Explicit</td>
             <td>{{ video.basicMetaV3.explicit ? 'Yes' : 'No' }}</td>
@@ -69,4 +75,29 @@
 defineProps<{
   video: Video;
 }>();
+
+const groupCreditsByRole = (credits: CreditsV3[]): { role: string; name: string }[] => {
+  if (!credits?.length) {
+    return [];
+  }
+
+  // Use Map for better performance and type safety
+  const roleMap = new Map<string, string[]>();
+
+  // Group credits by role
+  credits.forEach((credit) => {
+    if (!credit?.role || !credit?.name) return;
+
+    const existingNames = roleMap.get(credit.role) ?? [];
+    roleMap.set(credit.role, [...existingNames, credit.name]);
+  });
+
+  // Convert to array format with sorted roles for consistent display
+  return Array.from(roleMap.entries())
+    .map(([role, names]) => ({
+      role,
+      name: names.join(', ')
+    }))
+    .sort((a, b) => a.role.localeCompare(b.role));
+};
 </script>
