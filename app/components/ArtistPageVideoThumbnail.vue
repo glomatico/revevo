@@ -26,7 +26,6 @@ const props = defineProps<{
 const videoReleaseDate = props.video.basicMetaV3.releaseDate
   ? new Date(props.video.basicMetaV3.releaseDate)
   : null;
-// if it was released within the last 7 days, show "New" badge
 const isNewRelease = ref<boolean>(videoReleaseDate
   ? (new Date().getTime() - videoReleaseDate.getTime()) / (1000 * 60 * 60 * 24) <= 14
   : false);
