@@ -4,7 +4,8 @@
       :aspect-ratio="16 / 9" />
     <v-card-item>
       <v-card-title class="text-truncate text-center" :title="video.basicMetaV3.title">
-        <v-icon v-if="video.basicMetaV3.explicit" class="alpha-e-box" size="24" icon="mdi-alpha-e-box" />
+        <v-icon v-if="isNewRelease" size="24" icon="mdi-new-box" />
+        <v-icon v-if="video.basicMetaV3.explicit" size="24" icon="mdi-alpha-e-box" />
         {{ video.basicMetaV3.title }}
       </v-card-title>
       <v-card-subtitle class="text-center">
@@ -22,5 +23,11 @@ const props = defineProps<{
   video: Video;
 }>();
 
-console.log(props.video);
+const videoReleaseDate = props.video.basicMetaV3.releaseDate
+  ? new Date(props.video.basicMetaV3.releaseDate)
+  : null;
+// if it was released within the last 7 days, show "New" badge
+const isNewRelease = ref<boolean>(videoReleaseDate
+  ? (new Date().getTime() - videoReleaseDate.getTime()) / (1000 * 60 * 60 * 24) <= 14
+  : false);
 </script>

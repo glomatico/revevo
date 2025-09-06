@@ -39,6 +39,7 @@ export const useArtist = () => {
                   isrc
                   title
                   thumbnailUrl
+                  releaseDate
                   duration
                   explicit
                 }
@@ -112,6 +113,7 @@ export const useArtist = () => {
                 basicMetaV3 {
                   isrc
                   title
+                  releaseDate
                   thumbnailUrl
                   duration
                   explicit
