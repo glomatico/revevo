@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="app-footer" color="primary">
+  <v-footer class="app-footer" color="surface">
     <v-container>
       <v-row justify="space-between">
         <p>Made by Glomatico.</p>

@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar color="primary">
+  <v-toolbar color="surface">
     <v-container>
       <v-row align="center">
         <v-col>
