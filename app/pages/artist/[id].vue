@@ -9,6 +9,10 @@
         <v-alert type="error">Failed to load artist information.</v-alert>
       </v-col>
 
+      <v-col v-else-if="!artist.basicMeta.name" cols=12>
+        <v-alert type="error">Artist not found.</v-alert>
+      </v-col>
+
       <template v-else>
         <v-col cols="12">
           <ArtistPageBanner :artist="artist" />
@@ -28,7 +32,7 @@
           <v-alert type="info">No videos found for this artist or no videos found in this page</v-alert>
         </v-col>
 
-        <v-col v-else v-for="video in artistVideos.data" :key="video.id" cols="12" sm="6" md="4" lg="3">
+        <v-col v-else v-for="video in artistVideos.data" cols="12" sm="6" md="4" lg="3">
           <ArtistPageVideoThumbnail :video="video" />
         </v-col>
 
