@@ -2,14 +2,16 @@
   <v-toolbar color="surface">
     <v-container>
       <v-row align="center">
-        <v-col>
+        <v-col cols="8">
           <v-toolbar-title>
             <NuxtLink class="toolbar-title" to="/">
-              <h2>Revevo</h2>
+              <p class="text-h4 font-weight-bold">Revevo</p>
             </NuxtLink>
           </v-toolbar-title>
         </v-col>
-        <SearchBar />
+        <v-col>
+          <SearchBar />
+        </v-col>
       </v-row>
     </v-container>
   </v-toolbar>

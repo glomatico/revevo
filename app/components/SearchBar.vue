@@ -1,6 +1,11 @@
 <template>
-  <v-text-field label="Search" prepend-inner-icon="mdi-magnify" outlined dense hide-details width="400px"
-    @keyup.enter="search($event.target.value)" v-model="query">
+  <v-text-field label="Search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify" outlined dense
+    hide-details @keyup.enter="search()" v-model="query">
+    <template #append-inner>
+      <v-btn icon variant="text" @click="search">
+        <v-icon>mdi-send</v-icon>
+      </v-btn>
+    </template>
   </v-text-field>
 </template>
 
@@ -9,8 +14,8 @@ const router = useRouter();
 
 const query = ref<string>('');
 
-const search = async (query: string) => {
-  if (!query.trim()) return;
-  await router.push({ path: '/search', query: { q: query } });
+const search = async () => {
+  if (!query.value.trim()) return;
+  await router.push({ path: '/search', query: { q: query.value } });
 };
 </script>
