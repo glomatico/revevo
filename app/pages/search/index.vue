@@ -141,17 +141,9 @@ const onTabChange = async () => {
 
 const filterSearchResults = async () => {
   if (!searchResults.value) return;
-  searchResultsFiltered.value = {
-    ...searchResults.value,
-    videos: {
-      ...searchResults.value.videos,
-      items: searchResults.value.videos.items.filter((video) => video.basicMetaV3)
-    },
-    artists: {
-      ...searchResults.value.artists,
-      items: searchResults.value.artists.items.filter((artist) => artist.basicMeta)
-    }
-  }
+  searchResultsFiltered.value = searchResults.value;
+  searchResultsFiltered.value.videos!.items = searchResults.value.videos!.items.filter((video) => video.basicMetaV3);
+  searchResultsFiltered.value.artists!.items = searchResults.value.artists!.items.filter((artist) => artist.basicMeta);
 };
 
 watch(() => route.query.q, async () => {
