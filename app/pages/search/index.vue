@@ -15,7 +15,7 @@
         </v-col>
 
         <v-col cols="12">
-          <v-tabs v-model="currentTab" align-tabs="center">
+          <v-tabs v-model="currentTab" align-tabs="center" @update:model-value="onTabChange">
             <v-tab value="videos">Videos</v-tab>
             <v-tab value="artists">Artists</v-tab>
           </v-tabs>
@@ -79,7 +79,7 @@ const router = useRouter();
 const { search } = useSearch();
 
 const query = computed<string>(() => (route.query.q as string) || '');
-const currentTab = ref<string>('videos');
+const currentTab = ref<string>((route.query.t as string) || 'videos');
 const isLoadingGeneral = ref<boolean>(true);
 const isLoadingResults = ref<boolean>(false);
 const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
@@ -123,6 +123,20 @@ const onPageChange = async (newPageIndex: number) => {
   });
 
   await loadSearchResults();
+};
+
+const onTabChange = async () => {
+  const newQuery = { ...route.query };
+  if (currentTab.value === 'videos') {
+    delete newQuery.t;
+  } else {
+    newQuery.t = currentTab.value;
+  }
+
+  await router.push({
+    path: route.path,
+    query: newQuery
+  });
 };
 
 const filterSearchResults = async () => {
