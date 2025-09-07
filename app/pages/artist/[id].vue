@@ -9,7 +9,7 @@
         <v-alert type="error">Failed to load artist information.</v-alert>
       </v-col>
 
-      <v-col v-else-if="!artist.basicMeta.name" cols=12>
+      <v-col v-else-if="!artist.videoData?.videos" cols=12>
         <v-alert type="error">Artist not found.</v-alert>
       </v-col>
 
