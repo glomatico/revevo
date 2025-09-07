@@ -21,7 +21,7 @@
             <td>Views</td>
             <td>{{ video.views.viewsTotal.toLocaleString() }}</td>
           </tr>
-          <tr>
+          <tr v-if="video.basicMetaV3.releaseDate">
             <td>Release date</td>
             <td>{{ new Date(video.basicMetaV3.releaseDate!).toLocaleString() }}</td>
           </tr>
