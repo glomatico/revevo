@@ -7,16 +7,19 @@
             <p class="text-h4 font-weight-bold">Revevo</p>
           </NuxtLink>
         </v-toolbar-title>
+
         <v-sheet width="400">
           <SearchBar />
         </v-sheet>
       </template>
+
       <template v-else>
         <v-toolbar-title v-if="isLogoVisible">
           <NuxtLink class="toolbar-title" to="/">
             <p class="text-h4 font-weight-bold">Revevo</p>
           </NuxtLink>
         </v-toolbar-title>
+
         <CompactSearchBar @magnify-clicked="toggleLogo" />
       </template>
     </v-container>
