@@ -19,7 +19,11 @@
         </v-col>
 
         <v-col cols="12">
-          <ArtistPageTabs :initial-value="currentTab" @tab-change="onTabChange" />
+          <v-tabs v-model="currentTab" @update:model-value="onTabChange" align-tabs="center">
+            <v-tab value="videos">Videos</v-tab>
+            <v-tab value="about">About</v-tab>
+            <v-tab value="related">Related Artists</v-tab>
+          </v-tabs>
         </v-col>
 
         <v-divider thickness="2" />
@@ -122,14 +126,12 @@ const onPageChange = async (newPageIndex: number) => {
   loadArtistVideos();
 };
 
-const onTabChange = async (newCurrentTab: string) => {
-  currentTab.value = newCurrentTab;
-
+const onTabChange = async () => {
   const newQuery = { ...route.query };
-  if (newCurrentTab === 'videos') {
+  if (currentTab.value === 'videos') {
     delete newQuery.t;
   } else {
-    newQuery.t = newCurrentTab;
+    newQuery.t = currentTab.value;
   }
 
   await router.push({
