@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-if="isLoading" cols="12">
+      <v-col v-if="isLoadingGeneral" cols="12">
         <LoadingSpinner />
       </v-col>
       <v-col v-else-if="!searchResultsFiltered" cols="12">
@@ -27,7 +27,13 @@
           <v-tabs-window v-model="currentTab">
             <v-tabs-window-item value="videos">
               <v-row>
-                <v-col v-if="searchResultsFiltered.videos.items.length === 0" cols="12">
+                <v-col v-if="isLoadingResults" cols="12">
+                  <LoadingSpinner />
+                </v-col>
+                <v-col v-else-if="!searchResultsFiltered.videos" cols="12">
+                  <v-alert type="error">Failed to load video results.</v-alert>
+                </v-col>
+                <v-col v-else-if="searchResultsFiltered.videos.items.length === 0" cols="12">
                   <v-alert type="info">No videos found.</v-alert>
                 </v-col>
                 <v-col v-else v-for="video in searchResultsFiltered.videos.items" cols="12" sm="6">
@@ -38,7 +44,13 @@
 
             <v-tabs-window-item value="artists">
               <v-row>
-                <v-col v-if="searchResultsFiltered.artists.items.length === 0" cols="12">
+                <v-col v-if="isLoadingResults" cols="12">
+                  <LoadingSpinner />
+                </v-col>
+                <v-col v-else-if="!searchResultsFiltered.artists" cols="12">
+                  <v-alert type="error">Failed to load artists results.</v-alert>
+                </v-col>
+                <v-col v-else-if="searchResultsFiltered.artists.items.length === 0" cols="12">
                   <v-alert type="info">No artists found.</v-alert>
                 </v-col>
                 <v-col v-else v-for="artist in searchResultsFiltered.artists.items" :key="artist.id" cols="12" sm="6"
@@ -68,7 +80,8 @@ const { search } = useSearch();
 
 const query = computed<string>(() => (route.query.q as string) || '');
 const currentTab = ref<string>('videos');
-const isLoading = ref<boolean>(true);
+const isLoadingGeneral = ref<boolean>(true);
+const isLoadingResults = ref<boolean>(false);
 const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const searchResults = ref<SearchResult | null>(null);
 const searchResultsFiltered = ref<SearchResult | null>(null);
@@ -82,14 +95,15 @@ const goRootIfNoQuery = async () => {
 };
 
 const loadSearchResults = async () => {
-  isLoading.value = true;
+  isLoadingResults.value = true;
   try {
     searchResults.value = await search(query.value, searchResultsOffset.value, searchResultsOffset.value);
   } catch (error) {
     console.error('Error loading search results:', error);
   } finally {
-    isLoading.value = false;
+    isLoadingGeneral.value = false;
   }
+  isLoadingResults.value = false;
   await filterSearchResults();
 };
 
