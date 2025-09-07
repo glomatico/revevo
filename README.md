@@ -2,7 +2,7 @@
 
 A music video streaming website that recreates the old Vevo experience using their still-active internal APIs.
 
-Although the official Vevo website shut down years ago, many parts of its backend remain online. Revevo bridges that gap by using the APIs from the Vevo TV app to reconstruct the original platform, featuring music videos, curated playlists, and artist pages. All rebuilt for both desktop and mobile browsers.
+Although the official Vevo website shut down years ago, many parts of its backend remain online. Revevo bridges the gap by using those APIs to revive the classic Vevo experience, offering a vast library of high-quality music videos enriched with detailed metadata.
 
 ## Technologies Used
 
