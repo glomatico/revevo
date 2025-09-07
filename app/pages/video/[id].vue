@@ -63,6 +63,9 @@ const loadVideo = async () => {
   }
 
   streamUrl.value = video.value?.streamsV3!.find(s => s.format === 'hls')?.url || null;
+  if (streamUrl.value) {
+    streamUrl.value = streamUrl.value.replace('http://', 'https://');
+  }
 };
 
 onMounted(async () => {
