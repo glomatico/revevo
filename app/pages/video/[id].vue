@@ -32,7 +32,7 @@
               </p>
             </v-col>
 
-            <v-col v-for="item in filteredRelatedVideos" :key="item.basicMetaV3.isrc" cols="12" class="mb-4">
+            <v-col v-for="item in filteredRelatedVideos" :key="item.basicMetaV3.isrc" cols="12">
               <VideoThumbnail :video="item" />
             </v-col>
           </v-row>
