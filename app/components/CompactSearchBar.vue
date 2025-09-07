@@ -3,7 +3,7 @@
     <v-icon>mdi-magnify</v-icon>
   </v-btn>
 
-  <div v-if="isSearchOpen" class="d-flex w-100">
+  <div v-if="isSearchOpen" class="d-flex ga-2 w-100">
     <v-btn icon variant="text" @click="handleMagnifyClick">
       <v-icon>mdi-close</v-icon>
     </v-btn>
