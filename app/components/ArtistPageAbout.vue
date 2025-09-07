@@ -7,7 +7,7 @@
     <v-col cols=12>
       <p>
         <template v-if="artist.basicMeta.bio">
-          {{ artist.basicMeta.bio }}
+          {{ artist.basicMeta.bio.text }}
         </template>
         <template v-else>
           No biography available for this artist.
