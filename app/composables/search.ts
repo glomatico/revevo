@@ -1,46 +1,57 @@
 export const useSearch = () => {
   const config = useRuntimeConfig();
-  const token = config.public.apiToken;
-  const baseUrl = config.public.apiBaseUrl;
-  const graphqlApiUrl = `${baseUrl}/graphql`;
+  const graphqlApiUrl = config.public.graphqlApiUrl;
 
-  const searchVideos = async (
-    query: string,
-    offset: number = 0,
+  const search = async (
+    searchTerm: string,
+    offsetArtists: number = 0,
+    offsetVideos: number = 0,
     limit: number = 32,
-    explicit: boolean = false,
-  ): Promise<VideoSearchResult | null> => {
-    const graphqlQuery = `
-      query SearchVideos($query: String!, $explicit: Boolean, $offset: Int, $limit: Int) {
-        videoSearch(query: $query, explicit: $explicit, offset: $offset, limit: $limit) {
-          itemsCount
-          items {
-            id
-            title
-            thumbnail
-            duration
-            explicit
-            artists {
-              role
-              artist {
-                id
+  ): Promise<SearchResult | null> => {
+    const query = `
+      query Search($search: String!, $limit: Int, $offsetArtists: Int, $offsetVideos: Int) {
+        search {
+          artists(search: $search, limit: $limit, offset: $offsetArtists) {
+            items {
+              id
+              basicMeta {
                 name
-                thumbnail
+                urlSafeName
+                thumbnailUrl
               }
             }
-            viewCounts {
-              total
+            total
+          }
+          videos(search: $search, limit: $limit, offset: $offsetVideos) {
+            items {
+              basicMetaV3 {
+                isrc
+                title
+                thumbnailUrl
+                duration
+                explicit
+                artists {
+                  basicMeta {
+                    name
+                    urlSafeName
+                    role
+                  }
+                }
+              }
+              views {
+                viewsTotal
+              }
             }
+            total
           }
         }
       }
-    `;
-
+    `
     const variables = {
-      query,
-      explicit,
-      offset,
+      search: searchTerm,
       limit,
+      offsetArtists,
+      offsetVideos,
     };
 
     try {
@@ -48,26 +59,26 @@ export const useSearch = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
         },
         body: JSON.stringify({
-          query: graphqlQuery,
+          query,
           variables,
         })
       });
 
       if (!response.ok) {
-        console.error('Error when searching videos:', response.statusText);
+        console.error('Search API response not ok:', response.statusText);
         return null;
       }
 
-      const result: VideoSearchResultResponse = await response.json();
-      return result.data.videoSearch;
-    } catch (err) {
-      console.error('Exception when fetching search results:', err);
+      const searchResultResponse: SearchResultResponse = await response.json();
+      return searchResultResponse.data?.search || null;
+    } catch (error) {
+      console.error('Error during search API call:', error);
       return null;
     }
   }
 
-  return { searchVideos };
+  return { search };
 };

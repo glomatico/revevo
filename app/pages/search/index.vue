@@ -4,32 +4,57 @@
       <v-col v-if="isLoading" cols="12">
         <LoadingSpinner />
       </v-col>
-      <v-col v-else-if="!searchResults" cols="12">
+      <v-col v-else-if="!searchResultsFiltered" cols="12">
         <v-alert type="error">Failed to load search results.</v-alert>
       </v-col>
       <template v-else>
-        <v-col v-if="searchResults.items.length === 0" cols="12">
-          <v-alert type="info">No results found for "{{ query }}"</v-alert>
+        <v-col cols="12">
+          <p class="text-h5">
+            Search results for "{{ query }}"
+          </p>
         </v-col>
 
-        <template v-else>
-          <v-col cols="12">
-            <p class="text-h5">
-              {{ searchResults.itemsCount }} results for "{{ query }}"
-            </p>
-          </v-col>
+        <v-col cols="12">
+          <v-tabs v-model="currentTab" align-tabs="center">
+            <v-tab value="videos">Videos</v-tab>
+            <v-tab value="artists">Artists</v-tab>
+          </v-tabs>
+        </v-col>
 
-          <v-divider thickness="2" />
+        <v-divider thickness="2" />
 
-          <v-col v-for="video in searchResults.items" :key="video.id" cols="12" sm="6">
-            <GenericVideoThumbnail :video="video" />
-          </v-col>
-        </template>
+        <v-col cols="12">
+          <v-tabs-window v-model="currentTab">
+            <v-tabs-window-item value="videos">
+              <v-row>
+                <v-col v-if="searchResultsFiltered.videos.items.length === 0" cols="12">
+                  <v-alert type="info">No videos found.</v-alert>
+                </v-col>
+                <v-col v-else v-for="video in searchResultsFiltered.videos.items" cols="12" sm="6">
+                  <VideoThumbnail :video="video" />
+                </v-col>
+              </v-row>
+            </v-tabs-window-item>
+
+            <v-tabs-window-item value="artists">
+              <v-row>
+                <v-col v-if="searchResultsFiltered.artists.items.length === 0" cols="12">
+                  <v-alert type="info">No artists found.</v-alert>
+                </v-col>
+                <v-col v-else v-for="artist in searchResultsFiltered.artists.items" :key="artist.id" cols="12" sm="6"
+                  md="4" lg="3">
+                  <ArtistThumbnail :artist="artist.basicMeta" />
+                </v-col>
+              </v-row>
+            </v-tabs-window-item>
+          </v-tabs-window>
+        </v-col>
 
         <v-divider thickness="2" />
 
         <v-col>
-          <AppPagination :items-count="searchResults.itemsCount" :page-index="pageIndex" @page-change="onPageChange" />
+          <AppPagination :items-count="searchResults?.videos.total!" :page-index="pageIndex"
+            @page-change="onPageChange" />
         </v-col>
       </template>
     </v-row>
@@ -39,12 +64,14 @@
 <script lang="ts" setup>
 const route = useRoute();
 const router = useRouter();
-const { searchVideos } = useSearch();
+const { search } = useSearch();
 
 const query = computed<string>(() => (route.query.q as string) || '');
+const currentTab = ref<string>('videos');
 const isLoading = ref<boolean>(true);
 const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
-const searchResults = ref<VideoSearchResult | null>(null);
+const searchResults = ref<SearchResult | null>(null);
+const searchResultsFiltered = ref<SearchResult | null>(null);
 
 const searchResultsOffset = computed<number>(() => (pageIndex.value - 1) * 32);
 
@@ -57,12 +84,13 @@ const goRootIfNoQuery = async () => {
 const loadSearchResults = async () => {
   isLoading.value = true;
   try {
-    searchResults.value = await searchVideos(query.value, searchResultsOffset.value);
+    searchResults.value = await search(query.value, searchResultsOffset.value, searchResultsOffset.value);
   } catch (error) {
     console.error('Error loading search results:', error);
   } finally {
     isLoading.value = false;
   }
+  await filterSearchResults();
 };
 
 const onPageChange = async (newPageIndex: number) => {
@@ -80,7 +108,22 @@ const onPageChange = async (newPageIndex: number) => {
     query: newQuery
   });
 
-  loadSearchResults();
+  await loadSearchResults();
+};
+
+const filterSearchResults = async () => {
+  if (!searchResults.value) return;
+  searchResultsFiltered.value = {
+    ...searchResults.value,
+    videos: {
+      ...searchResults.value.videos,
+      items: searchResults.value.videos.items.filter((video) => video.basicMetaV3)
+    },
+    artists: {
+      ...searchResults.value.artists,
+      items: searchResults.value.artists.items.filter((artist) => artist.basicMeta)
+    }
+  }
 };
 
 watch(() => route.query.q, async () => {

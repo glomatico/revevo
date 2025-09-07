@@ -96,6 +96,17 @@ export interface Paging {
   next: string;
 };
 
+export interface SearchResult {
+  artists: {
+    items: Artist[];
+    total: number;
+  };
+  videos: {
+    items: Video[];
+    total: number;
+  };
+};
+
 export interface ArtistResponse {
   data: {
     artists: Artist[] | null;
@@ -107,6 +118,12 @@ export interface VideoResponse {
     videos: VideoList | null;
   } | null;
 };
+
+export interface SearchResultResponse {
+  data: {
+    search: SearchResult | null;
+  } | null;
+}
 
 export const formatDuration = (milliseconds: number): string => {
   let totalSeconds = Math.floor(milliseconds / 1000);
