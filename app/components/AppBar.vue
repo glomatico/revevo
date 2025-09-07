@@ -1,7 +1,7 @@
 <template>
   <v-toolbar color="surface">
     <v-container>
-      <v-row align="center" class="d-none d-md-flex">
+      <v-row v-if="!mobile" align="center">
         <v-col cols="6">
           <v-toolbar-title>
             <NuxtLink class="toolbar-title" to="/">
@@ -15,7 +15,7 @@
         </v-col>
       </v-row>
 
-      <v-row align="center" class="d-md-none ma-0">
+      <v-row v-else align="center">
         <v-col v-if="isLogoVisible" cols="auto">
           <v-toolbar-title>
             <NuxtLink class="toolbar-title" to="/">
@@ -34,6 +34,9 @@
 
 <script lang="ts" setup>
 const isLogoVisible = ref<boolean>(true);
+import { useDisplay } from 'vuetify';
+
+const { mobile } = useDisplay();
 
 const toggleLogo = (isSearchOpen: boolean) => {
   isLogoVisible.value = !isSearchOpen;
