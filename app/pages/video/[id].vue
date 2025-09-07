@@ -32,7 +32,7 @@
               </p>
             </v-col>
 
-            <v-col v-for="item in video.relatedVideos?.data" :key="item.basicMetaV3.isrc" cols="12">
+            <v-col v-for="item in filteredRelatedVideos" :key="item.basicMetaV3.isrc" cols="12" class="mb-4">
               <VideoThumbnail :video="item" />
             </v-col>
           </v-row>
@@ -50,6 +50,7 @@ const videoId = ref<string>(route.params.id as string);
 const isLoadingVideo = ref<boolean>(true);
 const video = ref<Video | null>(null);
 const streamUrl = ref<string | null>(null);
+const filteredRelatedVideos = ref<Video[] | null>(null);
 
 const loadVideo = async () => {
   isLoadingVideo.value = true;
@@ -62,10 +63,17 @@ const loadVideo = async () => {
     isLoadingVideo.value = false;
   }
 
+  filterRelatedVideos();
   streamUrl.value = video.value?.streamsV3!.find(s => s.format === 'hls')?.url || null;
   if (streamUrl.value) {
     streamUrl.value = streamUrl.value.replace('http://', 'https://');
   }
+};
+
+const filterRelatedVideos = () => {
+  if (!video.value?.relatedVideos?.data) return;
+  filteredRelatedVideos.value = video.value.relatedVideos.data;
+  filteredRelatedVideos.value = filteredRelatedVideos.value.filter(v => v.basicMetaV3 && v.basicMetaV3.isrc !== video.value?.basicMetaV3.isrc);
 };
 
 onMounted(async () => {
