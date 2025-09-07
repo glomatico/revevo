@@ -1,33 +1,24 @@
 <template>
-  <v-toolbar color="surface">
-    <v-container>
-      <v-row v-if="!mobile" align="center">
-        <v-col cols="6">
-          <v-toolbar-title>
-            <NuxtLink class="toolbar-title" to="/">
-              <p class="text-h4 font-weight-bold">Revevo</p>
-            </NuxtLink>
-          </v-toolbar-title>
-        </v-col>
-
-        <v-col>
+  <v-toolbar class="text-white">
+    <v-container class="d-flex align-center">
+      <template v-if="!mobile">
+        <v-toolbar-title>
+          <NuxtLink class="toolbar-title" to="/">
+            <p class="text-h4 font-weight-bold">Revevo</p>
+          </NuxtLink>
+        </v-toolbar-title>
+        <v-sheet width="400">
           <SearchBar />
-        </v-col>
-      </v-row>
-
-      <v-row v-else align="center">
-        <v-col v-if="isLogoVisible" cols="auto">
-          <v-toolbar-title>
-            <NuxtLink class="toolbar-title" to="/">
-              <p class="text-h4 font-weight-bold">Revevo</p>
-            </NuxtLink>
-          </v-toolbar-title>
-        </v-col>
-
-        <v-col class="text-end">
-          <CompactSearchBar @magnify-clicked="toggleLogo" />
-        </v-col>
-      </v-row>
+        </v-sheet>
+      </template>
+      <template v-else>
+        <v-toolbar-title v-if="isLogoVisible">
+          <NuxtLink class="toolbar-title" to="/">
+            <p class="text-h4 font-weight-bold">Revevo</p>
+          </NuxtLink>
+        </v-toolbar-title>
+        <CompactSearchBar @magnify-clicked="toggleLogo" />
+      </template>
     </v-container>
   </v-toolbar>
 </template>
