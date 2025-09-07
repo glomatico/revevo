@@ -81,7 +81,6 @@ const artist = ref<Artist | null>(null);
 const artistVideos = ref<VideoList | null>(null);
 
 const loadArtist = async () => {
-  isLoadingGeneral.value = true;
   try {
     const artists = await getArtists(artistId, pageIndex.value);
     artist.value = artists ? artists[0] as Artist : null;
