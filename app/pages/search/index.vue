@@ -65,8 +65,7 @@
         <v-divider thickness="2" />
 
         <v-col>
-          <AppPagination :items-count="searchResults?.videos.total!" :page-index="pageIndex"
-            @page-change="onPageChange" />
+          <AppPagination :items-count="searchResults?.videos.total!" :page-index="pageIndex" />
         </v-col>
       </template>
     </v-row>
@@ -82,7 +81,7 @@ const query = computed<string>(() => (route.query.q as string) || '');
 const currentTab = ref<string>((route.query.t as string) || 'videos');
 const isLoadingGeneral = ref<boolean>(true);
 const isLoadingResults = ref<boolean>(false);
-const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
+const pageIndex = computed<number>(() => parseInt((route.query.p as string) || '1', 10));
 const searchResults = ref<SearchResult | null>(null);
 const searchResultsFiltered = ref<SearchResult | null>(null);
 
@@ -109,24 +108,6 @@ const loadSearchResults = async () => {
   await filterSearchResults();
 };
 
-const onPageChange = async (newPageIndex: number) => {
-  pageIndex.value = newPageIndex;
-
-  const newQuery = { ...route.query };
-  if (newPageIndex === 1) {
-    delete newQuery.p;
-  } else {
-    newQuery.p = newPageIndex.toString();
-  }
-
-  await router.push({
-    path: route.path,
-    query: newQuery
-  });
-
-  await loadSearchResults();
-};
-
 const onTabChange = async () => {
   const newQuery = { ...route.query };
   if (currentTab.value === 'videos') {
@@ -147,7 +128,7 @@ const filterSearchResults = async () => {
   searchResultsFiltered.value.videos!.items = searchResults.value.videos!.items.filter((video) => video.basicMetaV3);
   searchResultsFiltered.value.artists!.items = searchResults.value.artists!.items.filter((artist) => artist.basicMeta);
 };
-watch(() => route.query.q, async () => {
+watch(() => pageIndex.value, async () => {
   await loadSearchResults();
 });
 
