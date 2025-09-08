@@ -95,6 +95,8 @@ const goRootIfNoQuery = async () => {
 };
 
 const loadSearchResults = async () => {
+  await goRootIfNoQuery();
+
   isLoadingResults.value = true;
   try {
     searchResults.value = await search(query.value, searchResultsOffset.value, searchResultsOffset.value);
@@ -145,14 +147,11 @@ const filterSearchResults = async () => {
   searchResultsFiltered.value.videos!.items = searchResults.value.videos!.items.filter((video) => video.basicMetaV3);
   searchResultsFiltered.value.artists!.items = searchResults.value.artists!.items.filter((artist) => artist.basicMeta);
 };
-
 watch(() => route.query.q, async () => {
-  goRootIfNoQuery();
   await loadSearchResults();
 });
 
 onMounted(async () => {
-  goRootIfNoQuery();
   await loadSearchResults();
 });
 </script>
