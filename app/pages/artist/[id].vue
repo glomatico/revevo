@@ -5,11 +5,11 @@
         <LoadingSpinner />
       </v-col>
 
-      <v-col v-else-if="!artist" cols=12>
+      <v-col v-else-if="!artist" cols="12">
         <v-alert type="error">Failed to load artist information.</v-alert>
       </v-col>
 
-      <v-col v-else-if="!artist.videoData?.videos" cols=12>
+      <v-col v-else-if="!artist.videoData?.videos" cols="12">
         <v-alert type="error">Artist not found.</v-alert>
       </v-col>
 
@@ -19,17 +19,13 @@
         </v-col>
 
         <v-col cols="12">
-          <v-tabs v-model="currentTab" @update:model-value="onTabChange" align-tabs="center">
-            <v-tab value="videos">Videos</v-tab>
-            <v-tab value="about">About</v-tab>
-            <v-tab value="related">Related Artists</v-tab>
-          </v-tabs>
+          <AppTabs :tabs="tabs" :route-param-key="defaultTabRouteParamKey" :default-tab="defaultTab"
+            @tab-change="onTabChange" />
+          <v-divider thickness="2" />
         </v-col>
 
-        <v-divider thickness="2" />
-
         <v-col cols="12">
-          <v-tabs-window v-model="currentTab">
+          <v-tabs-window v-model="tab">
             <v-tabs-window-item value="videos">
               <v-row>
                 <v-col v-if="isLoadingVideos" cols="12">
@@ -48,17 +44,21 @@
                   <ArtistPageVideoThumbnail :video="video" />
                 </v-col>
 
-                <v-divider thickness="2" />
+                <v-col cols="12">
+                  <v-divider thickness="2" />
+                </v-col>
 
                 <v-col cols="12">
-                  <AppPagination :items-count="artistVideos?.paging.total!" />
+                  <AppPagination :items-count="artistVideos?.paging.total!" @page-change="onPageChange" />
                 </v-col>
               </v-row>
             </v-tabs-window-item>
+
             <v-tabs-window-item value="about">
               <ArtistPageAbout :artist="artist" />
             </v-tabs-window-item>
-            <v-tabs-window-item value="related">
+
+            <v-tabs-window-item value="related-artists">
               <ArtistPageRelatedArtists :artist="artist" />
             </v-tabs-window-item>
           </v-tabs-window>
@@ -72,20 +72,23 @@
 
 const { getArtists, getArtistsVideos } = useArtist();
 const route = useRoute();
-const router = useRouter();
 
 const artistId = route.params.id as string;
 
+const tabs = ['videos', 'about', 'related-artists'];
+const defaultTabRouteParamKey = 't';
+const defaultTab = 'videos';
+
 const isLoadingGeneral = ref<boolean>(true);
 const isLoadingVideos = ref<boolean>(false);
-const currentTab = ref<string>((route.query.t as string) || 'videos');
-const pageIndex = computed<number>(() => parseInt((route.query.p as string) || '1', 10));
+const tab = ref<string>((route.query.t as string) || defaultTab);
+const page = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const artist = ref<Artist | null>(null);
 const artistVideos = ref<VideoList | null>(null);
 
 const loadArtist = async () => {
   try {
-    const artists = await getArtists(artistId, pageIndex.value);
+    const artists = await getArtists(artistId, page.value);
     artist.value = artists ? artists[0] as Artist : null;
   } catch (error) {
     console.error('Error fetching artist:', error);
@@ -96,10 +99,10 @@ const loadArtist = async () => {
 };
 
 const loadArtistVideos = async () => {
-  console.log('Loading artist videos for page:', pageIndex.value);
+  console.log('Loading artist videos for page:', page.value);
   try {
     isLoadingVideos.value = true;
-    const artistsVideos = await getArtistsVideos(artistId, pageIndex.value);
+    const artistsVideos = await getArtistsVideos(artistId, page.value);
     artistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)?.videoData?.videos!;
   } catch (error) {
     console.error('Error fetching artist videos:', error);
@@ -108,23 +111,14 @@ const loadArtistVideos = async () => {
   }
 };
 
-const onTabChange = async () => {
-  const newQuery = { ...route.query };
-  if (currentTab.value === 'videos') {
-    delete newQuery.t;
-  } else {
-    newQuery.t = currentTab.value;
-  }
-
-  await router.push({
-    path: route.path,
-    query: newQuery
-  });
+const onTabChange = (newTab: string) => {
+  tab.value = newTab;
 };
 
-watch(() => pageIndex.value, async () => {
-  await loadArtistVideos();
-});
+const onPageChange = (newPage: number) => {
+  page.value = newPage;
+  loadArtistVideos();
+};
 
 onMounted(async () => {
   loadArtist();

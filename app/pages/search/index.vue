@@ -4,38 +4,40 @@
       <v-col v-if="isLoadingGeneral" cols="12">
         <LoadingSpinner />
       </v-col>
+
       <v-col v-else-if="!searchResultsFiltered" cols="12">
         <v-alert type="error">Failed to load search results.</v-alert>
       </v-col>
+
       <template v-else>
         <v-col cols="12">
-          <p class="text-h5">
+          <p class="text-h4">
             Search results for "{{ query }}"
           </p>
         </v-col>
 
         <v-col cols="12">
-          <v-tabs v-model="currentTab" align-tabs="center" @update:model-value="onTabChange">
-            <v-tab value="videos">Videos</v-tab>
-            <v-tab value="artists">Artists</v-tab>
-          </v-tabs>
+          <AppTabs :tabs="tabs" :route-param-key="defaultTabRouteParamKey" :default-tab="defaultTab"
+            @tab-change="onTabChange" />
+          <v-divider thickness="2" />
         </v-col>
 
-        <v-divider thickness="2" />
-
         <v-col cols="12">
-          <v-tabs-window v-model="currentTab">
+          <v-tabs-window v-model="tab">
             <v-tabs-window-item value="videos">
               <v-row>
                 <v-col v-if="isLoadingResults" cols="12">
                   <LoadingSpinner />
                 </v-col>
+
                 <v-col v-else-if="!searchResultsFiltered.videos" cols="12">
                   <v-alert type="error">Failed to load video results.</v-alert>
                 </v-col>
+
                 <v-col v-else-if="searchResultsFiltered.videos.items.length === 0" cols="12">
                   <v-alert type="info">No videos found.</v-alert>
                 </v-col>
+
                 <v-col v-else v-for="video in searchResultsFiltered.videos.items" cols="12" sm="6">
                   <VideoThumbnail :video="video" />
                 </v-col>
@@ -47,12 +49,15 @@
                 <v-col v-if="isLoadingResults" cols="12">
                   <LoadingSpinner />
                 </v-col>
+
                 <v-col v-else-if="!searchResultsFiltered.artists" cols="12">
                   <v-alert type="error">Failed to load artists results.</v-alert>
                 </v-col>
+
                 <v-col v-else-if="searchResultsFiltered.artists.items.length === 0" cols="12">
                   <v-alert type="info">No artists found.</v-alert>
                 </v-col>
+
                 <v-col v-else v-for="artist in searchResultsFiltered.artists.items" :key="artist.id" cols="12" sm="6"
                   md="4" lg="3">
                   <ArtistThumbnail :artist="artist.basicMeta" />
@@ -62,10 +67,12 @@
           </v-tabs-window>
         </v-col>
 
-        <v-divider thickness="2" />
+        <v-col cols="12">
+          <v-divider thickness="2" />
+        </v-col>
 
-        <v-col>
-          <AppPagination :items-count="searchResults?.videos.total!" :page-index="pageIndex" />
+        <v-col cols="12">
+          <AppPagination :items-count="searchResults?.videos.total!" @page-change="onPageCange" />
         </v-col>
       </template>
     </v-row>
@@ -77,24 +84,24 @@ const route = useRoute();
 const router = useRouter();
 const { search } = useSearch();
 
-const query = computed<string>(() => (route.query.q as string) || '');
-const currentTab = ref<string>((route.query.t as string) || 'videos');
+const defaultTab = 'videos';
+const tabs = ['videos', 'artists'];
+const defaultTabRouteParamKey = 't';
+
+const tab = ref<string>((route.query[defaultTabRouteParamKey] as string) || defaultTab);
 const isLoadingGeneral = ref<boolean>(true);
 const isLoadingResults = ref<boolean>(false);
-const pageIndex = computed<number>(() => parseInt((route.query.p as string) || '1', 10));
+const page = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const searchResults = ref<SearchResult | null>(null);
 const searchResultsFiltered = ref<SearchResult | null>(null);
 
-const searchResultsOffset = computed<number>(() => (pageIndex.value - 1) * 32);
+const query = computed<string>(() => (route.query.q as string) || '');
+const searchResultsOffset = computed<number>(() => (page.value - 1) * 32);
 
-const goRootIfNoQuery = async () => {
+const loadSearchResults = async () => {
   if (!query.value.trim()) {
     await router.push({ path: '/' });
   }
-};
-
-const loadSearchResults = async () => {
-  await goRootIfNoQuery();
 
   isLoadingResults.value = true;
   try {
@@ -108,20 +115,6 @@ const loadSearchResults = async () => {
   await filterSearchResults();
 };
 
-const onTabChange = async () => {
-  const newQuery = { ...route.query };
-  if (currentTab.value === 'videos') {
-    delete newQuery.t;
-  } else {
-    newQuery.t = currentTab.value;
-  }
-
-  await router.push({
-    path: route.path,
-    query: newQuery
-  });
-};
-
 const filterSearchResults = async () => {
   if (!searchResults.value) return;
   searchResultsFiltered.value = searchResults.value;
@@ -129,11 +122,16 @@ const filterSearchResults = async () => {
   searchResultsFiltered.value.artists!.items = searchResults.value.artists!.items.filter((artist) => artist.basicMeta);
 };
 
-watch(() => pageIndex.value, async () => {
-  await loadSearchResults();
-});
+const onPageCange = async (newPage: number) => {
+  page.value = newPage;
+  loadSearchResults();
+};
 
-watch(() => query.value, async () => {
+const onTabChange = (newTab: string) => {
+  tab.value = newTab;
+};
+
+watch(query, async () => {
   await loadSearchResults();
 });
 

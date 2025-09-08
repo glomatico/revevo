@@ -1,25 +1,39 @@
 <template>
-  <v-pagination v-model="pageIndex" :length="length" rounded="circle" @update:model-value="onPageChange"></v-pagination>
+  <v-pagination v-model="page" :length="length" rounded="circle"></v-pagination>
 </template>
 
 <script lang="ts" setup>
 const props = defineProps<{
   itemsCount: number;
 }>();
+
+const emit = defineEmits<{
+  pageChange: [value: number];
+}>();
+
 const router = useRouter();
 const route = useRoute();
 
 const length = ref<number>(Math.ceil(props.itemsCount / 32));
-const pageIndex = computed<number>(() => parseInt((route.query.p as string) || '1', 10));
-
-const onPageChange = (newPage: number) => {
-  const pageIndex = newPage;
-  if (pageIndex === 1) {
+const page = computed<number>({
+  get: () => parseInt((route.query.p as string) || '1', 10),
+  set: async (value: number) => {
     const newQuery = { ...route.query };
-    delete newQuery.p;
-    router.push({ path: route.path, query: newQuery });
-  } else {
-    router.push({ path: route.path, query: { ...route.query, p: pageIndex.toString() } });
+    if (value === 1) {
+      delete newQuery.p;
+    } else {
+      newQuery.p = value.toString();
+    }
+
+    await router.push({
+      path: route.path,
+      query: newQuery
+    });
   }
-};
+});
+
+
+watch(page, async () => {
+  emit('pageChange', page.value);
+});
 </script>

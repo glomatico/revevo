@@ -24,8 +24,9 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter();
+const route = useRoute();
 
-const query = ref<string>('');
+const query = ref<string>(route.query.q as string || '');
 const isSearchOpen = ref<boolean>(false);
 
 const handleMagnifyClick = () => {
@@ -35,6 +36,11 @@ const handleMagnifyClick = () => {
 
 const search = async () => {
   if (!query.value.trim()) return;
-  await router.push({ path: '/search', query: { q: query.value } });
+  await router.push({
+    path: '/search',
+    query: {
+      q: query.value,
+    }
+  });
 };
 </script>
