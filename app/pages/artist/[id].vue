@@ -51,8 +51,7 @@
                 <v-divider thickness="2" />
 
                 <v-col cols="12">
-                  <AppPagination :items-count="artistVideos?.paging.total!" :page-index="pageIndex"
-                    @page-change="onPageChange" />
+                  <AppPagination :items-count="artistVideos?.paging.total!" />
                 </v-col>
               </v-row>
             </v-tabs-window-item>
@@ -80,7 +79,7 @@ const artistId = route.params.id as string;
 const isLoadingGeneral = ref<boolean>(true);
 const isLoadingVideos = ref<boolean>(false);
 const currentTab = ref<string>((route.query.t as string) || 'videos');
-const pageIndex = ref<number>(parseInt((route.query.p as string) || '1', 10));
+const pageIndex = computed<number>(() => parseInt((route.query.p as string) || '1', 10));
 const artist = ref<Artist | null>(null);
 const artistVideos = ref<VideoList | null>(null);
 
@@ -97,6 +96,7 @@ const loadArtist = async () => {
 };
 
 const loadArtistVideos = async () => {
+  console.log('Loading artist videos for page:', pageIndex.value);
   try {
     isLoadingVideos.value = true;
     const artistsVideos = await getArtistsVideos(artistId, pageIndex.value);
@@ -106,24 +106,6 @@ const loadArtistVideos = async () => {
   } finally {
     isLoadingVideos.value = false;
   }
-};
-
-const onPageChange = async (newPageIndex: number) => {
-  pageIndex.value = newPageIndex;
-
-  const newQuery = { ...route.query };
-  if (newPageIndex === 1) {
-    delete newQuery.p;
-  } else {
-    newQuery.p = newPageIndex.toString();
-  }
-
-  await router.push({
-    path: route.path,
-    query: newQuery
-  });
-
-  loadArtistVideos();
 };
 
 const onTabChange = async () => {
@@ -139,6 +121,10 @@ const onTabChange = async () => {
     query: newQuery
   });
 };
+
+watch(() => pageIndex.value, async () => {
+  await loadArtistVideos();
+});
 
 onMounted(async () => {
   loadArtist();
