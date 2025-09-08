@@ -128,7 +128,12 @@ const filterSearchResults = async () => {
   searchResultsFiltered.value.videos!.items = searchResults.value.videos!.items.filter((video) => video.basicMetaV3);
   searchResultsFiltered.value.artists!.items = searchResults.value.artists!.items.filter((artist) => artist.basicMeta);
 };
+
 watch(() => pageIndex.value, async () => {
+  await loadSearchResults();
+});
+
+watch(() => query.value, async () => {
   await loadSearchResults();
 });
 

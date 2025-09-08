@@ -13,7 +13,7 @@
 const router = useRouter();
 const route = useRoute();
 
-const query = computed<string>(() => (route.query.q as string) || '');
+const query = ref<string>(route.query.q as string || '');
 
 const search = async () => {
   if (!query.value.trim()) return;
