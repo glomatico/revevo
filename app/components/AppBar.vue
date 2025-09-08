@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar class="text-white">
+  <v-toolbar color="surface">
     <v-container class="d-flex align-center">
       <template v-if="!mobile">
         <v-toolbar-title>
