@@ -60,11 +60,8 @@ onMounted(async () => {
 
 <style scoped>
 .video-player {
-  height: 1920px;
   width: 100%;
-  object-fit: contain;
   background-color: #000;
-  max-height: 70vh;
-  min-height: 180px;
+  max-height: 75vh;
 }
 </style>
