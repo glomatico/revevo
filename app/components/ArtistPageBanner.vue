@@ -2,7 +2,7 @@
   <v-row>
     <v-col cols="12" sm="auto" class="text-center">
       <v-avatar size="180">
-        <v-img :src="artist.basicMeta.thumbnailUrl" :alt="`Profile avatar of ${artist.basicMeta.name}.`" />
+        <v-img :src="resizedAvatarlUrl" :alt="`Profile avatar of ${artist.basicMeta.name}.`" />
       </v-avatar>
     </v-col>
     <v-col cols="12" sm="auto" class="align-self-center text-center text-sm-left">
@@ -18,7 +18,9 @@
 </template>
 
 <script lang="ts" setup>
-defineProps<{
+const props = defineProps<{
   artist: Artist;
 }>();
+
+const resizedAvatarlUrl = resizeImageUrl(props.artist.basicMeta.thumbnailUrl, 256, 256);
 </script>

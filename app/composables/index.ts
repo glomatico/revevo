@@ -131,3 +131,13 @@ export const formatDuration = (milliseconds: number): string => {
   let seconds = totalSeconds % 60;
   return String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
 };
+
+
+export const resizeImageUrl = (url: string, width: number, height: number): string => {
+  // add height and width query parameters to the url
+  const urlObj = new URL(url);
+  urlObj.searchParams.set('width', width.toString());
+  urlObj.searchParams.set('height', height.toString());
+  console.log(urlObj.toString());
+  return urlObj.toString();
+};

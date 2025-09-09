@@ -2,7 +2,7 @@
   <v-card :link="true" hover :to="`/artist/${artist.urlSafeName}`">
     <v-card-item align="center">
       <v-avatar size="50%">
-        <v-img :src="artist.thumbnailUrl" :alt="`Profile avatar for ${artist.name}`" :aspect-ratio="1" />
+        <v-img :src="resizedAvatarUrl" :alt="`Profile avatar for ${artist.name}`" :aspect-ratio="1" />
       </v-avatar>
     </v-card-item>
 
@@ -13,7 +13,9 @@
 </template>
 
 <script lang="ts" setup>
-defineProps<{
+const props = defineProps<{
   artist: BasicArtistMeta;
 }>();
+
+const resizedAvatarUrl = resizeImageUrl(props.artist.thumbnailUrl, 256, 256);
 </script>
