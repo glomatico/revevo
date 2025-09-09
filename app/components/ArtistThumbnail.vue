@@ -16,6 +16,9 @@
 const props = defineProps<{
   artist: BasicArtistMeta;
 }>();
+const resizedAvatarUrl = ref<string>('');
 
-const resizedAvatarUrl = resizeImageUrl(props.artist.thumbnailUrl, 256, 256);
+if (props.artist.thumbnailUrl) {
+  resizedAvatarUrl.value = resizeImageUrl(props.artist.thumbnailUrl, 256, 256);
+}
 </script>
