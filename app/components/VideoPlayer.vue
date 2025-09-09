@@ -62,6 +62,7 @@ onMounted(async () => {
 .video-player {
   width: 100%;
   background-color: #000;
+  aspect-ratio: 16 / 9;
   max-height: 75vh;
 }
 </style>
