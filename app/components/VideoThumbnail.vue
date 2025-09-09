@@ -7,12 +7,12 @@
       </v-col>
       <v-col cols="7">
         <v-card-item>
-          <v-card-title class="text-truncate pa-0 text-body-2" :title="video.basicMetaV3.title">
-            <v-icon v-if="video.basicMetaV3.explicit" class="alpha-e-box mr-1" size="16" icon="mdi-alpha-e-box" />
+          <v-card-title class="text-truncate text-body-2" :title="video.basicMetaV3.title">
+            <v-icon v-if="video.basicMetaV3.explicit" size="24" icon="mdi-alpha-e-box" />
             {{ video.basicMetaV3.title }}
           </v-card-title>
 
-          <v-card-subtitle class="pa-0 text-caption">
+          <v-card-subtitle>
             <ArtistLink :video-artists="video.basicMetaV3.artists!" />
             {{ formatDuration(video.basicMetaV3.duration!) }}
             <template v-if="video.views && video.views.viewsTotal">

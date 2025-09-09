@@ -47,6 +47,7 @@ export const useVideo = () => {
                 basicMetaV3 {
                   title
                   isrc
+                  explicit
                   thumbnailUrl
                   duration
                   artists {
