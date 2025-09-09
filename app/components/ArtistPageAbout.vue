@@ -20,7 +20,7 @@
     </v-col>
 
     <v-col cols=12>
-      <div v-if="artist.basicMeta.links?.length !== 0" class="d-flex ga-2">
+      <div v-if="artist.basicMeta.links?.length !== 0" class="d-flex flex-wrap ga-2">
         <v-btn v-for="link in artist.basicMeta.links" :key="link.url" :href="link.url" target="_blank"
           variant="outlined">
           {{ link.type }}
