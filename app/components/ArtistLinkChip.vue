@@ -3,8 +3,10 @@
     <v-chip v-for="artist in artistsFiltered" :key="artist.basicMeta.name"
       :to="`/artist/${artist.basicMeta.urlSafeName}`">
       <v-avatar v-if="addAvatar" class="mr-1">
-        <v-img :src="artist.basicMeta.thumbnailUrl" :alt="`Avatar for ${artist.basicMeta.name}`" />
+        <v-img :src="resizeImageUrl(artist.basicMeta.thumbnailUrl, 32, 32)"
+          :alt="`Avatar for ${artist.basicMeta.name}`" />
       </v-avatar>
+
       <p>
         {{ artist.basicMeta.name }}
       </p>
