@@ -11,17 +11,17 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const captions = await getCaptions(id);
+  try {
+    const captions = await getCaptions(id);
 
-  if (captions === null) {
+    event.node.res.setHeader('Content-Type', 'text/vtt; charset=utf-8');
+    event.node.res.setHeader('Cache-Control', 'public, max-age=3600');
+
+    return captions;
+  } catch (error) {
     throw createError({
-      statusCode: 404,
-      statusMessage: 'Captions not found',
+      statusCode: 500,
+      statusMessage: 'Error fetching captions',
     });
   }
-
-  event.res.setHeader('Content-Type', 'text/vtt; charset=utf-8');
-  event.res.setHeader('Cache-Control', 'public, max-age=3600');
-
-  return captions;
 })
