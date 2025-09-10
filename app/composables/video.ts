@@ -110,7 +110,7 @@ export const useVideo = () => {
     }
   };
 
-  const getCaptions = async (videoId: string): Promise<string | null> => {
+  const getCaptions = async (videoId?: string): Promise<string | null> => {
     try {
       const response = await fetch(`${captionsApiUrl}/${videoId}.vtt?token=${captionsApiToken}`, {
         method: 'GET',
@@ -128,8 +128,16 @@ export const useVideo = () => {
     }
   };
 
-  const attachCaptions = async (videoHtml: HTMLVideoElement, captionsVtt: string) => {
-    if (!videoHtml || !captionsVtt) return;
+  const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {
+    return Boolean(
+      video?.basicMetaV3?.title
+        &&
+        checkStreams ? video?.streamsV3?.some(stream => stream.url) : true
+    );
+  }
+
+  const attachCaptions = async (videoHtml: HTMLVideoElement, captionsVtt?: string) => {
+    if (!captionsVtt) return;
 
     const response = await fetch(captionsVtt);
     if (!response.ok) return;
@@ -158,8 +166,8 @@ export const useVideo = () => {
     });
   };
 
-  const attachVideo = async (videoHtml: HTMLVideoElement, streamUrl: string) => {
-    if (!videoHtml || !streamUrl) return;
+  const attachHlsVideo = async (videoHtml: HTMLVideoElement, streamUrl?: string) => {
+    if (!streamUrl) return;
 
     const hls = new Hls();
     hls.loadSource(streamUrl);
@@ -182,8 +190,9 @@ export const useVideo = () => {
 
   return {
     getVideos,
+    isVideoValid,
     getCaptions,
-    attachVideo,
+    attachHlsVideo,
     attachCaptions,
   };
 }

@@ -5,23 +5,21 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-  streamUrl: string;
-  captionsUrl: string;
+  streamUrl?: string;
+  captionsUrl?: string;
 }>();
 
-const { attachVideo, attachCaptions } = useVideo();
+const { attachHlsVideo, attachCaptions } = useVideo();
 
 const videoHtml = ref<HTMLVideoElement>();
 
 const loadVideo = async () => {
   try {
-    attachVideo(videoHtml.value!, props.streamUrl);
+    attachHlsVideo(videoHtml.value!, props.streamUrl);
   } catch (error) {
     console.error(error);
   }
-  if (props.captionsUrl) {
-    await loadCaptions();
-  }
+  await loadCaptions();
 };
 
 const loadCaptions = async () => {
@@ -32,9 +30,10 @@ const loadCaptions = async () => {
   }
 };
 
-onMounted(async () => {
+watch(props, async () => {
   await loadVideo();
 });
+
 </script>
 
 <style scoped>
