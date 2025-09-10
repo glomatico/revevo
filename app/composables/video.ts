@@ -130,8 +130,8 @@ export const useVideo = () => {
   const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {
     return Boolean(
       video?.basicMetaV3?.title
-        &&
-        checkStreams ? video?.streamsV3?.some(stream => stream.url) : true
+      &&
+      (checkStreams ? video?.streamsV3?.some(stream => stream.url) : true)
     );
   }
 

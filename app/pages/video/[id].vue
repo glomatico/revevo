@@ -48,6 +48,7 @@ const video = ref<Video | null>(null);
 const streamUrl = ref<string | null>(null);
 const captionsUrl = ref<string | null>(null);
 const filteredRelatedVideos = ref<Video[] | null>(null);
+const validVideo = ref<boolean>(false);
 
 const loadVideo = async () => {
   try {
@@ -60,6 +61,7 @@ const loadVideo = async () => {
   }
 
   loadingState.value = LoadingState.Loaded;
+  validVideo.value = isVideoValid(video.value);
 
   filterRelatedVideos();
   streamUrl.value = video.value?.streamsV3!.find(s => s.format === 'hls')?.url || null;
@@ -80,6 +82,6 @@ onMounted(async () => {
 });
 
 useHead(() => ({
-  title: video.value ? `${video.value.basicMetaV3.title} - Revevo` : 'Revevo'
+  title: validVideo.value ? `${video.value?.basicMetaV3.title} - Revevo` : 'Revevo'
 }));
 </script>
