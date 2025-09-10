@@ -2,7 +2,8 @@
   <v-card :link="true" hover :to="`/artist/${artist.urlSafeName}`">
     <v-card-item align="center">
       <v-avatar size="50%">
-        <v-img :src="resizedAvatarUrl" :alt="`Profile avatar for ${artist.name}`" :aspect-ratio="1" />
+        <v-img v-if="resizedAvatarlUrl" :src="resizedAvatarlUrl" :alt="`Profile avatar of ${artist.name}.`" />
+        <v-icon v-else size="180">mdi-account-circle</v-icon>
       </v-avatar>
     </v-card-item>
 
@@ -16,9 +17,10 @@
 const props = defineProps<{
   artist: BasicArtistMeta;
 }>();
-const resizedAvatarUrl = ref<string>('');
 
-if (props.artist.thumbnailUrl) {
-  resizedAvatarUrl.value = resizeImageUrl(props.artist.thumbnailUrl, 256, 256);
+const resizedAvatarlUrl = ref<string | null>(null);
+
+if (props.artist?.thumbnailUrl) {
+  resizedAvatarlUrl.value = resizeImageUrl(props.artist.thumbnailUrl, 256, 256);
 }
 </script>
