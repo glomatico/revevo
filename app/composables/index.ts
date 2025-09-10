@@ -107,6 +107,29 @@ export interface SearchResult {
   };
 };
 
+export interface Playlist {
+  id: string;
+};
+
+export interface HomePageContainerItem {
+  item: {
+    video: Video | null;
+    playlist: Playlist | null;
+    artist: Artist | null;
+  } | null;
+};
+
+export interface HomePageContainer {
+  title: string;
+  description: string;
+  serviceName: string;
+  items: HomePageContainerItem[];
+};
+
+export interface HomePage {
+  containersV2: HomePageContainer[];
+};
+
 export interface ArtistResponse {
   data: {
     artists: Artist[] | null;
@@ -123,7 +146,13 @@ export interface SearchResultResponse {
   data: {
     search: SearchResult | null;
   } | null;
-}
+};
+
+export interface HomePageResponse {
+  data: {
+    homePage: HomePage | null;
+  } | null;
+};
 
 export enum LoadingState {
   Loading = "Loading",
