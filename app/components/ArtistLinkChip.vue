@@ -3,8 +3,9 @@
     <v-chip v-for="artist in artistsFiltered" :key="artist.basicMeta.name"
       :to="`/artist/${artist.basicMeta.urlSafeName}`">
       <v-avatar v-if="addAvatar" class="mr-1">
-        <v-img :src="resizeImageUrl(artist.basicMeta.thumbnailUrl, 32, 32)"
+        <v-img v-if="artist.basicMeta.thumbnailUrl" :src="resizeImageUrl(artist.basicMeta.thumbnailUrl, 32, 32)"
           :alt="`Avatar for ${artist.basicMeta.name}`" />
+        <v-icon v-else>mdi-account-circle</v-icon>
       </v-avatar>
 
       <p>
