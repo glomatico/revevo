@@ -3,10 +3,8 @@
     <v-container>
       <v-row align="center">
         <v-col>
-          <p>Made by Glomatico
-          <p>
-
-          </p>This project is not affiliated with or endorsed by Vevo</p>
+          <p>Made by Glomatico </p>
+          <p>This project is not affiliated with or endorsed by Vevo</p>
         </v-col>
         <v-col class="text-end">
           <v-btn href="https://github.com/glomatico/revevo" target="_blank" icon="mdi-github" class="mx-4" size="medium"
