@@ -1,3 +1,5 @@
+import type { ArtistVideos } from ".";
+
 export const useArtist = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
@@ -169,14 +171,9 @@ export const useArtist = () => {
     return Boolean(artist?.basicMeta?.name);
   }
 
-  const artistHasVideos = (artist: Artist | null): boolean => {
-    return Boolean(artist?.videoData?.videos?.data?.length);
-  }
-
   return {
     getArtists,
     getArtistsVideos,
     isArtistValid,
-    artistHasVideos,
   };
 };

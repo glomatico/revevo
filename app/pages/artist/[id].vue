@@ -9,7 +9,7 @@
         <v-alert type="error">Failed to load artist information.</v-alert>
       </v-col>
 
-      <v-col v-else-if="!isArtistValid(artist)" cols="12">
+      <v-col v-else-if="!validArtist" cols="12">
         <v-alert type="warning">Artist not found.</v-alert>
       </v-col>
 
@@ -36,7 +36,7 @@
                   <v-alert type="error">Failed to load artist videos.</v-alert>
                 </v-col>
 
-                <v-col v-else-if="!artistHasVideos(artist)" cols="12">
+                <v-col v-else-if="!artistVideos" cols="12">
                   <v-alert type="warning">No videos found for this artist or no videos found in this page</v-alert>
                 </v-col>
 
@@ -70,7 +70,7 @@
 
 <script lang="ts" setup>
 
-const { getArtists, getArtistsVideos, isArtistValid, artistHasVideos } = useArtist();
+const { getArtists, getArtistsVideos, isArtistValid } = useArtist();
 const route = useRoute();
 
 const artistId = route.params.id as string;
@@ -85,6 +85,7 @@ const tab = ref<string>((route.query.t as string) || defaultTab);
 const page = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const artist = ref<Artist | null>(null);
 const artistVideos = ref<VideoList | null>(null);
+const validArtist = ref<boolean>(false);
 
 const loadArtist = async () => {
   try {
@@ -96,8 +97,10 @@ const loadArtist = async () => {
     console.error(error);
     loadingStateGeneral.value = LoadingState.Error;
   }
+
   loadingStateGeneral.value = LoadingState.Loaded;
   loadingStateVideos.value = LoadingState.Loaded;
+  validArtist.value = isArtistValid(artist.value);
 };
 
 const loadArtistVideos = async () => {
@@ -129,6 +132,6 @@ onMounted(async () => {
 });
 
 useHead(() => ({
-  title: artist.value ? `${artist.value.basicMeta.name} - Revevo` : 'Revevo'
+  title: validArtist.value ? `${artist.value?.basicMeta.name} - Revevo` : 'Revevo'
 }));
 </script>
