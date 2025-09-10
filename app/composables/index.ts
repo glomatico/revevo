@@ -154,6 +154,12 @@ export interface HomePageResponse {
   } | null;
 };
 
+export interface PageMetadata {
+  title: string;
+  path: string;
+  icon: string;
+}
+
 export enum LoadingState {
   Loading = "Loading",
   Loaded = "Loaded",
