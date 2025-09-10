@@ -7,15 +7,21 @@
 const props = defineProps<{
   streamUrl?: string;
   captionsUrl?: string;
+  streamType: StreamType;
 }>();
 
-const { attachHlsVideo, attachCaptions } = useVideo();
+const { attachHlsVideo, attachNormalVideo, attachCaptions } = useVideo();
 
 const videoHtml = ref<HTMLVideoElement>();
 
 const loadVideo = async () => {
   try {
-    attachHlsVideo(videoHtml.value!, props.streamUrl);
+    if (props.streamType === StreamType.HLS) {
+      await attachHlsVideo(videoHtml.value!, props.streamUrl);
+    }
+    if (props.streamType === StreamType.MP4) {
+      await attachNormalVideo(videoHtml.value!, props.streamUrl);
+    }
   } catch (error) {
     console.error(error);
   }

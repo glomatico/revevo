@@ -1,4 +1,5 @@
 import Hls from 'hls.js';
+import type { StreamsV3 } from '.';
 
 export const useVideo = () => {
   const config = useRuntimeConfig();
@@ -127,6 +128,21 @@ export const useVideo = () => {
     return data;
   };
 
+  const getBestMp4Stream = (streams: StreamsV3[]): string | null => {
+    const qualityPriority = ['high', 'medium', 'low'] as const;
+
+    const mp4Streams = streams.filter(stream =>
+      stream.format === 'mp4' && stream.url
+    );
+
+    for (const quality of qualityPriority) {
+      const stream = mp4Streams.find(s => s.quality === quality);
+      if (stream) return stream.url;
+    }
+
+    return null;
+  }
+
   const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {
     return Boolean(
       video?.basicMetaV3?.title
@@ -149,9 +165,20 @@ export const useVideo = () => {
     track.kind = 'subtitles';
     track.label = 'Unknown Language';
     track.src = url;
-    track.default = true;
+    track.default = false;
+
+    videoHtml.textTracks.addEventListener('change', () => {
+      const tracks = videoHtml.textTracks;
+
+      Array.from(tracks).forEach((track) => {
+        if (track.kind !== 'subtitles') return;
+        localStorage.setItem('enableCaptions', (track.mode === 'showing').toString());
+      });
+    });
 
     videoHtml.appendChild(track);
+
+    toggleCaptionsFromStorage(videoHtml);
   };
 
   const toggleCaptionsFromStorage = async (videoHtml: HTMLVideoElement) => {
@@ -174,24 +201,22 @@ export const useVideo = () => {
     hls.on(Hls.Events.MANIFEST_PARSED, function () {
       videoHtml.play();
     });
+  }
 
-    videoHtml.textTracks.addEventListener('change', () => {
-      const tracks = videoHtml.textTracks;
+  const attachNormalVideo = async (videoHtml: HTMLVideoElement, streamUrl?: string) => {
+    if (!streamUrl) return;
 
-      Array.from(tracks).forEach((track) => {
-        if (track.kind !== 'subtitles') return;
-        localStorage.setItem('enableCaptions', (track.mode === 'showing').toString());
-      });
-    });
-
-    toggleCaptionsFromStorage(videoHtml);
+    videoHtml.src = streamUrl;
+    videoHtml.play();
   }
 
   return {
     getVideos,
     isVideoValid,
     getCaptions,
+    getBestMp4Stream,
     attachHlsVideo,
+    attachNormalVideo,
     attachCaptions,
   };
 }

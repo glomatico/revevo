@@ -166,6 +166,11 @@ export enum LoadingState {
   Error = "Error",
 }
 
+export enum StreamType {
+  HLS = "hls",
+  MP4 = "mp4",
+}
+
 export const formatDuration = (milliseconds: number): string => {
   let totalSeconds = Math.floor(milliseconds / 1000);
   let minutes = Math.floor(totalSeconds / 60);

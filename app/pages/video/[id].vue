@@ -1,5 +1,5 @@
 <template>
-  <VideoPlayer :stream-url="streamUrl!" :captions-url="captionsUrl!" />
+  <VideoPlayer :stream-url="streamUrl!" :captions-url="captionsUrl!" :stream-type="streamType!" />
 
   <v-container>
     <v-row>
@@ -40,7 +40,7 @@
 
 <script lang="ts" setup>
 const route = useRoute();
-const { getVideos, isVideoValid } = useVideo();
+const { getVideos, isVideoValid, getBestMp4Stream } = useVideo();
 
 const videoId = ref<string>(route.params.id as string);
 const loadingState = ref<LoadingState>(LoadingState.Loading);
@@ -49,6 +49,34 @@ const streamUrl = ref<string | null>(null);
 const captionsUrl = ref<string | null>(null);
 const filteredRelatedVideos = ref<Video[] | null>(null);
 const validVideo = ref<boolean>(false);
+const streamType = ref<StreamType | null>(null);
+
+const loadStreamType = () => {
+  const playBackMethod = localStorage.getItem('playBackMethod') || 'hls';
+  streamType.value = playBackMethod === 'hls' ? StreamType.HLS : StreamType.MP4;
+};
+
+const loadStreamUrl = () => {
+  if (!video.value?.streamsV3) {
+    streamUrl.value = null;
+    return;
+  }
+
+  if (streamType.value === StreamType.HLS) {
+    streamUrl.value = video.value.streamsV3.find(s => s.format === 'hls')?.url || null;
+  }
+  if (streamType.value === StreamType.MP4) {
+    streamUrl.value = getBestMp4Stream(video.value.streamsV3);
+  }
+
+  if (streamUrl.value) {
+    streamUrl.value = streamUrl.value.replace('http://', 'https://');
+  }
+};
+
+const loadCaptionsUrl = () => {
+  captionsUrl.value = `/api/captions/${videoId.value}`;
+}
 
 const loadVideo = async () => {
   try {
@@ -62,13 +90,6 @@ const loadVideo = async () => {
 
   loadingState.value = LoadingState.Loaded;
   validVideo.value = isVideoValid(video.value);
-
-  filterRelatedVideos();
-  streamUrl.value = video.value?.streamsV3!.find(s => s.format === 'hls')?.url || null;
-  if (streamUrl.value) {
-    streamUrl.value = streamUrl.value.replace('http://', 'https://');
-  }
-  captionsUrl.value = `/api/captions/${videoId.value}`;
 };
 
 const filterRelatedVideos = () => {
@@ -79,6 +100,12 @@ const filterRelatedVideos = () => {
 
 onMounted(async () => {
   await loadVideo();
+  if (!validVideo.value) return;
+
+  loadStreamType();
+  loadStreamUrl();
+  loadCaptionsUrl();
+  filterRelatedVideos();
 });
 
 useHead(() => ({
