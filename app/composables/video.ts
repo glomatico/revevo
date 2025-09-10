@@ -10,7 +10,7 @@ export const useVideo = () => {
     videoIds: string[] | string,
     relatedVideosPage: number = 1,
     relatedVideosSize: number = 32,
-  ): Promise<VideoList | null> => {
+  ): Promise<VideoList> => {
     const query = `
       query Video($videoIds: [String]!, $relatedVideosPage: Int, $relatedVideosSize: Int) {
         videos(ids: $videoIds) {
@@ -84,48 +84,47 @@ export const useVideo = () => {
       relatedVideosSize,
     };
 
-    try {
-      const response = await fetch(graphqlApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
-        },
-        body: JSON.stringify({
-          query,
-          variables,
-        })
-      });
+    const response = await fetch(graphqlApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      })
+    });
 
-      if (!response.ok) {
-        console.error('Error when fetching videos:', response.statusText);
-        return null;
-      }
-
-      const result: VideoResponse = await response.json();
-      return result.data!.videos;
-    } catch (err) {
-      console.error('Error when fetching videos:', err);
-      return null;
+    if (!response.ok) {
+      throw new Error(`Error when fetching videos: ${response.status} ${response.statusText}`);
     }
+
+    const result: VideoResponse = await response.json();
+
+    if (!result.data?.videos) {
+      throw new Error('Invalid response structure: missing videos data');
+    }
+
+    return result.data.videos;
   };
 
-  const getCaptions = async (videoId?: string): Promise<string | null> => {
-    try {
-      const response = await fetch(`${captionsApiUrl}/${videoId}.vtt?token=${captionsApiToken}`, {
-        method: 'GET',
-      });
+  const getCaptions = async (videoId?: string): Promise<string> => {
+    const response = await fetch(`${captionsApiUrl}/${videoId}.vtt?token=${captionsApiToken}`, {
+      method: 'GET',
+    });
 
-      if (!response.ok) {
-        throw new Error(`Error fetching captions: ${response.statusText}`);
-      }
-
-      const data = await response.text();
-      return data || null;
-    } catch (err) {
-      console.error('Failed to fetch captions:', err);
-      return null;
+    if (!response.ok) {
+      throw new Error(`Error fetching captions: ${response.status} ${response.statusText}`);
     }
+
+    const data = await response.text();
+
+    if (!data) {
+      throw new Error('Invalid response structure: missing captions data');
+    }
+
+    return data;
   };
 
   const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {

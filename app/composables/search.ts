@@ -7,7 +7,7 @@ export const useSearch = () => {
     offsetArtists: number = 0,
     offsetVideos: number = 0,
     limit: number = 32,
-  ): Promise<SearchResult | null> => {
+  ): Promise<SearchResult> => {
     const query = `
       query Search($search: String!, $limit: Int, $offsetArtists: Int, $offsetVideos: Int) {
         search {
@@ -54,30 +54,29 @@ export const useSearch = () => {
       offsetVideos,
     };
 
-    try {
-      const response = await fetch(graphqlApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
-        },
-        body: JSON.stringify({
-          query,
-          variables,
-        })
-      });
+    const response = await fetch(graphqlApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      })
+    });
 
-      if (!response.ok) {
-        console.error('Search API response not ok:', response.statusText);
-        return null;
-      }
-
-      const searchResultResponse: SearchResultResponse = await response.json();
-      return searchResultResponse.data?.search || null;
-    } catch (error) {
-      console.error('Error during search API call:', error);
-      return null;
+    if (!response.ok) {
+      throw new Error(`Error when searching: ${response.status} ${response.statusText}`);
     }
+
+    const searchResultResponse: SearchResultResponse = await response.json();
+
+    if (!searchResultResponse.data?.search) {
+      throw new Error('Invalid response structure: missing search data');
+    }
+
+    return searchResultResponse.data.search;
   }
 
   return { search };
