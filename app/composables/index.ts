@@ -125,6 +125,12 @@ export interface SearchResultResponse {
   } | null;
 }
 
+export enum LoadingState {
+  Loading = "Loading",
+  Loaded = "Loaded",
+  Error = "Error",
+}
+
 export const formatDuration = (milliseconds: number): string => {
   let totalSeconds = Math.floor(milliseconds / 1000);
   let minutes = Math.floor(totalSeconds / 60);
@@ -134,10 +140,8 @@ export const formatDuration = (milliseconds: number): string => {
 
 
 export const resizeImageUrl = (url: string, width: number, height: number): string => {
-  // add height and width query parameters to the url
   const urlObj = new URL(url);
   urlObj.searchParams.set('width', width.toString());
   urlObj.searchParams.set('height', height.toString());
-  console.log(urlObj.toString());
   return urlObj.toString();
 };

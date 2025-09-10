@@ -7,7 +7,7 @@ export const useArtist = () => {
     videosPage: number = 1,
     videosSize: number = 32,
     videosSort: string = "viewsTotal",
-  ): Promise<Artist[] | null> => {
+  ): Promise<Artist[]> => {
     const query = `
       query Artist($artistIds: [String]!, $videosSize: Int, $videosPage: Int, $videosSort: String) {
         artists(ids: $artistIds) {
@@ -71,30 +71,29 @@ export const useArtist = () => {
       videosSort,
     };
 
-    try {
-      const response = await fetch(graphqlApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
-        },
-        body: JSON.stringify({
-          query,
-          variables,
-        })
-      });
+    const response = await fetch(graphqlApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      })
+    });
 
-      if (!response.ok) {
-        console.error('Error when fetching artist:', response.statusText);
-        return null;
-      }
-
-      const result: ArtistResponse = await response.json();
-      return result.data!.artists;
-    } catch (err) {
-      console.error('Exception when fetching artists:', err);
-      return null;
+    if (!response.ok) {
+      throw new Error(`Error when fetching artist: ${response.status} ${response.statusText}`);
     }
+
+    const result: ArtistResponse = await response.json();
+
+    if (!result.data?.artists) {
+      throw new Error('Invalid response structure: missing artists data');
+    }
+
+    return result.data.artists;
   };
 
   const getArtistsVideos = async (
@@ -102,7 +101,7 @@ export const useArtist = () => {
     videosPage: number = 1,
     videosSize: number = 32,
     videosSort: string = "viewsTotal",
-  ): Promise<Artist[] | null> => {
+  ): Promise<Artist[]> => {
     const query = `
       query Artist($artistIds: [String]!, $videosSize: Int, $videosPage: Int, $videosSort: String) {
         artists(ids: $artistIds) {
@@ -141,34 +140,43 @@ export const useArtist = () => {
       videosSort,
     };
 
-    try {
-      const response = await fetch(graphqlApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
-        },
-        body: JSON.stringify({
-          query,
-          variables,
-        })
-      });
+    const response = await fetch(graphqlApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      })
+    });
 
-      if (!response.ok) {
-        console.error('Error when fetching artists videos:', response.statusText);
-        return null;
-      }
-
-      const result: ArtistResponse = await response.json();
-      return result.data!.artists;
-    } catch (err) {
-      console.error('Exception when fetching artists videos:', err);
-      return null;
+    if (!response.ok) {
+      throw new Error(`Error when fetching artists videos: ${response.status} ${response.statusText}`);
     }
+
+    const result: ArtistResponse = await response.json();
+
+    if (!result.data?.artists) {
+      throw new Error('Invalid response structure: missing artists data');
+    }
+
+    return result.data.artists;
   };
+
+  const isArtistValid = (artist: Artist | null): boolean => {
+    return Boolean(artist?.basicMeta?.name);
+  }
+
+  const artistHasVideos = (artist: Artist | null): boolean => {
+    return Boolean(artist?.videoData?.videos?.data?.length);
+  }
 
   return {
     getArtists,
     getArtistsVideos,
+    isArtistValid,
+    artistHasVideos,
   };
 };
