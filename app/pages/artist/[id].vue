@@ -93,8 +93,7 @@ const loadArtist = async () => {
     artist.value = artists ? artists[0] as Artist : null;
     artistVideos.value = artist.value?.videoData?.videos!;
   } catch (error) {
-    console.error('Error fetching artist:', error);
-  } finally {
+    console.error(error);
     loadingStateGeneral.value = LoadingState.Error;
   }
   loadingStateGeneral.value = LoadingState.Loaded;
@@ -102,15 +101,17 @@ const loadArtist = async () => {
 };
 
 const loadArtistVideos = async () => {
+  loadingStateVideos.value = LoadingState.Loading;
+
   try {
     const artistsVideos = await getArtistsVideos(artistId, page.value);
 
     artistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)?.videoData?.videos!;
   } catch (error) {
     console.error('Error fetching artist videos:', error);
-  } finally {
     loadingStateVideos.value = LoadingState.Error;
   }
+
   loadingStateVideos.value = LoadingState.Loaded;
 };
 
