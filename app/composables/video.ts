@@ -1,3 +1,5 @@
+import Hls from 'hls.js';
+
 export const useVideo = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
@@ -126,8 +128,62 @@ export const useVideo = () => {
     }
   };
 
+  const attachCaptions = async (videoHtml: HTMLVideoElement, captionsVtt: string) => {
+    if (!videoHtml || !captionsVtt) return;
+
+    const response = await fetch(captionsVtt);
+    if (!response.ok) return;
+
+    const blob = new Blob([await response.text()], { type: 'text/vtt' });
+    const url = URL.createObjectURL(blob);
+
+    const track = document.createElement('track') as HTMLTrackElement;
+
+    track.kind = 'subtitles';
+    track.label = 'Unknown Language';
+    track.src = url;
+    track.default = true;
+
+    videoHtml.appendChild(track);
+  };
+
+  const toggleCaptionsFromStorage = async (videoHtml: HTMLVideoElement) => {
+    if (!videoHtml) return;
+
+    const enableCaptions = localStorage.getItem('enableCaptions') === 'true';
+    Array.from(videoHtml.textTracks).forEach((track) => {
+      if (track.kind === 'subtitles') {
+        track.mode = enableCaptions ? 'showing' : 'hidden';
+      }
+    });
+  };
+
+  const attachVideo = async (videoHtml: HTMLVideoElement, streamUrl: string) => {
+    if (!videoHtml || !streamUrl) return;
+
+    const hls = new Hls();
+    hls.loadSource(streamUrl);
+    hls.attachMedia(videoHtml);
+    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+      videoHtml.play();
+    });
+
+    videoHtml.textTracks.addEventListener('change', () => {
+      const tracks = videoHtml.textTracks;
+
+      Array.from(tracks).forEach((track) => {
+        if (track.kind !== 'subtitles') return;
+        localStorage.setItem('enableCaptions', (track.mode === 'showing').toString());
+      });
+    });
+
+    toggleCaptionsFromStorage(videoHtml);
+  }
+
   return {
     getVideos,
     getCaptions,
+    attachVideo,
+    attachCaptions,
   };
 }
