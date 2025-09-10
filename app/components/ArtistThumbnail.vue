@@ -1,10 +1,10 @@
 <template>
   <v-card :link="true" hover :to="`/artist/${artist.urlSafeName}`">
     <v-card-item align="center">
-      <v-avatar size="50%">
+      <v-avatar size="120">
         <v-img v-if="resizedAvatarlUrl" :src="resizedAvatarlUrl" :alt="`Profile avatar of ${artist.name}.`"
           :aspect-ratio="1" />
-        <v-icon v-else size="180">mdi-account-circle</v-icon>
+        <v-icon v-else size="120">mdi-account-circle</v-icon>
       </v-avatar>
     </v-card-item>
 
