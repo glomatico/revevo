@@ -1,5 +1,5 @@
 <template>
-  <VideoPlayer :stream-url="streamUrl!" :captions-url="captionsUrl!" :stream-type="streamType!" />
+  <VideoPlayer :stream-url="streamUrl!" :captions-url="captionsUrl!" :stream-type="settings.playBackMethod" />
 
   <v-container>
     <v-row>
@@ -40,6 +40,7 @@
 
 <script lang="ts" setup>
 const route = useRoute();
+const { settings, loadSettings } = useSettings();
 const { getVideos, isVideoValid, getBestMp4Stream } = useVideo();
 
 const videoId = ref<string>(route.params.id as string);
@@ -49,12 +50,6 @@ const streamUrl = ref<string | null>(null);
 const captionsUrl = ref<string | null>(null);
 const filteredRelatedVideos = ref<Video[] | null>(null);
 const validVideo = ref<boolean>(false);
-const streamType = ref<StreamType | null>(null);
-
-const loadStreamType = () => {
-  const playBackMethod = localStorage.getItem('playBackMethod') || 'hls';
-  streamType.value = playBackMethod === 'hls' ? StreamType.HLS : StreamType.MP4;
-};
 
 const loadStreamUrl = () => {
   if (!video.value?.streamsV3) {
@@ -62,10 +57,10 @@ const loadStreamUrl = () => {
     return;
   }
 
-  if (streamType.value === StreamType.HLS) {
+  if (settings.value.playBackMethod === StreamType.HLS) {
     streamUrl.value = video.value.streamsV3.find(s => s.format === 'hls')?.url || null;
   }
-  if (streamType.value === StreamType.MP4) {
+  if (settings.value.playBackMethod === StreamType.MP4) {
     streamUrl.value = getBestMp4Stream(video.value.streamsV3);
   }
 
@@ -99,10 +94,11 @@ const filterRelatedVideos = () => {
 };
 
 onMounted(async () => {
+  loadSettings();
+
   await loadVideo();
   if (!validVideo.value) return;
 
-  loadStreamType();
   loadStreamUrl();
   loadCaptionsUrl();
   filterRelatedVideos();
