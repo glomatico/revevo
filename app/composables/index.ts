@@ -178,10 +178,17 @@ export const formatDuration = (milliseconds: number): string => {
   return String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
 };
 
-
 export const resizeImageUrl = (url: string, width: number, height: number): string => {
   const urlObj = new URL(url);
   urlObj.searchParams.set('width', width.toString());
   urlObj.searchParams.set('height', height.toString());
   return urlObj.toString();
 };
+
+export const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {
+  return Boolean(
+    video?.basicMetaV3?.title
+    &&
+    (checkStreams ? video?.streamsV3?.some(stream => stream.url) : true)
+  );
+}
