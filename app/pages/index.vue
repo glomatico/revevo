@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-if="loadingState === LoadingState.Loading" cols="12">
+      <v-col v-if="loadingState === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
-      <v-col v-else-if="loadingState === LoadingState.Error" cols="12">
+      <v-col v-else-if="loadingState === LoadingState.ERROR" cols="12">
         <v-alert type="error">Failed to load homepage data.</v-alert>
       </v-col>
       <template v-else>
@@ -48,10 +48,9 @@
 
 <script lang="ts" setup>
 const { getHomePage } = useHomePage();
-const { isVideoValid } = useVideo();
 const { isArtistValid } = useArtist();
 
-const loadingState = ref<LoadingState>(LoadingState.Loading);
+const loadingState = ref<LoadingState>(LoadingState.LOADING);
 const homePage = ref<HomePage | null>(null);
 const topVideosSectionTitle = ref<string | null>(null);
 const topVideosSectionItems = ref<Video[]>([]);
@@ -63,9 +62,9 @@ const loadHomePage = async () => {
     homePage.value = await getHomePage();
   } catch (error) {
     console.error(error);
-    loadingState.value = LoadingState.Error;
+    loadingState.value = LoadingState.ERROR;
   }
-  loadingState.value = LoadingState.Loaded;
+  loadingState.value = LoadingState.LOADED;
 };
 
 const setSections = async () => {

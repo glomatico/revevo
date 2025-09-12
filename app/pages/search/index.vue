@@ -1,11 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-if="loadingStateGeneral === LoadingState.Loading" cols="12">
+      <v-col v-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
 
-      <v-col v-else-if="loadingStateGeneral === LoadingState.Error" cols="12">
+      <v-col v-else-if="loadingStateGeneral === LoadingState.ERROR" cols="12">
         <v-alert type="error">Failed to load search results.</v-alert>
       </v-col>
 
@@ -26,11 +26,11 @@
           <v-tabs-window v-model="tab">
             <v-tabs-window-item value="videos">
               <v-row>
-                <v-col v-if="loadingStateResults === LoadingState.Loading" cols="12">
+                <v-col v-if="loadingStateResults === LoadingState.LOADING" cols="12">
                   <LoadingSpinner />
                 </v-col>
 
-                <v-col v-else-if="loadingStateResults === LoadingState.Error" cols="12">
+                <v-col v-else-if="loadingStateResults === LoadingState.ERROR" cols="12">
                   <v-alert type="error">Failed to load video results.</v-alert>
                 </v-col>
 
@@ -46,11 +46,11 @@
 
             <v-tabs-window-item value="artists">
               <v-row>
-                <v-col v-if="loadingStateResults === LoadingState.Loading" cols="12">
+                <v-col v-if="loadingStateResults === LoadingState.LOADING" cols="12">
                   <LoadingSpinner />
                 </v-col>
 
-                <v-col v-else-if="loadingStateResults === LoadingState.Error" cols="12">
+                <v-col v-else-if="loadingStateResults === LoadingState.ERROR" cols="12">
                   <v-alert type="error">Failed to load artists results.</v-alert>
                 </v-col>
 
@@ -90,8 +90,8 @@ const tabs = ['videos', 'artists'];
 const defaultTabRouteParamKey = 't';
 
 const tab = ref<string>((route.query[defaultTabRouteParamKey] as string) || defaultTab);
-const loadingStateGeneral = ref<LoadingState>(LoadingState.Loading);
-const loadingStateResults = ref<LoadingState>(LoadingState.Loading);
+const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
+const loadingStateResults = ref<LoadingState>(LoadingState.LOADING);
 const page = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const searchResults = ref<SearchResult | null>(null);
 const searchResultsFiltered = ref<SearchResult | null>(null);
@@ -104,18 +104,18 @@ const loadSearchResults = async () => {
     await router.push({ path: '/' });
   }
 
-  loadingStateResults.value = LoadingState.Loading;
+  loadingStateResults.value = LoadingState.LOADING;
 
   try {
     searchResults.value = await search(query.value, searchResultsOffset.value, searchResultsOffset.value);
   } catch (error) {
     console.error(error);
-    loadingStateGeneral.value = LoadingState.Error;
-    loadingStateResults.value = LoadingState.Error;
+    loadingStateGeneral.value = LoadingState.ERROR;
+    loadingStateResults.value = LoadingState.ERROR;
   }
 
-  loadingStateGeneral.value = LoadingState.Loaded;
-  loadingStateResults.value = LoadingState.Loaded;
+  loadingStateGeneral.value = LoadingState.LOADED;
+  loadingStateResults.value = LoadingState.LOADED;
 
   await filterSearchResults();
 };

@@ -1,11 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-if="loadingStateGeneral === LoadingState.Loading" cols="12">
+      <v-col v-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
 
-      <v-col v-else-if="loadingStateGeneral === LoadingState.Error" cols="12">
+      <v-col v-else-if="loadingStateGeneral === LoadingState.ERROR" cols="12">
         <v-alert type="error">Failed to load artist information.</v-alert>
       </v-col>
 
@@ -28,11 +28,11 @@
           <v-tabs-window v-model="tab">
             <v-tabs-window-item value="videos">
               <v-row>
-                <v-col v-if="loadingStateVideos === LoadingState.Loading" cols="12">
+                <v-col v-if="loadingStateVideos === LoadingState.LOADING" cols="12">
                   <LoadingSpinner />
                 </v-col>
 
-                <v-col v-else-if="loadingStateVideos === LoadingState.Error" cols="12">
+                <v-col v-else-if="loadingStateVideos === LoadingState.ERROR" cols="12">
                   <v-alert type="error">Failed to load artist videos.</v-alert>
                 </v-col>
 
@@ -79,8 +79,8 @@ const tabs = ['videos', 'about', 'related-artists'];
 const defaultTabRouteParamKey = 't';
 const defaultTab = 'videos';
 
-const loadingStateGeneral = ref<LoadingState>(LoadingState.Loading);
-const loadingStateVideos = ref<LoadingState>(LoadingState.Loading);
+const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
+const loadingStateVideos = ref<LoadingState>(LoadingState.LOADING);
 const tab = ref<string>((route.query.t as string) || defaultTab);
 const page = ref<number>(parseInt((route.query.p as string) || '1', 10));
 const artist = ref<Artist | null>(null);
@@ -95,16 +95,16 @@ const loadArtist = async () => {
     artistVideos.value = artist.value?.videoData?.videos!;
   } catch (error) {
     console.error(error);
-    loadingStateGeneral.value = LoadingState.Error;
+    loadingStateGeneral.value = LoadingState.ERROR;
   }
 
-  loadingStateGeneral.value = LoadingState.Loaded;
-  loadingStateVideos.value = LoadingState.Loaded;
+  loadingStateGeneral.value = LoadingState.LOADED;
+  loadingStateVideos.value = LoadingState.LOADED;
   validArtist.value = isArtistValid(artist.value);
 };
 
 const loadArtistVideos = async () => {
-  loadingStateVideos.value = LoadingState.Loading;
+  loadingStateVideos.value = LoadingState.LOADING;
 
   try {
     const artistsVideos = await getArtistsVideos(artistId, page.value);
@@ -112,10 +112,10 @@ const loadArtistVideos = async () => {
     artistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)?.videoData?.videos!;
   } catch (error) {
     console.error('Error fetching artist videos:', error);
-    loadingStateVideos.value = LoadingState.Error;
+    loadingStateVideos.value = LoadingState.ERROR;
   }
 
-  loadingStateVideos.value = LoadingState.Loaded;
+  loadingStateVideos.value = LoadingState.LOADED;
 };
 
 const onTabChange = (newTab: string) => {
