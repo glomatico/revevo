@@ -1,11 +1,15 @@
-import Hls from 'hls.js';
-import type { StreamsV3 } from '.';
-
-export const useVideo = () => {
+export const useVideo = (settings: Settings | null = null) => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
-  const captionsApiUrl = config.public.captionsApiUrl;
-  const captionsApiToken = config.public.captionsToken;
+
+  const videoId = ref<string>();
+  const loadingState = ref<LoadingState>(LoadingState.LOADING);
+  const video = ref<Video | null>();
+  const validVideo = ref<boolean>(false);
+  const streamUrl = ref<string | null>();
+  const captionsUrl = ref<string | null>();
+  const filteredRelatedVideos = ref<Video[] | null>();
+
 
   const getVideos = async (
     videoIds: string[] | string,
@@ -110,26 +114,8 @@ export const useVideo = () => {
     return result.data.videos;
   };
 
-  const getCaptions = async (videoId?: string): Promise<string> => {
-    const response = await fetch(`${captionsApiUrl}/${videoId}.vtt?token=${captionsApiToken}`, {
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error fetching captions: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.text();
-
-    if (!data) {
-      throw new Error('Invalid response structure: missing captions data');
-    }
-
-    return data;
-  };
-
   const getBestMp4Stream = (streams: StreamsV3[]): string | null => {
-    const qualityPriority = ['high', 'medium', 'low'] as const;
+    const qualityPriority = ['high', 'medium', 'low'];
 
     const mp4Streams = streams.filter(stream =>
       stream.format === 'mp4' && stream.url
@@ -141,82 +127,63 @@ export const useVideo = () => {
     }
 
     return null;
-  }
-
-  const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {
-    return Boolean(
-      video?.basicMetaV3?.title
-      &&
-      (checkStreams ? video?.streamsV3?.some(stream => stream.url) : true)
-    );
-  }
-
-  const attachCaptions = async (videoHtml: HTMLVideoElement, captionsVtt?: string) => {
-    if (!captionsVtt) return;
-
-    const response = await fetch(captionsVtt);
-    if (!response.ok) return;
-
-    const blob = new Blob([await response.text()], { type: 'text/vtt' });
-    const url = URL.createObjectURL(blob);
-
-    const track = document.createElement('track') as HTMLTrackElement;
-
-    track.kind = 'subtitles';
-    track.label = 'Unknown Language';
-    track.src = url;
-    track.default = false;
-
-    videoHtml.textTracks.addEventListener('change', () => {
-      const tracks = videoHtml.textTracks;
-
-      Array.from(tracks).forEach((track) => {
-        if (track.kind !== 'subtitles') return;
-        localStorage.setItem('enableCaptions', (track.mode === 'showing').toString());
-      });
-    });
-
-    videoHtml.appendChild(track);
-
-    toggleCaptionsFromStorage(videoHtml);
   };
 
-  const toggleCaptionsFromStorage = async (videoHtml: HTMLVideoElement) => {
-    if (!videoHtml) return;
+  const fetchVideo = async () => {
+    try {
+      const videos = (await getVideos(videoId.value!))?.data;
 
-    const enableCaptions = localStorage.getItem('enableCaptions') === 'true';
-    Array.from(videoHtml.textTracks).forEach((track) => {
-      if (track.kind === 'subtitles') {
-        track.mode = enableCaptions ? 'showing' : 'hidden';
-      }
-    });
+      video.value = videos ? videos[0] : null;
+    } catch (error) {
+      console.error(error);
+      loadingState.value = LoadingState.ERROR;
+    }
+
+    loadingState.value = LoadingState.LOADED;
+    validVideo.value = isVideoValid(video.value!);
   };
 
-  const attachHlsVideo = async (videoHtml: HTMLVideoElement, streamUrl?: string) => {
-    if (!streamUrl) return;
+  const loadStreamUrl = () => {
+    if (settings!.playbackMethod === PlaybackMethod.HLS) {
+      streamUrl.value = video.value?.streamsV3?.find(s => s.format === 'hls')?.url;
+    }
+    if (settings!.playbackMethod === PlaybackMethod.MP4) {
+      streamUrl.value = getBestMp4Stream(video.value?.streamsV3!);
+    }
 
-    const hls = new Hls();
-    hls.loadSource(streamUrl);
-    hls.attachMedia(videoHtml);
-    hls.on(Hls.Events.MANIFEST_PARSED, function () {
-      videoHtml.play();
-    });
-  }
+    if (streamUrl.value) {
+      streamUrl.value = streamUrl.value.replace('http://', 'https://');
+    }
+  };
 
-  const attachNormalVideo = async (videoHtml: HTMLVideoElement, streamUrl?: string) => {
-    if (!streamUrl) return;
+  const loadCaptionsUrl = () => {
+    captionsUrl.value = `/api/captions/${videoId.value!}`;
+  };
 
-    videoHtml.src = streamUrl;
-    videoHtml.play();
-  }
+  const filterRelatedVideos = () => {
+    if (!video.value?.relatedVideos?.data) return;
+
+    filteredRelatedVideos.value = video.value.relatedVideos.data;
+    filteredRelatedVideos.value = filteredRelatedVideos.value.filter(v => isVideoValid(v, false) && v.basicMetaV3.isrc !== video.value?.basicMetaV3.isrc);
+  };
+
+  const loadVideo = async () => {
+    await fetchVideo();
+    if (!validVideo.value) return;
+
+    loadStreamUrl();
+    loadCaptionsUrl();
+    filterRelatedVideos();
+  };
 
   return {
-    getVideos,
-    isVideoValid,
-    getCaptions,
-    getBestMp4Stream,
-    attachHlsVideo,
-    attachNormalVideo,
-    attachCaptions,
+    loadVideo,
+    videoId,
+    loadingState,
+    video,
+    validVideo,
+    streamUrl,
+    captionsUrl,
+    filteredRelatedVideos,
   };
 }
