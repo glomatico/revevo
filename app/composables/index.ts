@@ -161,14 +161,19 @@ export interface PageMetadata {
 }
 
 export enum LoadingState {
-  Loading = "Loading",
-  Loaded = "Loaded",
-  Error = "Error",
+  LOADING = "loading",
+  LOADED = "loaded",
+  ERROR = "error",
 }
 
-export enum StreamType {
+export enum PlaybackMethod {
   HLS = "hls",
   MP4 = "mp4",
+}
+
+export interface Settings {
+  playbackMethod: PlaybackMethod;
+  enableCaptions: boolean;
 }
 
 export const formatDuration = (milliseconds: number): string => {
