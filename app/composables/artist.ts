@@ -1,8 +1,13 @@
-import type { ArtistVideos } from ".";
-
 export const useArtist = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
+  const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
+  const loadingStateVideos = ref<LoadingState>(LoadingState.LOADING);
+  const page = ref<number>();
+  const artistId = ref<string | null>();
+  const artist = ref<Artist | null>();
+  const validArtist = ref<boolean>(false);
+  const filteredArtistVideos = ref<Video[] | null>();
 
   const getArtists = async (
     artistIds: string[] | string,
@@ -167,13 +172,48 @@ export const useArtist = () => {
     return result.data.artists;
   };
 
-  const isArtistValid = (artist: Artist | null): boolean => {
-    return Boolean(artist?.basicMeta?.name);
-  }
+  const loadArtistVideos = async () => {
+    loadingStateVideos.value = LoadingState.LOADING;
+
+    try {
+      const artistsVideos = await getArtistsVideos(artistId.value!, page.value);
+
+      filteredArtistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)
+        ?.videoData?.videos?.data?.filter(video => isVideoValid(video, false));
+    } catch (error) {
+      console.error(error);
+      loadingStateVideos.value = LoadingState.ERROR;
+    }
+
+    loadingStateVideos.value = LoadingState.LOADED;
+  };
+
+  const loadArtist = async () => {
+    try {
+      const artists = await getArtists(artistId.value!, page.value);
+
+      artist.value = artists ? artists[0] : null;
+      filteredArtistVideos.value = artist.value?.videoData?.videos?.data?.filter(video => isVideoValid(video, false));
+    } catch (error) {
+      console.error(error);
+      loadingStateGeneral.value = LoadingState.ERROR;
+    }
+
+    loadingStateGeneral.value = LoadingState.LOADED;
+    loadingStateVideos.value = LoadingState.LOADED;
+
+    validArtist.value = isArtistValid(artist.value!);
+  };
 
   return {
-    getArtists,
-    getArtistsVideos,
-    isArtistValid,
+    loadArtist,
+    loadArtistVideos,
+    loadingStateGeneral,
+    loadingStateVideos,
+    page,
+    artistId,
+    artist,
+    validArtist,
+    filteredArtistVideos,
   };
 };

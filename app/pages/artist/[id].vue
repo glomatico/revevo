@@ -1,4 +1,47 @@
+<script lang="ts" setup>
+const tabs = ['videos', 'about', 'related-artists'];
+const defaultTabRouteParamKey = 't';
+const defaultTab = 'videos';
+
+const route = useRoute();
+
+const tab = ref<string>((route.query.t as string) || defaultTab);
+
+const {
+  loadArtist,
+  loadArtistVideos,
+  loadingStateGeneral,
+  loadingStateVideos,
+  page,
+  artistId,
+  artist,
+  validArtist,
+  filteredArtistVideos,
+} = useArtist();
+
+
+const onTabChange = (newTab: string) => {
+  tab.value = newTab;
+};
+
+const onPageChange = (newPage: number) => {
+  page.value = newPage;
+  loadArtistVideos();
+};
+
+onMounted(async () => {
+  page.value = parseInt((route.query.p as string) || '1', 10);
+  artistId.value = route.params.id as string;
+  loadArtist();
+});
+</script>
+
 <template>
+
+  <Head>
+    <Title>{{ validArtist ? `${artist?.basicMeta.name} - Revevo` : 'Revevo' }}</Title>
+  </Head>
+
   <v-container>
     <v-row>
       <v-col v-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
@@ -36,11 +79,11 @@
                   <v-alert type="error">Failed to load artist videos.</v-alert>
                 </v-col>
 
-                <v-col v-else-if="!artistVideos" cols="12">
+                <v-col v-else-if="!filteredArtistVideos || filteredArtistVideos?.length == 0" cols="12">
                   <v-alert type="warning">No videos found for this artist or no videos found in this page</v-alert>
                 </v-col>
 
-                <v-col v-else v-for="video in artistVideos!.data" cols="12" sm="6" md="4" lg="3">
+                <v-col v-else v-for="video in filteredArtistVideos" cols="12" sm="6" md="4" lg="3">
                   <ArtistPageVideoThumbnail :video="video" />
                 </v-col>
 
@@ -49,7 +92,8 @@
                 </v-col>
 
                 <v-col cols="12">
-                  <AppPagination :items-count="artistVideos?.paging.total! || 0" @page-change="onPageChange" />
+                  <AppPagination :items-count="artist?.videoData?.videos?.paging?.total || 0"
+                    @page-change="onPageChange" />
                 </v-col>
               </v-row>
             </v-tabs-window-item>
@@ -67,71 +111,3 @@
     </v-row>
   </v-container>
 </template>
-
-<script lang="ts" setup>
-
-const { getArtists, getArtistsVideos, isArtistValid } = useArtist();
-const route = useRoute();
-
-const artistId = route.params.id as string;
-
-const tabs = ['videos', 'about', 'related-artists'];
-const defaultTabRouteParamKey = 't';
-const defaultTab = 'videos';
-
-const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
-const loadingStateVideos = ref<LoadingState>(LoadingState.LOADING);
-const tab = ref<string>((route.query.t as string) || defaultTab);
-const page = ref<number>(parseInt((route.query.p as string) || '1', 10));
-const artist = ref<Artist | null>(null);
-const artistVideos = ref<VideoList | null>(null);
-const validArtist = ref<boolean>(false);
-
-const loadArtist = async () => {
-  try {
-    const artists = await getArtists(artistId, page.value);
-
-    artist.value = artists ? artists[0] as Artist : null;
-    artistVideos.value = artist.value?.videoData?.videos!;
-  } catch (error) {
-    console.error(error);
-    loadingStateGeneral.value = LoadingState.ERROR;
-  }
-
-  loadingStateGeneral.value = LoadingState.LOADED;
-  loadingStateVideos.value = LoadingState.LOADED;
-  validArtist.value = isArtistValid(artist.value);
-};
-
-const loadArtistVideos = async () => {
-  loadingStateVideos.value = LoadingState.LOADING;
-
-  try {
-    const artistsVideos = await getArtistsVideos(artistId, page.value);
-
-    artistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)?.videoData?.videos!;
-  } catch (error) {
-    console.error('Error fetching artist videos:', error);
-    loadingStateVideos.value = LoadingState.ERROR;
-  }
-
-  loadingStateVideos.value = LoadingState.LOADED;
-};
-
-const onTabChange = (newTab: string) => {
-  tab.value = newTab;
-};
-
-const onPageChange = (newPage: number) => {
-  page.value = newPage;
-  loadArtistVideos();
-};
-
-onMounted(async () => {
-  loadArtist();
-});
-
-useHead(() => ({
-  title: validArtist.value ? `${artist.value?.basicMeta.name} - Revevo` : 'Revevo'
-}));
-</script>

@@ -190,6 +190,11 @@ export const resizeImageUrl = (url: string, width: number, height: number): stri
   return urlObj.toString();
 };
 
+
+export const isArtistValid = (artist: Artist | null): boolean => {
+  return Boolean(artist?.basicMeta?.name);
+}
+
 export const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {
   return Boolean(
     video?.basicMetaV3?.title
