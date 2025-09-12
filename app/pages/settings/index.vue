@@ -9,7 +9,7 @@
 
       <v-col cols="12">
         <p>Playback method</p>
-        <v-radio-group v-model="settings.playBackMethod">
+        <v-radio-group v-model="settings.playbackMethod">
           <v-radio label="HLS" value="hls"></v-radio>
           <v-radio label="MP4" value="mp4"></v-radio>
         </v-radio-group>

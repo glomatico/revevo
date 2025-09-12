@@ -1,14 +1,6 @@
-
-import { ref, watch } from 'vue';
-
-export interface Settings {
-  playBackMethod: StreamType;
-  enableCaptions: boolean;
-}
-
 export const useSettings = () => {
   const defaultSettings: Settings = {
-    playBackMethod: StreamType.HLS,
+    playbackMethod: PlaybackMethod.HLS,
     enableCaptions: false,
   };
   const settings = ref<Settings>(defaultSettings);
@@ -38,7 +30,7 @@ export const useSettings = () => {
   };
 
   return {
-    settings,
     loadSettings,
+    settings,
   };
 };
