@@ -17,6 +17,7 @@ const {
   artist,
   validArtist,
   filteredArtistVideos,
+  pageCount,
 } = useArtist();
 
 
@@ -32,7 +33,7 @@ const onPageChange = (newPage: number) => {
 onMounted(async () => {
   page.value = parseInt((route.query.p as string) || '1', 10);
   artistId.value = route.params.id as string;
-  loadArtist();
+  await loadArtist();
 });
 </script>
 
@@ -83,7 +84,7 @@ onMounted(async () => {
                   <v-alert type="error">Failed to load artist videos.</v-alert>
                 </v-col>
 
-                <v-col v-else-if="!filteredArtistVideos || filteredArtistVideos?.length == 0" cols="12">
+                <v-col v-else-if="!filteredArtistVideos?.length" cols="12">
                   <v-alert type="warning">No videos found for this artist or no videos found in this page</v-alert>
                 </v-col>
 
@@ -96,8 +97,7 @@ onMounted(async () => {
                 </v-col>
 
                 <v-col cols="12">
-                  <AppPagination :items-count="artist?.videoData?.videos?.paging?.total || 0"
-                    @page-change="onPageChange" />
+                  <AppPagination :page-count="pageCount!" @page-change="onPageChange" />
                 </v-col>
               </v-row>
             </v-tabs-window-item>

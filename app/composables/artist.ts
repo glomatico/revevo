@@ -11,6 +11,7 @@ export const useArtist = () => {
   const artist = ref<Artist | null>();
   const validArtist = ref<boolean>(false);
   const filteredArtistVideos = ref<Video[] | null>();
+  const pageCount = ref<number>();
 
   const getArtists = async (
     artistIds: string[] | string,
@@ -202,6 +203,7 @@ export const useArtist = () => {
       if (validArtist.value && artist.value?.videoData?.videos?.data) {
         filterArtistVideos(artist.value.videoData.videos.data);
       }
+      pageCount.value = artist.value.videoData?.videos.paging.pages || 0;
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
@@ -221,5 +223,6 @@ export const useArtist = () => {
     artist,
     validArtist,
     filteredArtistVideos,
+    pageCount,
   };
 };
