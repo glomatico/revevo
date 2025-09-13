@@ -8,7 +8,7 @@
       <v-divider thickness="2" />
 
       <v-col cols="12">
-        <p>Playback method</p>
+        <p class="text-h6">Playback method</p>
         <v-radio-group v-model="settings.playbackMethod">
           <v-radio label="HLS" value="hls"></v-radio>
           <v-radio label="MP4" value="mp4"></v-radio>
@@ -16,7 +16,8 @@
       </v-col>
 
       <v-col cols="12">
-        <v-switch v-model="settings.enableCaptions" label="Enable captions"></v-switch>
+        <p class="text-h6">Enable captions</p>
+        <v-switch v-model="settings.enableCaptions"></v-switch>
       </v-col>
     </v-row>
   </v-container>
