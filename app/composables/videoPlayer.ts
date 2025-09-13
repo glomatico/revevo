@@ -1,5 +1,4 @@
 import Hls from 'hls.js';
-import { PlaybackMethod } from '.';
 
 export const useVideoPlayer = (settings: Settings | null) => {
   const htmlVideo = ref<HTMLVideoElement>();
