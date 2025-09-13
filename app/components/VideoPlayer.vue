@@ -12,10 +12,6 @@ const {
 } = useVideoPlayer();
 
 watch(props, async () => {
-  if (!props.streamUrl) {
-    return;
-  }
-
   streamUrl.value = props.streamUrl;
   captionsUrl.value = props.captionsUrl;
 

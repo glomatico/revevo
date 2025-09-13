@@ -51,24 +51,22 @@ export const useVideoPlayer = () => {
   };
 
   const attachHlsVideo = async () => {
-    if (!htmlVideo.value) return;
-
     const hls = new Hls();
     hls.loadSource(streamUrl.value!);
-    hls.attachMedia(htmlVideo.value);
+    hls.attachMedia(htmlVideo.value!);
     hls.on(Hls.Events.MANIFEST_PARSED, function () {
       htmlVideo.value?.play();
     });
   };
 
   const attachNormalVideo = async () => {
-    if (!htmlVideo.value) return;
-
-    htmlVideo.value.src = streamUrl.value!;
-    htmlVideo.value.play();
+    htmlVideo.value!.src = streamUrl.value!;
+    htmlVideo.value!.play();
   };
 
   const attachVideo = async () => {
+    if (!streamUrl.value) return;
+
     if (settings.value.playbackMethod === PlaybackMethod.MP4) {
       await attachNormalVideo();
     } else {
@@ -76,9 +74,16 @@ export const useVideoPlayer = () => {
     }
   };
 
+  const deatachVideo = () => {
+    htmlVideo.value!.removeAttribute('src');
+  };
+
+
   const loadVideoPlayer = async (
   ) => {
     loadSettings();
+
+    deatachVideo();
 
     await attachVideo();
     await attachCaptions();
