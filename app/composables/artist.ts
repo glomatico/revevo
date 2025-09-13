@@ -4,8 +4,8 @@ export const useArtist = () => {
 
   const { loadSettings, settings } = useSettings();
 
-  const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
-  const loadingStateVideos = ref<LoadingState>(LoadingState.LOADING);
+  const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
+  const loadingStateVideos = ref<LoadingState>(LoadingState.IDLE);
   const page = ref<number>();
   const artistId = ref<string | null>();
   const artist = ref<Artist | null>();
@@ -93,17 +93,14 @@ export const useArtist = () => {
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`Error when fetching artist: ${response.status} ${response.statusText}`);
+    const artistsResponse: ArtistResponse = await response.json();
+    const artists = artistsResponse?.data?.artists;
+
+    if (!artists) {
+      throw new Error(`Error when fetching artists: ${response.status} ${response.statusText}`);
     }
 
-    const result: ArtistResponse = await response.json();
-
-    if (!result.data?.artists) {
-      throw new Error('Invalid response structure: missing artists data');
-    }
-
-    return result.data.artists;
+    return artists;
   };
 
   const getArtistsVideos = async (
@@ -162,27 +159,28 @@ export const useArtist = () => {
       })
     });
 
-    if (!response.ok) {
+    const artistsResponse: ArtistResponse = await response.json();
+    const artists = artistsResponse?.data?.artists;
+
+    if (!artists) {
       throw new Error(`Error when fetching artists videos: ${response.status} ${response.statusText}`);
     }
 
-    const result: ArtistResponse = await response.json();
-
-    if (!result.data?.artists) {
-      throw new Error('Invalid response structure: missing artists data');
-    }
-
-    return result.data.artists;
+    return artists;
   };
 
-  const loadArtistVideos = async () => {
+  const filterArtistVideos = (artistVideos: Video[]) => {
+    filteredArtistVideos.value = artistVideos.filter(video => isVideoValid(video, settings.value.hidePseudoCountryIsrc));
+  };
+
+  const loadArtistPage = async () => {
     loadingStateVideos.value = LoadingState.LOADING;
 
     try {
-      const artistsVideos = await getArtistsVideos(artistId.value!, page.value);
+      const artistsVideosResponse = await getArtistsVideos(artistId.value!, page.value);
 
-      filteredArtistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)
-        ?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
+      const artistVideos = artistsVideosResponse[0]!.videoData.videos.data;
+      filterArtistVideos(artistVideos);
     } catch (error) {
       console.error(error);
       loadingStateVideos.value = LoadingState.ERROR;
@@ -191,12 +189,19 @@ export const useArtist = () => {
     loadingStateVideos.value = LoadingState.LOADED;
   };
 
-  const fetchArtist = async () => {
-    try {
-      const artists = await getArtists(artistId.value!, page.value);
+  const loadArtist = async () => {
+    loadSettings();
 
-      artist.value = artists ? artists[0] : null;
-      filteredArtistVideos.value = artist.value?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
+    loadingStateGeneral.value = LoadingState.LOADING;
+
+    try {
+      const artistsResponse = await getArtists(artistId.value!, page.value);
+
+      artist.value = (artistsResponse?.length == 1 ? artistsResponse[0] : null)!;
+      validArtist.value = isArtistValid(artist.value);
+      if (validArtist.value && artist.value?.videoData?.videos?.data) {
+        filterArtistVideos(artist.value.videoData.videos.data);
+      }
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
@@ -204,20 +209,11 @@ export const useArtist = () => {
 
     loadingStateGeneral.value = LoadingState.LOADED;
     loadingStateVideos.value = LoadingState.LOADED;
-
-    validArtist.value = isArtistValid(artist.value!);
   };
-
-  const loadArtist = async () => {
-    loadSettings();
-
-    await fetchArtist();
-  };
-
 
   return {
     loadArtist,
-    loadArtistVideos,
+    loadArtistPage,
     loadingStateGeneral,
     loadingStateVideos,
     page,

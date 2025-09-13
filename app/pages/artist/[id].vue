@@ -9,7 +9,7 @@ const tab = ref<string>((route.query.t as string) || defaultTab);
 
 const {
   loadArtist,
-  loadArtistVideos,
+  loadArtistPage,
   loadingStateGeneral,
   loadingStateVideos,
   page,
@@ -26,7 +26,7 @@ const onTabChange = (newTab: string) => {
 
 const onPageChange = (newPage: number) => {
   page.value = newPage;
-  loadArtistVideos();
+  loadArtistPage();
 };
 
 onMounted(async () => {
@@ -44,7 +44,9 @@ onMounted(async () => {
 
   <v-container>
     <v-row>
-      <v-col v-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
+      <template v-if="loadingStateGeneral === LoadingState.IDLE" />
+
+      <v-col v-else-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
 
@@ -71,6 +73,8 @@ onMounted(async () => {
           <v-tabs-window v-model="tab">
             <v-tabs-window-item value="videos">
               <v-row>
+                <template v-if="loadingStateVideos === LoadingState.IDLE" />
+
                 <v-col v-if="loadingStateVideos === LoadingState.LOADING" cols="12">
                   <LoadingSpinner />
                 </v-col>
