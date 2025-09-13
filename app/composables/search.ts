@@ -4,18 +4,17 @@ export const useSearch = () => {
 
   const { loadSettings, settings } = useSettings();
 
-  const searchTerm = ref<string | null>(null);
-  const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
-  const loadingStateResults = ref<LoadingState>(LoadingState.LOADING);
+  const searchQuery = ref<string | null>(null);
+  const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
+  const loadingStateResults = ref<LoadingState>(LoadingState.IDLE);
   const searchOffset = ref<number>(0);
   const searchResults = ref<SearchResult | null>();
   const filteredVideoSerchResults = ref<Video[] | null>();
   const filteredArtistSerchResults = ref<Artist[] | null>();
-  const searchResultCount = ref<number>(0);
 
 
-  const search = async (
-    searchTerm: string,
+  const getSearchResults = async (
+    searchQuery: string,
     offsetArtists: number = 0,
     offsetVideos: number = 0,
     limit: number = 32,
@@ -60,7 +59,7 @@ export const useSearch = () => {
       }
     `
     const variables = {
-      search: searchTerm,
+      search: searchQuery,
       limit,
       offsetArtists,
       offsetVideos,
@@ -89,45 +88,47 @@ export const useSearch = () => {
     }
 
     return searchResultResponse.data.search;
-  }
-
-  const fetchSearch = async () => {
-    loadingStateResults.value = LoadingState.LOADING;
-
-    try {
-      searchResults.value = await search(searchTerm.value!, searchOffset.value, searchOffset.value);
-
-      filteredVideoSerchResults.value = searchResults.value.videos.items
-        .filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
-      filteredArtistSerchResults.value = searchResults.value.artists.items
-        .filter(artist => isArtistValid(artist));
-
-      searchResultCount.value = Math.max(
-        searchResults.value.artists.total || 0,
-        searchResults.value.videos.total || 0,
-      );
-    } catch (error) {
-      console.error(error);
-
-      if (loadingStateGeneral.value === LoadingState.LOADING) {
-        loadingStateGeneral.value = LoadingState.ERROR;
-      }
-      loadingStateResults.value = LoadingState.ERROR;
-    }
-
-    loadingStateGeneral.value = LoadingState.LOADED;
-    loadingStateResults.value = LoadingState.LOADED;
   };
+
+  const filterSearchResults = (searchResultsResponse: SearchResult) => {
+    filteredVideoSerchResults.value = searchResultsResponse.videos.items
+      .filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
+    filteredArtistSerchResults.value = searchResultsResponse.artists.items
+      .filter(artist => isArtistValid(artist));
+  }
 
   const loadSearch = async () => {
     loadSettings();
 
-    await fetchSearch();
-  }
+    loadingStateGeneral.value = LoadingState.LOADING;
+    try {
+      const searchResultsResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
+      searchResults.value = searchResultsResponse;
+      filterSearchResults(searchResultsResponse);
+    } catch (error) {
+      console.error(error);
+      loadingStateGeneral.value = LoadingState.ERROR;
+    }
+    loadingStateGeneral.value = LoadingState.LOADED;
+    loadingStateResults.value = LoadingState.LOADED;
+  };
+
+  const loadSearchPage = async () => {
+    loadingStateResults.value = LoadingState.LOADING;
+    try {
+      const searchResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
+      filterSearchResults(searchResponse);
+    } catch (error) {
+      console.error(error);
+      loadingStateResults.value = LoadingState.ERROR;
+    }
+    loadingStateResults.value = LoadingState.LOADED;
+  };
 
   return {
     loadSearch,
-    searchTerm,
+    loadSearchPage,
+    searchQuery,
     loadingStateGeneral,
     loadingStateResults,
     searchOffset,

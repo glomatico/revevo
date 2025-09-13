@@ -4,10 +4,13 @@ const tabs = ['videos', 'artists'];
 const defaultTabRouteParamKey = 't';
 
 const route = useRoute();
-const router = useRouter();
+
+const tab = ref<string>((route.query[defaultTabRouteParamKey] as string) || defaultTab);
+
 const {
   loadSearch,
-  searchTerm,
+  loadSearchPage,
+  searchQuery,
   loadingStateGeneral,
   loadingStateResults,
   searchOffset,
@@ -16,11 +19,11 @@ const {
   filteredArtistSerchResults,
 } = useSearch();
 
-const tab = ref<string>((route.query[defaultTabRouteParamKey] as string) || defaultTab);
+
 
 const onPageChange = async (newPage: number) => {
-  searchOffset.value = (newPage - 1) * 32;
-  loadSearch();
+  searchOffset.value = 32 * (newPage - 1);
+  loadSearchPage();
 };
 
 const onTabChange = (newTab: string) => {
@@ -28,30 +31,33 @@ const onTabChange = (newTab: string) => {
 };
 
 const handleSearchInit = async () => {
-  if (searchTerm.value === route.query.q) {
+  if (searchQuery.value === route.query.q) {
     return;
   }
 
-  searchTerm.value = (route.query.q as string) || null;
-  if (!searchTerm.value) {
-    router.push({ path: '/' });
+  searchQuery.value = (route.query.q as string) || null;
+  if (!searchQuery.value) {
+    navigateTo('/');
     return;
   }
+
+  searchOffset.value = 32 * (parseInt((route.query.p as string) || '1', 10) - 1);
+  console.log(searchOffset.value);
 
   await loadSearch();
 };
 
 watch(route, handleSearchInit);
 
-onMounted(async () => {
-  await handleSearchInit();
-});
+onMounted(handleSearchInit);
 </script>
 
 <template>
   <v-container>
     <v-row>
-      <v-col v-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
+      <template v-if="loadingStateGeneral === LoadingState.IDLE" />
+
+      <v-col v-else-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
 
@@ -62,7 +68,7 @@ onMounted(async () => {
       <template v-else>
         <v-col cols="12">
           <p class="text-h4">
-            Search results for "{{ searchTerm }}"
+            Search results for "{{ searchQuery }}"
           </p>
         </v-col>
 
@@ -76,7 +82,9 @@ onMounted(async () => {
           <v-tabs-window v-model="tab">
             <v-tabs-window-item value="videos">
               <v-row>
-                <v-col v-if="loadingStateResults === LoadingState.LOADING" cols="12">
+                <template v-if="loadingStateResults === LoadingState.IDLE" />
+
+                <v-col v-else-if="loadingStateResults === LoadingState.LOADING" cols="12">
                   <LoadingSpinner />
                 </v-col>
 
@@ -96,7 +104,9 @@ onMounted(async () => {
 
             <v-tabs-window-item value="artists">
               <v-row>
-                <v-col v-if="loadingStateResults === LoadingState.LOADING" cols="12">
+                <template v-if="loadingStateResults === LoadingState.IDLE" />
+
+                <v-col v-else-if="loadingStateResults === LoadingState.LOADING" cols="12">
                   <LoadingSpinner />
                 </v-col>
 
