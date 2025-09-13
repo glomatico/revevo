@@ -7,10 +7,10 @@ export const useArtist = () => {
   const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
   const loadingStateVideos = ref<LoadingState>(LoadingState.IDLE);
   const page = ref<number>();
-  const artistId = ref<string | null>();
-  const artist = ref<Artist | null>();
-  const validArtist = ref<boolean>(false);
-  const filteredArtistVideos = ref<Video[] | null>();
+  const artistId = ref<string>();
+  const artist = ref<Artist>();
+  const validArtist = ref<boolean>();
+  const filteredArtistVideos = ref<Video[]>();
   const pageCount = ref<number>();
 
   const getArtists = async (
