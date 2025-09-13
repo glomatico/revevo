@@ -1,6 +1,16 @@
 export const useSearch = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
+  // empty function on search term change
+  const searchTerm = ref<string | null>(null);
+  const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
+  const loadingStateResults = ref<LoadingState>(LoadingState.LOADING);
+  const searchOffset = ref<number>(0);
+  const searchResults = ref<SearchResult | null>();
+  const filteredVideoSerchResults = ref<Video[] | null>();
+  const filteredArtistSerchResults = ref<Artist[] | null>();
+  const searchResultCount = ref<number>(0);
+
 
   const search = async (
     searchTerm: string,
@@ -79,5 +89,42 @@ export const useSearch = () => {
     return searchResultResponse.data.search;
   }
 
-  return { search };
+  const loadSearch = async () => {
+    loadingStateResults.value = LoadingState.LOADING;
+
+    try {
+      searchResults.value = await search(searchTerm.value!, searchOffset.value, searchOffset.value);
+
+      filteredVideoSerchResults.value = searchResults.value.videos.items
+        .filter(video => isVideoValid(video, false));
+      filteredArtistSerchResults.value = searchResults.value.artists.items
+        .filter(artist => isArtistValid(artist));
+
+      searchResultCount.value = Math.max(
+        searchResults.value.artists.total || 0,
+        searchResults.value.videos.total || 0,
+      );
+    } catch (error) {
+      console.error(error);
+
+      if (loadingStateGeneral.value === LoadingState.LOADING) {
+        loadingStateGeneral.value = LoadingState.ERROR;
+      }
+      loadingStateResults.value = LoadingState.ERROR;
+    }
+
+    loadingStateGeneral.value = LoadingState.LOADED;
+    loadingStateResults.value = LoadingState.LOADED;
+  };
+
+  return {
+    loadSearch,
+    searchTerm,
+    loadingStateGeneral,
+    loadingStateResults,
+    searchOffset,
+    searchResults,
+    filteredVideoSerchResults,
+    filteredArtistSerchResults,
+  };
 };
