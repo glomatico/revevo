@@ -101,27 +101,33 @@ export const useSearch = () => {
     loadSettings();
 
     loadingStateGeneral.value = LoadingState.LOADING;
+
     try {
       const searchResultsResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
+
       searchResults.value = searchResultsResponse;
       filterSearchResults(searchResultsResponse);
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
     }
+
     loadingStateGeneral.value = LoadingState.LOADED;
     loadingStateResults.value = LoadingState.LOADED;
   };
 
   const loadSearchPage = async () => {
     loadingStateResults.value = LoadingState.LOADING;
+
     try {
-      const searchResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
-      filterSearchResults(searchResponse);
+      const searchResultsResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
+
+      filterSearchResults(searchResultsResponse);
     } catch (error) {
       console.error(error);
       loadingStateResults.value = LoadingState.ERROR;
     }
+
     loadingStateResults.value = LoadingState.LOADED;
   };
 

@@ -19,8 +19,6 @@ const {
   filteredArtistSerchResults,
 } = useSearch();
 
-
-
 const onPageChange = async (newPage: number) => {
   searchOffset.value = 32 * (newPage - 1);
   loadSearchPage();
