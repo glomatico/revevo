@@ -3,8 +3,8 @@ const route = useRoute();
 
 const {
   loadVideo,
-  videoId,
   loadingState,
+  videoId,
   video,
   validVideo,
   streamUrl,
@@ -31,7 +31,9 @@ onMounted(() => {
 
   <v-container>
     <v-row>
-      <v-col v-if="loadingState === LoadingState.LOADING" cols="12">
+      <template v-if="loadingState === LoadingState.IDLE" />
+
+      <v-col v-else-if="loadingState === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
 

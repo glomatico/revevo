@@ -4,9 +4,8 @@ export const useVideo = () => {
 
   const { loadSettings, settings } = useSettings();
 
-
+  const loadingState = ref<LoadingState>(LoadingState.IDLE);
   const videoId = ref<string>();
-  const loadingState = ref<LoadingState>(LoadingState.LOADING);
   const video = ref<Video | null>();
   const validVideo = ref<boolean>(false);
   const streamUrl = ref<string | null>();
@@ -132,20 +131,6 @@ export const useVideo = () => {
     return null;
   };
 
-  const fetchVideo = async () => {
-    try {
-      const videos = (await getVideos(videoId.value!))?.data;
-
-      video.value = videos ? videos[0] : null;
-    } catch (error) {
-      console.error(error);
-      loadingState.value = LoadingState.ERROR;
-    }
-
-    loadingState.value = LoadingState.LOADED;
-    validVideo.value = isVideoValid(video.value!);
-  };
-
   const loadStreamUrl = () => {
     if (settings.value.playbackMethod === PlaybackMethod.HLS) {
       streamUrl.value = video.value?.streamsV3?.find(s => s.format === 'hls')?.url;
@@ -173,19 +158,30 @@ export const useVideo = () => {
   const loadVideo = async () => {
     loadSettings();
 
-    await fetchVideo();
-    filterRelatedVideos();
-    if (!validVideo.value) return;
+    loadingState.value = LoadingState.LOADING;
 
-    loadStreamUrl();
-    loadCaptionsUrl();
-    filterRelatedVideos();
+    try {
+      const videosResponse = await getVideos(videoId.value!);
+
+      video.value = videosResponse.data?.length === 1 ? videosResponse.data[0] : null;
+      validVideo.value = isVideoValid(video.value!);
+      filterRelatedVideos();
+
+      if (!validVideo.value) return;
+      loadStreamUrl();
+      loadCaptionsUrl();
+    } catch (error) {
+      console.error(error);
+      loadingState.value = LoadingState.ERROR;
+    }
+
+    loadingState.value = LoadingState.LOADED;
   };
 
   return {
     loadVideo,
-    videoId,
     loadingState,
+    videoId,
     video,
     validVideo,
     streamUrl,
