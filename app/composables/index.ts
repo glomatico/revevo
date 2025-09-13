@@ -201,9 +201,9 @@ export const isArtistValid = (artist: Artist | null): boolean => {
 export const isVideoValid = (video: Video | null, checkStreams: boolean = true, hidePseudoCountryIsrc: boolean = false): boolean => {
   return Boolean(
     video?.basicMetaV3?.title
-      &&
-      (checkStreams ? video?.streamsV3?.some(stream => stream.url) : true)
-      &&
-      hidePseudoCountryIsrc ? (!PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video?.basicMetaV3?.isrc.substring(0, 2))) : true
+    &&
+    (checkStreams ? video?.streamsV3?.some(stream => stream.url) : true)
+    &&
+    (hidePseudoCountryIsrc ? (!PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video?.basicMetaV3?.isrc.substring(0, 2))) : true)
   );
 }
