@@ -1,10 +1,10 @@
 <template>
-  <v-pagination v-model="page" :length="length" rounded="circle"></v-pagination>
+  <v-pagination v-model="page" :length="pageCount" rounded="circle"></v-pagination>
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{
-  itemsCount: number;
+defineProps<{
+  pageCount: number;
 }>();
 
 const emit = defineEmits<{
@@ -14,7 +14,6 @@ const emit = defineEmits<{
 const router = useRouter();
 const route = useRoute();
 
-const length = ref<number>(Math.ceil(props.itemsCount / 32));
 const page = computed<number>({
   get: () => parseInt((route.query.p as string) || '1', 10),
   set: async (value: number) => {
