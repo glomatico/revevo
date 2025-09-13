@@ -1,3 +1,5 @@
+export const PSEUDO_COUNTRY_ISRC_PREFIXES = ['QM', 'QN', 'QT', 'QZ'];
+
 export interface TokenData {
   access_token: string;
   legacy_token: string;
@@ -196,10 +198,12 @@ export const isArtistValid = (artist: Artist | null): boolean => {
   return Boolean(artist?.basicMeta?.name);
 }
 
-export const isVideoValid = (video: Video | null, checkStreams: boolean = true): boolean => {
+export const isVideoValid = (video: Video | null, checkStreams: boolean = true, hidePseudoCountryIsrc: boolean = false): boolean => {
   return Boolean(
     video?.basicMetaV3?.title
-    &&
-    (checkStreams ? video?.streamsV3?.some(stream => stream.url) : true)
+      &&
+      (checkStreams ? video?.streamsV3?.some(stream => stream.url) : true)
+      &&
+      hidePseudoCountryIsrc ? (!PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video?.basicMetaV3?.isrc.substring(0, 2))) : true
   );
 }

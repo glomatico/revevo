@@ -1,6 +1,7 @@
 export const useArtist = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
+  const hidePseudoCountryIsrc = ref<boolean>();
   const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
   const loadingStateVideos = ref<LoadingState>(LoadingState.LOADING);
   const page = ref<number>();
@@ -179,7 +180,7 @@ export const useArtist = () => {
       const artistsVideos = await getArtistsVideos(artistId.value!, page.value);
 
       filteredArtistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)
-        ?.videoData?.videos?.data?.filter(video => isVideoValid(video, false));
+        ?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, hidePseudoCountryIsrc.value));
     } catch (error) {
       console.error(error);
       loadingStateVideos.value = LoadingState.ERROR;
@@ -193,7 +194,7 @@ export const useArtist = () => {
       const artists = await getArtists(artistId.value!, page.value);
 
       artist.value = artists ? artists[0] : null;
-      filteredArtistVideos.value = artist.value?.videoData?.videos?.data?.filter(video => isVideoValid(video, false));
+      filteredArtistVideos.value = artist.value?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, hidePseudoCountryIsrc.value));
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
@@ -208,6 +209,7 @@ export const useArtist = () => {
   return {
     loadArtist,
     loadArtistVideos,
+    hidePseudoCountryIsrc,
     loadingStateGeneral,
     loadingStateVideos,
     page,
