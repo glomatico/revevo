@@ -202,8 +202,8 @@ export const useArtist = () => {
       validArtist.value = isArtistValid(artist.value);
       if (validArtist.value && artist.value?.videoData?.videos?.data) {
         filterArtistVideos(artist.value.videoData.videos.data);
+        pageCount.value = artist.value.videoData.videos.paging.pages;
       }
-      pageCount.value = artist.value.videoData?.videos.paging.pages || 0;
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
