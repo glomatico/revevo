@@ -13,20 +13,20 @@ export interface TokenData {
 export interface Artist {
   id: string;
   basicMeta: BasicArtistMeta;
-  likes: number | null;
-  videoData: ArtistVideos | null;
-  relatedArtists: BasicArtistMeta[] | null;
+  likes: number;
+  videoData: ArtistVideos;
+  relatedArtists: BasicArtistMeta[];
 };
 
 export interface BasicArtistMeta {
   name: string;
   thumbnailUrl: string;
-  urlSafeName: string | null;
-  views: Views | null;
-  genres: string[] | null;
-  role: string | null;
-  links: Link[] | null;
-  bio: Bio | null;
+  urlSafeName: string;
+  views: Views;
+  genres: string[];
+  role: string;
+  links: Link[];
+  bio: Bio;
 };
 
 export interface Link {
@@ -35,12 +35,12 @@ export interface Link {
 };
 
 export interface Bio {
-  text: string | null;
-  source: string | null;
-  birthCity: string | null;
-  birthName: string | null;
-  origin: string | null;
-  dateOfBirth: string | null;
+  text: string;
+  source: string;
+  birthCity: string;
+  birthName: string;
+  origin: string;
+  dateOfBirth: string;
 };
 
 export interface ArtistVideos {
@@ -54,24 +54,24 @@ export interface VideoList {
 
 export interface Video {
   basicMetaV3: BasicVideoMetaV3;
-  likes: number | null;
-  streamsV3: StreamsV3[] | null;
-  relatedVideos: VideoList | null;
-  views: Views | null;
+  likes: number;
+  streamsV3: StreamsV3[];
+  relatedVideos: VideoList;
+  views: Views;
 };
 
 export interface BasicVideoMetaV3 {
   isrc: string;
   title: string;
   thumbnailUrl: string;
-  releaseDate: string | null;
-  copyright: string | null;
-  credits: CreditsV3[] | null;
-  genres: string[] | null;
-  duration: number | null;
-  explicit: boolean | null;
-  artists: Artist[] | null;
-  errorCode: string | null;
+  releaseDate: string;
+  copyright: string;
+  credits: CreditsV3[];
+  genres: string[];
+  duration: number;
+  explicit: boolean;
+  artists: Artist[];
+  errorCode: string;
 };
 
 export interface CreditsV3 {
@@ -87,7 +87,7 @@ export interface StreamsV3 {
 
 export interface Views {
   viewsTotal: number;
-  youTubeId: string | null;
+  youTubeId: string;
 };
 
 export interface Paging {
@@ -121,10 +121,10 @@ export interface Playlist {
 
 export interface HomePageContainerItem {
   item: {
-    video: Video | null;
-    playlist: Playlist | null;
-    artist: Artist | null;
-  } | null;
+    video: Video;
+    playlist: Playlist;
+    artist: Artist;
+  };
 };
 
 export interface HomePageContainer {
@@ -140,51 +140,51 @@ export interface HomePage {
 
 export interface ArtistResponse {
   data: {
-    artists: Artist[] | null;
-  } | null;
+    artists: Artist[];
+  };
 };
 
 export interface VideoResponse {
   data: {
-    videos: VideoList | null;
-  } | null;
+    videos: VideoList;
+  };
 };
 
 export interface SearchResultResponse {
   data: {
-    search: SearchResult | null;
-  } | null;
+    search: SearchResult;
+  };
 };
 
 export interface HomePageResponse {
   data: {
-    homePage: HomePage | null;
-  } | null;
+    homePage: HomePage;
+  };
 };
 
 export interface PageMetadata {
   title: string;
   path: string;
   icon: string;
-}
+};
 
 export enum LoadingState {
   IDLE = "idle",
   LOADING = "loading",
   LOADED = "loaded",
   ERROR = "error",
-}
+};
 
 export enum PlaybackMethod {
   HLS = "hls",
   MP4 = "mp4",
-}
+};
 
 export interface Settings {
   playbackMethod: PlaybackMethod;
   enableCaptions: boolean;
   hidePseudoCountryIsrc: boolean;
-}
+};
 
 export const formatDuration = (milliseconds: number): string => {
   let totalSeconds = Math.floor(milliseconds / 1000);
@@ -200,10 +200,9 @@ export const resizeImageUrl = (url: string, width: number, height: number): stri
   return urlObj.toString();
 };
 
-
 export const isArtistValid = (artist: Artist | null): boolean => {
   return Boolean(artist?.basicMeta?.name);
-}
+};
 
 export const isVideoValid = (video: Video | null, checkStreams: boolean = true, hidePseudoCountryIsrc: boolean = false): boolean => {
   return Boolean(
