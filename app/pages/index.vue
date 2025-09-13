@@ -29,6 +29,8 @@ useSeoMeta({
 
   <v-container>
     <v-row>
+      <template v-if="loadingState === LoadingState.IDLE" />
+
       <v-col v-if="loadingState === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>

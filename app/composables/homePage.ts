@@ -4,7 +4,7 @@ export const useHomePage = () => {
 
   const { loadSettings, settings } = useSettings();
 
-  const loadingState = ref<LoadingState>(LoadingState.LOADING);
+  const loadingState = ref<LoadingState>(LoadingState.IDLE);
   const homePage = ref<HomePage | null>();
   const topVideosSection = ref<HomePageContainer | null>();
   const trendingArtistsSection = ref<HomePageContainer | null>();
@@ -119,6 +119,8 @@ export const useHomePage = () => {
   };
 
   const fetchHomePage = async () => {
+    loadingState.value = LoadingState.LOADING;
+
     try {
       homePage.value = await getHomePage();
     } catch (error) {
