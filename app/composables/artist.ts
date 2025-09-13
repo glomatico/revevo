@@ -86,7 +86,7 @@ export const useArtist = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
+        'Authorization': `Bearer ${useCookie<string>('token').value}`,
       },
       body: JSON.stringify({
         query,
@@ -152,7 +152,7 @@ export const useArtist = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
+        'Authorization': `Bearer ${useCookie<string>('token').value}`,
       },
       body: JSON.stringify({
         query,
