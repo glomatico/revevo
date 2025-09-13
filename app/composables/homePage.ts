@@ -5,13 +5,13 @@ export const useHomePage = () => {
   const { loadSettings, settings } = useSettings();
 
   const loadingState = ref<LoadingState>(LoadingState.IDLE);
-  const homePage = ref<HomePage | null>();
-  const topVideosSection = ref<HomePageContainer | null>();
-  const trendingArtistsSection = ref<HomePageContainer | null>();
-  const playlistsSection = ref<HomePageContainer | null>();
-  const filteredTopVideosSectionItems = ref<Video[] | null>();
-  const filteredTrendingArtistsSectionItems = ref<Artist[] | null>();
-  const filteredPlaylistsSectionItems = ref<Playlist[] | null>();
+  const homePage = ref<HomePage>();
+  const topVideosSection = ref<HomePageContainer>();
+  const trendingArtistsSection = ref<HomePageContainer>();
+  const playlistsSection = ref<HomePageContainer>();
+  const filteredTopVideosSectionItems = ref<Video[]>();
+  const filteredTrendingArtistsSectionItems = ref<Artist[]>();
+  const filteredPlaylistsSectionItems = ref<Playlist[]>();
 
   const getHomePage = async (
     offset: number = 0,
@@ -100,7 +100,7 @@ export const useHomePage = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
+        'Authorization': `Bearer ${useCookie('token').value}`,
       },
       body: JSON.stringify({ query, variables }),
     });
@@ -109,53 +109,52 @@ export const useHomePage = () => {
       throw new Error(`Error when fetching homepage: ${response.status} ${response.statusText}`);
     }
 
-    const homePageRespons: HomePageResponse = await response.json();
+    const homePageResponse: HomePageResponse = await response.json();
+    const homePage: HomePage = homePageResponse?.data?.homePage;
 
-    if (!homePageRespons.data?.homePage) {
-      throw new Error('Invalid response structure: missing homepage data');
+    if (!homePage) {
+      throw new Error(`Error when fetching homepage: ${response.status} ${response.statusText}`);
     }
 
-    return homePageRespons.data.homePage;
-  };
-
-  const fetchHomePage = async () => {
-    loadingState.value = LoadingState.LOADING;
-
-    try {
-      homePage.value = await getHomePage();
-    } catch (error) {
-      console.error(error);
-      loadingState.value = LoadingState.ERROR;
-    }
-    loadingState.value = LoadingState.LOADED;
+    return homePage;
   };
 
   const loadHomePageVideoSection = () => {
     topVideosSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'top-videos');
 
-    filteredTopVideosSectionItems.value = topVideosSection.value!.items.map(i => i.item?.video!).filter(v => isVideoValid(v, false, settings.value.hidePseudoCountryIsrc));
+    filteredTopVideosSectionItems.value = topVideosSection.value!.items.map(i => i.item.video).filter(v => isVideoValid(v, settings.value.hidePseudoCountryIsrc));
   };
 
   const loadHomePageArtistSection = () => {
     trendingArtistsSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'trending-artists');
 
-    filteredTrendingArtistsSectionItems.value = trendingArtistsSection.value!.items.map(i => i.item?.artist!).filter(a => isArtistValid(a));
+    filteredTrendingArtistsSectionItems.value = trendingArtistsSection.value!.items.map(i => i.item.artist).filter(a => isArtistValid(a));
   };
 
   const loadHomePagePlaylistSection = () => {
     playlistsSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'playlists');
 
-    filteredPlaylistsSectionItems.value = playlistsSection.value?.items.map(i => i.item?.playlist!)
-  }
+    filteredPlaylistsSectionItems.value = playlistsSection.value?.items.map(i => i.item.playlist)
+  };
 
 
   const loadHomePage = async () => {
     loadSettings();
 
-    await fetchHomePage();
-    loadHomePageVideoSection();
-    loadHomePageArtistSection();
-    loadHomePagePlaylistSection();
+    loadingState.value = LoadingState.LOADING;
+
+    try {
+      homePage.value = await getHomePage();
+
+      loadHomePageVideoSection();
+      loadHomePageArtistSection();
+      loadHomePagePlaylistSection();
+    } catch (error) {
+      console.error(error);
+      loadingState.value = LoadingState.ERROR;
+    }
+
+    loadingState.value = LoadingState.LOADED;
   };
 
   return {

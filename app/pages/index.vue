@@ -31,16 +31,18 @@ useSeoMeta({
     <v-row>
       <template v-if="loadingState === LoadingState.IDLE" />
 
-      <v-col v-if="loadingState === LoadingState.LOADING" cols="12">
+      <v-col v-else-if="loadingState === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
+
       <v-col v-else-if="loadingState === LoadingState.ERROR" cols="12">
         <v-alert type="error">Failed to load homepage data.</v-alert>
       </v-col>
+
       <template v-else>
         <v-col cols="12">
           <p class="text-h4">
-            {{ topVideosSection?.title }}
+            {{ topVideosSection!.title }}
           </p>
         </v-col>
 
@@ -48,7 +50,14 @@ useSeoMeta({
 
         <v-col cols="12">
           <v-row>
-            <v-col v-for="(video, index) in filteredTopVideosSectionItems" :key="index" cols="12" sm="6" md="4" lg="3">
+            <v-col v-if="!filteredTopVideosSectionItems?.length">
+              <v-alert type="info">
+                This section is empty.
+              </v-alert>
+            </v-col>
+
+            <v-col v-else v-for="(video, index) in filteredTopVideosSectionItems" :key="index" cols="12" sm="6" md="4"
+              lg="3">
               <VideoThumbnail v-if="video" :video="video" :vertical="true" />
             </v-col>
           </v-row>
@@ -56,14 +65,18 @@ useSeoMeta({
 
         <v-col cols="12">
           <p class="text-h4">
-            {{ trendingArtistsSection?.title }}
+            {{ trendingArtistsSection!.title }}
           </p>
         </v-col>
 
         <v-divider thickness="2" />
 
         <v-col cols="12">
-          <v-slide-group>
+          <v-alert v-if="!filteredTrendingArtistsSectionItems?.length" type="info">
+            This section is empty.
+          </v-alert>
+
+          <v-slide-group v-else>
             <v-slide-group-item v-for="(artist, index) in filteredTrendingArtistsSectionItems" :key="index">
               <div class="ma-2">
                 <ArtistThumbnail :artist="artist.basicMeta" />
@@ -74,14 +87,18 @@ useSeoMeta({
 
         <v-col cols="12">
           <p class="text-h4">
-            {{ playlistsSection?.title }}
+            {{ playlistsSection!.title }}
           </p>
         </v-col>
 
         <v-divider thickness="2" />
 
         <v-col cols="12">
-          <v-slide-group>
+          <v-alert v-if="!filteredPlaylistsSectionItems?.length" type="info">
+            This section is empty.
+          </v-alert>
+
+          <v-slide-group v-else>
             <v-slide-group-item v-for="(playlist, index) in filteredPlaylistsSectionItems" :key="index">
               <div class="ma-2">
                 <PlaylistThumbnail :playlist="playlist" :id="playlist.id!" />
