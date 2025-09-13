@@ -174,6 +174,7 @@ export const useVideo = () => {
     loadSettings();
 
     await fetchVideo();
+    filterRelatedVideos();
     if (!validVideo.value) return;
 
     loadStreamUrl();
