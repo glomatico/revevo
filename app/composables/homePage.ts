@@ -8,8 +8,10 @@ export const useHomePage = () => {
   const homePage = ref<HomePage | null>();
   const topVideosSection = ref<HomePageContainer | null>();
   const trendingArtistsSection = ref<HomePageContainer | null>();
-  const filteredTopVideosSectionItems = ref<Video[]>();
-  const filteredTrendingArtistsSectionItems = ref<Artist[]>();
+  const playlistsSection = ref<HomePageContainer | null>();
+  const filteredTopVideosSectionItems = ref<Video[] | null>();
+  const filteredTrendingArtistsSectionItems = ref<Artist[] | null>();
+  const filteredPlaylistsSectionItems = ref<Playlist[] | null>();
 
   const getHomePage = async (
     offset: number = 0,
@@ -77,10 +79,8 @@ export const useHomePage = () => {
                     id
                     basicMeta {
                       title
-                      description
-                      videoCount
+                      image_url
                     }
-                    likes
                   }
                 }
               }
@@ -129,16 +129,22 @@ export const useHomePage = () => {
   };
 
   const loadHomePageVideoSection = () => {
-    topVideosSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'top-videos') || null;
+    topVideosSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'top-videos');
 
     filteredTopVideosSectionItems.value = topVideosSection.value!.items.map(i => i.item?.video!).filter(v => isVideoValid(v, false, settings.value.hidePseudoCountryIsrc));
   };
 
   const loadHomePageArtistSection = () => {
-    trendingArtistsSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'trending-artists') || null;
+    trendingArtistsSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'trending-artists');
 
     filteredTrendingArtistsSectionItems.value = trendingArtistsSection.value!.items.map(i => i.item?.artist!).filter(a => isArtistValid(a));
   };
+
+  const loadHomePagePlaylistSection = () => {
+    playlistsSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'playlists');
+
+    filteredPlaylistsSectionItems.value = playlistsSection.value?.items.map(i => i.item?.playlist!)
+  }
 
 
   const loadHomePage = async () => {
@@ -147,6 +153,7 @@ export const useHomePage = () => {
     await fetchHomePage();
     loadHomePageVideoSection();
     loadHomePageArtistSection();
+    loadHomePagePlaylistSection();
   };
 
   return {
@@ -155,7 +162,9 @@ export const useHomePage = () => {
     homePage,
     topVideosSection,
     trendingArtistsSection,
+    playlistsSection,
     filteredTopVideosSectionItems,
     filteredTrendingArtistsSectionItems,
+    filteredPlaylistsSectionItems,
   };
 }

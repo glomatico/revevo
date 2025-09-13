@@ -4,8 +4,10 @@ const {
   loadingState,
   topVideosSection,
   trendingArtistsSection,
+  playlistsSection,
   filteredTopVideosSectionItems,
   filteredTrendingArtistsSectionItems,
+  filteredPlaylistsSectionItems,
 } = useHomePage();
 
 onMounted(async () => {
@@ -62,7 +64,25 @@ useSeoMeta({
           <v-slide-group>
             <v-slide-group-item v-for="(artist, index) in filteredTrendingArtistsSectionItems" :key="index">
               <div class="ma-2">
-                <ArtistThumbnail :artist="artist.basicMeta" class="artist-thumbnail" />
+                <ArtistThumbnail :artist="artist.basicMeta" />
+              </div>
+            </v-slide-group-item>
+          </v-slide-group>
+        </v-col>
+
+        <v-col cols="12">
+          <p class="text-h4">
+            {{ playlistsSection?.title }}
+          </p>
+        </v-col>
+
+        <v-divider thickness="2" />
+
+        <v-col cols="12">
+          <v-slide-group>
+            <v-slide-group-item v-for="(playlist, index) in filteredPlaylistsSectionItems" :key="index">
+              <div class="ma-2">
+                <PlaylistThumbnail :playlist="playlist" :id="playlist.id!" />
               </div>
             </v-slide-group-item>
           </v-slide-group>

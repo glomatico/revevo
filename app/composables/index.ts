@@ -109,8 +109,14 @@ export interface SearchResult {
   };
 };
 
+export interface BasicPlaylistMeta {
+  title: string;
+  image_url: string;
+};
+
 export interface Playlist {
   id: string;
+  basicMeta: BasicPlaylistMeta;
 };
 
 export interface HomePageContainerItem {
