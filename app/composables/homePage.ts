@@ -2,6 +2,7 @@ export const useHomePage = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
 
+  const hidePseudoCountryIsrc = ref<boolean>();
   const loadingState = ref<LoadingState>(LoadingState.LOADING);
   const homePage = ref<HomePage | null>();
   const topVideosSection = ref<HomePageContainer | null>();
@@ -129,7 +130,7 @@ export const useHomePage = () => {
   const loadHomePageVideoSection = () => {
     topVideosSection.value = homePage.value!.containersV2.find(s => s.serviceName === 'top-videos') || null;
 
-    filteredTopVideosSectionItems.value = topVideosSection.value!.items.map(i => i.item?.video!).filter(v => isVideoValid(v, false));
+    filteredTopVideosSectionItems.value = topVideosSection.value!.items.map(i => i.item?.video!).filter(v => isVideoValid(v, false, hidePseudoCountryIsrc.value));
   };
 
   const loadHomePageArtistSection = () => {
@@ -147,6 +148,7 @@ export const useHomePage = () => {
 
   return {
     loadHomePage,
+    hidePseudoCountryIsrc,
     loadingState,
     homePage,
     topVideosSection,

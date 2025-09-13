@@ -48,8 +48,11 @@
 </template>
 
 <script lang="ts" setup>
+const { loadSettings, settings } = useSettings();
+
 const {
   loadHomePage,
+  hidePseudoCountryIsrc,
   loadingState,
   topVideosSection,
   trendingArtistsSection,
@@ -58,6 +61,9 @@ const {
 } = useHomePage();
 
 onMounted(async () => {
+  loadSettings();
+  hidePseudoCountryIsrc.value = settings.value.hidePseudoCountryIsrc;
+
   await loadHomePage();
 });
 
