@@ -10,11 +10,12 @@ const tab = ref<string>((route.query[defaultTabRouteParamKey] as string) || defa
 const {
   loadSearch,
   loadSearchPage,
-  searchQuery,
   loadingStateGeneral,
   loadingStateResults,
+  searchQuery,
   searchOffset,
   searchResults,
+  pageCount,
   filteredVideoSerchResults,
   filteredArtistSerchResults,
 } = useSearch();
@@ -33,7 +34,7 @@ const handleSearchInit = async () => {
     return;
   }
 
-  searchQuery.value = (route.query.q as string) || null;
+  searchQuery.value = route.query.q as string;
   if (!searchQuery.value) {
     navigateTo('/');
     return;
@@ -90,7 +91,7 @@ onMounted(handleSearchInit);
                   <v-alert type="error">Failed to load video results.</v-alert>
                 </v-col>
 
-                <v-col v-else-if="filteredVideoSerchResults!.length === 0" cols="12">
+                <v-col v-else-if="!filteredVideoSerchResults?.length" cols="12">
                   <v-alert type="info">No videos found.</v-alert>
                 </v-col>
 
@@ -112,7 +113,7 @@ onMounted(handleSearchInit);
                   <v-alert type="error">Failed to load artists results.</v-alert>
                 </v-col>
 
-                <v-col v-else-if="filteredArtistSerchResults!.length === 0" cols="12">
+                <v-col v-else-if="!filteredArtistSerchResults?.length" cols="12">
                   <v-alert type="info">No artists found.</v-alert>
                 </v-col>
 
@@ -130,7 +131,7 @@ onMounted(handleSearchInit);
         </v-col>
 
         <v-col cols="12">
-          <AppPagination :items-count="searchResults!.videos.total" @page-change="onPageChange" />
+          <AppPagination :page-count="pageCount!" @page-change="onPageChange" />
         </v-col>
       </template>
     </v-row>

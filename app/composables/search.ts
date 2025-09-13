@@ -4,13 +4,14 @@ export const useSearch = () => {
 
   const { loadSettings, settings } = useSettings();
 
-  const searchQuery = ref<string | null>(null);
   const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
   const loadingStateResults = ref<LoadingState>(LoadingState.IDLE);
-  const searchOffset = ref<number>(0);
-  const searchResults = ref<SearchResult | null>();
-  const filteredVideoSerchResults = ref<Video[] | null>();
-  const filteredArtistSerchResults = ref<Artist[] | null>();
+  const searchQuery = ref<string>();
+  const searchOffset = ref<number>();
+  const searchResults = ref<SearchResult>();
+  const pageCount = ref<number>();
+  const filteredVideoSerchResults = ref<Video[]>();
+  const filteredArtistSerchResults = ref<Artist[]>();
 
 
   const getSearchResults = async (
@@ -76,26 +77,40 @@ export const useSearch = () => {
         variables,
       })
     });
+    const searchResultsResponse: SearchResultResponse = await response.json();
+    const searchResults: SearchResult = searchResultsResponse?.data?.search;
 
-    if (!response.ok) {
-      throw new Error(`Error when searching: ${response.status} ${response.statusText}`);
+    if (!searchResults) {
+      throw new Error(`Error when fetching search results: ${response.status} ${response.statusText}`);
     }
 
-    const searchResultResponse: SearchResultResponse = await response.json();
-
-    if (!searchResultResponse.data?.search) {
-      throw new Error('Invalid response structure: missing search data');
-    }
-
-    return searchResultResponse.data.search;
+    return searchResults;
   };
 
   const filterSearchResults = (searchResultsResponse: SearchResult) => {
     filteredVideoSerchResults.value = searchResultsResponse.videos.items
-      .filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
+      .filter(video => isVideoValid(video, settings.value.hidePseudoCountryIsrc));
     filteredArtistSerchResults.value = searchResultsResponse.artists.items
       .filter(artist => isArtistValid(artist));
-  }
+  };
+
+  const loadSearchPage = async () => {
+    loadingStateResults.value = LoadingState.LOADING;
+
+    try {
+      const searchResultsResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
+
+      const totalVideos = searchResultsResponse.videos.total;
+      const totalArtists = searchResultsResponse.artists.total;
+      pageCount.value = Math.ceil(Math.max(totalVideos, totalArtists) / 32);
+      filterSearchResults(searchResultsResponse);
+    } catch (error) {
+      console.error(error);
+      loadingStateResults.value = LoadingState.ERROR;
+    }
+
+    loadingStateResults.value = LoadingState.LOADED;
+  };
 
   const loadSearch = async () => {
     loadSettings();
@@ -116,29 +131,15 @@ export const useSearch = () => {
     loadingStateResults.value = LoadingState.LOADED;
   };
 
-  const loadSearchPage = async () => {
-    loadingStateResults.value = LoadingState.LOADING;
-
-    try {
-      const searchResultsResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
-
-      filterSearchResults(searchResultsResponse);
-    } catch (error) {
-      console.error(error);
-      loadingStateResults.value = LoadingState.ERROR;
-    }
-
-    loadingStateResults.value = LoadingState.LOADED;
-  };
-
   return {
     loadSearch,
     loadSearchPage,
-    searchQuery,
     loadingStateGeneral,
     loadingStateResults,
+    searchQuery,
     searchOffset,
     searchResults,
+    pageCount,
     filteredVideoSerchResults,
     filteredArtistSerchResults,
   };
