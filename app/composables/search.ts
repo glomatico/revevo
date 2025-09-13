@@ -1,7 +1,6 @@
 export const useSearch = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
-  // empty function on search term change
   const searchTerm = ref<string | null>(null);
   const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
   const loadingStateResults = ref<LoadingState>(LoadingState.LOADING);
