@@ -5,8 +5,12 @@ const defaultTabRouteParamKey = 't';
 
 const route = useRoute();
 const router = useRouter();
+
+const { loadSettings, settings } = useSettings();
+
 const {
   loadSearch,
+  hidePseudoCountryIsrc,
   searchTerm,
   loadingStateGeneral,
   loadingStateResults,
@@ -43,7 +47,12 @@ const handleSearchInit = async () => {
 
 watch(route, handleSearchInit);
 
-onMounted(handleSearchInit);
+onMounted(async () => {
+  loadSettings();
+
+  hidePseudoCountryIsrc.value = settings.value.hidePseudoCountryIsrc;
+  await handleSearchInit();
+});
 </script>
 
 <template>

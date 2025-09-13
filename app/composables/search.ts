@@ -2,6 +2,7 @@ export const useSearch = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
   const searchTerm = ref<string | null>(null);
+  const hidePseudoCountryIsrc = ref<boolean>();
   const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
   const loadingStateResults = ref<LoadingState>(LoadingState.LOADING);
   const searchOffset = ref<number>(0);
@@ -95,7 +96,7 @@ export const useSearch = () => {
       searchResults.value = await search(searchTerm.value!, searchOffset.value, searchOffset.value);
 
       filteredVideoSerchResults.value = searchResults.value.videos.items
-        .filter(video => isVideoValid(video, false));
+        .filter(video => isVideoValid(video, false, hidePseudoCountryIsrc.value));
       filteredArtistSerchResults.value = searchResults.value.artists.items
         .filter(artist => isArtistValid(artist));
 
@@ -118,6 +119,7 @@ export const useSearch = () => {
 
   return {
     loadSearch,
+    hidePseudoCountryIsrc,
     searchTerm,
     loadingStateGeneral,
     loadingStateResults,
