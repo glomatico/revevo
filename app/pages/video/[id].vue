@@ -60,7 +60,12 @@ onMounted(() => {
             </v-col>
 
             <v-col v-for="item in filteredRelatedVideos" :key="item.basicMetaV3.isrc" cols="12">
-              <VideoThumbnail :video="item" />
+              <div class="d-none d-sm-block">
+                <VideoThumbnail :video="item" />
+              </div>
+              <div class="d-sm-none">
+                <VideoThumbnail :video="item" :vertical="true" />
+              </div>
             </v-col>
           </v-row>
         </v-col>
