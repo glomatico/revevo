@@ -1,8 +1,10 @@
 export const useSearch = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
+
+  const { loadSettings, settings } = useSettings();
+
   const searchTerm = ref<string | null>(null);
-  const hidePseudoCountryIsrc = ref<boolean>();
   const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
   const loadingStateResults = ref<LoadingState>(LoadingState.LOADING);
   const searchOffset = ref<number>(0);
@@ -89,14 +91,14 @@ export const useSearch = () => {
     return searchResultResponse.data.search;
   }
 
-  const loadSearch = async () => {
+  const fetchSearch = async () => {
     loadingStateResults.value = LoadingState.LOADING;
 
     try {
       searchResults.value = await search(searchTerm.value!, searchOffset.value, searchOffset.value);
 
       filteredVideoSerchResults.value = searchResults.value.videos.items
-        .filter(video => isVideoValid(video, false, hidePseudoCountryIsrc.value));
+        .filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
       filteredArtistSerchResults.value = searchResults.value.artists.items
         .filter(artist => isArtistValid(artist));
 
@@ -117,9 +119,14 @@ export const useSearch = () => {
     loadingStateResults.value = LoadingState.LOADED;
   };
 
+  const loadSearch = async () => {
+    loadSettings();
+
+    await fetchSearch();
+  }
+
   return {
     loadSearch,
-    hidePseudoCountryIsrc,
     searchTerm,
     loadingStateGeneral,
     loadingStateResults,

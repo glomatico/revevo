@@ -1,6 +1,9 @@
-export const useVideo = (settings: Settings | null = null) => {
+export const useVideo = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
+
+  const { loadSettings, settings } = useSettings();
+
 
   const videoId = ref<string>();
   const loadingState = ref<LoadingState>(LoadingState.LOADING);
@@ -144,10 +147,10 @@ export const useVideo = (settings: Settings | null = null) => {
   };
 
   const loadStreamUrl = () => {
-    if (settings!.playbackMethod === PlaybackMethod.HLS) {
+    if (settings.value.playbackMethod === PlaybackMethod.HLS) {
       streamUrl.value = video.value?.streamsV3?.find(s => s.format === 'hls')?.url;
     }
-    if (settings!.playbackMethod === PlaybackMethod.MP4) {
+    if (settings.value.playbackMethod === PlaybackMethod.MP4) {
       streamUrl.value = getBestMp4Stream(video.value?.streamsV3!);
     }
 
@@ -168,6 +171,8 @@ export const useVideo = (settings: Settings | null = null) => {
   };
 
   const loadVideo = async () => {
+    loadSettings();
+
     await fetchVideo();
     if (!validVideo.value) return;
 

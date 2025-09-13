@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 const route = useRoute();
 
-const { loadSettings, settings } = useSettings();
 const {
   loadVideo,
   videoId,
@@ -11,11 +10,9 @@ const {
   streamUrl,
   captionsUrl,
   filteredRelatedVideos,
-} = useVideo(settings.value);
+} = useVideo();
 
 onMounted(() => {
-  loadSettings();
-
   videoId.value = route.params.id as string;
   loadVideo();
 });

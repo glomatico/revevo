@@ -1,7 +1,9 @@
 export const useArtist = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
-  const hidePseudoCountryIsrc = ref<boolean>();
+
+  const { loadSettings, settings } = useSettings();
+
   const loadingStateGeneral = ref<LoadingState>(LoadingState.LOADING);
   const loadingStateVideos = ref<LoadingState>(LoadingState.LOADING);
   const page = ref<number>();
@@ -180,7 +182,7 @@ export const useArtist = () => {
       const artistsVideos = await getArtistsVideos(artistId.value!, page.value);
 
       filteredArtistVideos.value = (artistsVideos ? artistsVideos[0] as Artist : null)
-        ?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, hidePseudoCountryIsrc.value));
+        ?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
     } catch (error) {
       console.error(error);
       loadingStateVideos.value = LoadingState.ERROR;
@@ -189,12 +191,12 @@ export const useArtist = () => {
     loadingStateVideos.value = LoadingState.LOADED;
   };
 
-  const loadArtist = async () => {
+  const fetchArtist = async () => {
     try {
       const artists = await getArtists(artistId.value!, page.value);
 
       artist.value = artists ? artists[0] : null;
-      filteredArtistVideos.value = artist.value?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, hidePseudoCountryIsrc.value));
+      filteredArtistVideos.value = artist.value?.videoData?.videos?.data?.filter(video => isVideoValid(video, false, settings.value.hidePseudoCountryIsrc));
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
@@ -206,10 +208,16 @@ export const useArtist = () => {
     validArtist.value = isArtistValid(artist.value!);
   };
 
+  const loadArtist = async () => {
+    loadSettings();
+
+    await fetchArtist();
+  };
+
+
   return {
     loadArtist,
     loadArtistVideos,
-    hidePseudoCountryIsrc,
     loadingStateGeneral,
     loadingStateVideos,
     page,

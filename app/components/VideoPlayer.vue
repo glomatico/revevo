@@ -4,14 +4,12 @@ const props = defineProps<{
   streamUrl?: string;
 }>();
 
-const { loadSettings, settings } = useSettings();
-
 const {
   loadVideoPlayer,
   streamUrl,
   captionsUrl,
   htmlVideo
-} = useVideoPlayer(settings.value);
+} = useVideoPlayer();
 
 watch(props, async () => {
   if (!props.streamUrl) {
@@ -23,10 +21,6 @@ watch(props, async () => {
 
   await loadVideoPlayer();
 })
-
-onMounted(async () => {
-  loadSettings();
-});
 </script>
 
 <template>

@@ -1,6 +1,8 @@
 import Hls from 'hls.js';
 
-export const useVideoPlayer = (settings: Settings | null) => {
+export const useVideoPlayer = () => {
+  const { loadSettings, settings } = useSettings();
+
   const htmlVideo = ref<HTMLVideoElement>();
   const streamUrl = ref<string | null>();
   const captionsUrl = ref<string | null>();
@@ -14,7 +16,7 @@ export const useVideoPlayer = (settings: Settings | null) => {
 
       Array.from(tracks).forEach((track) => {
         if (track.kind !== 'subtitles') return;
-        settings.enableCaptions = track.mode === 'showing';
+        settings.value.enableCaptions = track.mode === 'showing';
       });
     });
   };
@@ -43,7 +45,7 @@ export const useVideoPlayer = (settings: Settings | null) => {
   const toggleCaptionsFromStorage = async () => {
     Array.from(htmlVideo.value!.textTracks).forEach((track) => {
       if (track.kind === 'subtitles') {
-        track.mode = settings?.enableCaptions! ? 'showing' : 'hidden';
+        track.mode = settings.value.enableCaptions! ? 'showing' : 'hidden';
       }
     });
   };
@@ -67,7 +69,7 @@ export const useVideoPlayer = (settings: Settings | null) => {
   };
 
   const attachVideo = async () => {
-    if (settings?.playbackMethod === PlaybackMethod.MP4) {
+    if (settings.value.playbackMethod === PlaybackMethod.MP4) {
       await attachNormalVideo();
     } else {
       await attachHlsVideo();
@@ -76,6 +78,8 @@ export const useVideoPlayer = (settings: Settings | null) => {
 
   const loadVideoPlayer = async (
   ) => {
+    loadSettings();
+
     await attachVideo();
     await attachCaptions();
 

@@ -7,12 +7,9 @@ const route = useRoute();
 
 const tab = ref<string>((route.query.t as string) || defaultTab);
 
-const { loadSettings, settings } = useSettings();
-
 const {
   loadArtist,
   loadArtistVideos,
-  hidePseudoCountryIsrc,
   loadingStateGeneral,
   loadingStateVideos,
   page,
@@ -33,9 +30,6 @@ const onPageChange = (newPage: number) => {
 };
 
 onMounted(async () => {
-  loadSettings();
-
-  hidePseudoCountryIsrc.value = settings.value.hidePseudoCountryIsrc;
   page.value = parseInt((route.query.p as string) || '1', 10);
   artistId.value = route.params.id as string;
   loadArtist();

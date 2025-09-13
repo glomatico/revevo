@@ -1,3 +1,28 @@
+<script lang="ts" setup>
+const {
+  loadHomePage,
+  loadingState,
+  topVideosSection,
+  trendingArtistsSection,
+  filteredTopVideosSectionItems,
+  filteredTrendingArtistsSectionItems,
+} = useHomePage();
+
+onMounted(async () => {
+  await loadHomePage();
+});
+
+useSeoMeta({
+  title: 'Revevo',
+  ogTitle: 'Revevo',
+  description: 'A music video streaming website that revives the old Vevo experience.',
+  ogDescription: 'A music video streaming website that revives the old Vevo experience.',
+  ogImage: 'https://img.vevo.com/images/defaultbackstageassets/vevo.png?width=720&height=720',
+  twitterCard: 'summary_large_image',
+})
+</script>
+
+
 <template>
 
   <v-container>
@@ -46,33 +71,3 @@
     </v-row>
   </v-container>
 </template>
-
-<script lang="ts" setup>
-const { loadSettings, settings } = useSettings();
-
-const {
-  loadHomePage,
-  hidePseudoCountryIsrc,
-  loadingState,
-  topVideosSection,
-  trendingArtistsSection,
-  filteredTopVideosSectionItems,
-  filteredTrendingArtistsSectionItems,
-} = useHomePage();
-
-onMounted(async () => {
-  loadSettings();
-  hidePseudoCountryIsrc.value = settings.value.hidePseudoCountryIsrc;
-
-  await loadHomePage();
-});
-
-useSeoMeta({
-  title: 'Revevo',
-  ogTitle: 'Revevo',
-  description: 'A music video streaming website that revives the old Vevo experience.',
-  ogDescription: 'A music video streaming website that revives the old Vevo experience.',
-  ogImage: 'https://img.vevo.com/images/defaultbackstageassets/vevo.png?width=720&height=720',
-  twitterCard: 'summary_large_image',
-})
-</script>
