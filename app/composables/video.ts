@@ -6,11 +6,11 @@ export const useVideo = () => {
 
   const loadingState = ref<LoadingState>(LoadingState.IDLE);
   const videoId = ref<string>();
-  const video = ref<Video | null>();
-  const validVideo = ref<boolean>(false);
-  const streamUrl = ref<string | null>();
-  const captionsUrl = ref<string | null>();
-  const filteredRelatedVideos = ref<Video[] | null>();
+  const video = ref<Video>();
+  const validVideo = ref<boolean>();
+  const streamUrl = ref<string>();
+  const captionsUrl = ref<string>();
+  const filteredRelatedVideos = ref<Video[]>();
 
 
   const getVideos = async (
@@ -103,20 +103,19 @@ export const useVideo = () => {
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`Error when fetching videos: ${response.status} ${response.statusText}`);
-    }
+    const videosResponse: VideoResponse = await response.json();
+    const videos: VideoList = videosResponse?.data?.videos;
 
-    const result: VideoResponse = await response.json();
-
-    if (!result.data?.videos) {
+    if (!videos) {
       throw new Error('Invalid response structure: missing videos data');
     }
 
-    return result.data.videos;
+    return videos;
   };
 
-  const getBestMp4Stream = (streams: StreamsV3[]): string | null => {
+  const getBestMp4Stream = (): string | null => {
+    const streams = video.value!.streamsV3!;
+
     const qualityPriority = ['high', 'medium', 'low'];
 
     const mp4Streams = streams.filter(stream =>
@@ -133,10 +132,10 @@ export const useVideo = () => {
 
   const loadStreamUrl = () => {
     if (settings.value.playbackMethod === PlaybackMethod.HLS) {
-      streamUrl.value = video.value?.streamsV3?.find(s => s.format === 'hls')?.url;
+      streamUrl.value = video.value!.streamsV3.find(s => s.format === 'hls')!.url;
     }
     if (settings.value.playbackMethod === PlaybackMethod.MP4) {
-      streamUrl.value = getBestMp4Stream(video.value?.streamsV3!);
+      streamUrl.value = getBestMp4Stream()!;
     }
 
     if (streamUrl.value) {
@@ -152,7 +151,12 @@ export const useVideo = () => {
     if (!video.value?.relatedVideos?.data) return;
 
     filteredRelatedVideos.value = video.value.relatedVideos.data;
-    filteredRelatedVideos.value = filteredRelatedVideos.value.filter(v => isVideoValid(v, false) && v.basicMetaV3.isrc !== video.value?.basicMetaV3.isrc);
+    filteredRelatedVideos.value = filteredRelatedVideos.value.filter(
+      v =>
+        isVideoValid(v, settings.value.hidePseudoCountryIsrc)
+        &&
+        (v?.basicMetaV3?.isrc !== video.value?.basicMetaV3?.isrc)
+    );
   };
 
   const loadVideo = async () => {
@@ -163,13 +167,14 @@ export const useVideo = () => {
     try {
       const videosResponse = await getVideos(videoId.value!);
 
-      video.value = videosResponse.data?.length === 1 ? videosResponse.data[0] : null;
-      validVideo.value = isVideoValid(video.value!);
+      video.value = (videosResponse.data?.length == 1 ? videosResponse.data[0] : null)!;
+      validVideo.value = isVideoValid(video.value, false, true);
       filterRelatedVideos();
 
-      if (!validVideo.value) return;
-      loadStreamUrl();
-      loadCaptionsUrl();
+      if (validVideo.value) {
+        loadStreamUrl();
+        loadCaptionsUrl();
+      }
     } catch (error) {
       console.error(error);
       loadingState.value = LoadingState.ERROR;

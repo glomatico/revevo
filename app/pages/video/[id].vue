@@ -56,7 +56,12 @@ onMounted(() => {
               </p>
             </v-col>
 
-            <v-col v-for="item in filteredRelatedVideos" :key="item.basicMetaV3.isrc" cols="12">
+            <v-col v-if="!filteredRelatedVideos?.length" cols="12">
+              <v-alert type="info">No related videos found.</v-alert>
+            </v-col>
+
+            <v-col v-else="filteredRelatedVideos" v-for="item in filteredRelatedVideos" :key="item.basicMetaV3.isrc"
+              cols="12">
               <div class="d-none d-sm-block">
                 <VideoThumbnail :video="item" />
               </div>
