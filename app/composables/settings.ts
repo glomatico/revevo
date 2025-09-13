@@ -2,6 +2,7 @@ export const useSettings = () => {
   const defaultSettings: Settings = {
     playbackMethod: PlaybackMethod.HLS,
     enableCaptions: false,
+    hidePseudoCountryIsrc: false,
   };
   const settings = ref<Settings>(defaultSettings);
 

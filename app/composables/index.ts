@@ -174,6 +174,7 @@ export enum PlaybackMethod {
 export interface Settings {
   playbackMethod: PlaybackMethod;
   enableCaptions: boolean;
+  hidePseudoCountryIsrc: boolean;
 }
 
 export const formatDuration = (milliseconds: number): string => {
