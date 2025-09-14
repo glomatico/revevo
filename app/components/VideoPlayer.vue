@@ -4,12 +4,20 @@ const props = defineProps<{
   streamUrl?: string;
 }>();
 
+const emit = defineEmits<{
+  (e: 'ended'): void;
+}>();
+
 const {
   loadVideoPlayer,
   streamUrl,
   captionsUrl,
   htmlVideo
 } = useVideoPlayer();
+
+const onEnded = () => {
+  emit('ended');
+}
 
 watch(props, async () => {
   streamUrl.value = props.streamUrl;
@@ -19,8 +27,8 @@ watch(props, async () => {
 })
 </script>
 
-<template>
-  <video ref="htmlVideo" controls class="video-player">
+<template>>>
+  <video ref="htmlVideo" controls class="video-player" @ended="onEnded">
   </video>
 </template>
 
