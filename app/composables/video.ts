@@ -5,7 +5,7 @@ export const useVideo = () => {
   const { loadSettings, settings } = useSettings();
 
   const loadingState = ref<LoadingState>(LoadingState.IDLE);
-  const videoId = ref<string>();
+  const videoId = computed(() => useRoute().params.id as string);
   const video = ref<Video>();
   const validVideo = ref<boolean>();
   const streamUrl = ref<string>();
@@ -186,7 +186,6 @@ export const useVideo = () => {
   return {
     loadVideo,
     loadingState,
-    videoId,
     video,
     validVideo,
     streamUrl,

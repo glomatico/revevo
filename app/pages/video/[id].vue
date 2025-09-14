@@ -4,7 +4,6 @@ const route = useRoute();
 const {
   loadVideo,
   loadingState,
-  videoId,
   video,
   validVideo,
   streamUrl,
@@ -13,7 +12,6 @@ const {
 } = useVideo();
 
 onMounted(() => {
-  videoId.value = route.params.id as string;
   loadVideo();
 });
 </script>
