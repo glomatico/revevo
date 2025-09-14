@@ -162,6 +162,12 @@ export interface HomePageResponse {
   };
 };
 
+export interface PlaylistResponse {
+  data: {
+    playlists: Playlist[];
+  };
+};
+
 export interface PageMetadata {
   title: string;
   path: string;
@@ -212,4 +218,8 @@ export const isVideoValid = (video: Video | null, hidePseudoCountryIsrc: boolean
     &&
     (checkStreams ? video?.streamsV3?.some(stream => stream?.url) : true)
   );
-}
+};
+
+export const isPlaylistValid = (playlist: Playlist | null): boolean => {
+  return Boolean(playlist?.basicMeta?.title);
+};
