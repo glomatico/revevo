@@ -27,7 +27,7 @@ watch(props, async () => {
 })
 </script>
 
-<template>>>
+<template>
   <video ref="htmlVideo" controls class="video-player" @ended="onEnded">
   </video>
 </template>
