@@ -1,6 +1,6 @@
 import Hls from 'hls.js';
 
-export const useVideoPlayer = (setupWatcher?: boolean) => {
+export const useVideoPlayer = () => {
   const { loadSettings, settings } = useSettings();
 
   const htmlVideo = ref<HTMLVideoElement>();
@@ -82,14 +82,6 @@ export const useVideoPlayer = (setupWatcher?: boolean) => {
     addCaptionsEventListener();
 
   };
-
-  onMounted(async () => {
-    if (!setupWatcher) return;
-
-    watch(streamUrl, async () => {
-      loadVideoPlayer();
-    }, { immediate: true });
-  });
 
   return {
     loadVideoPlayer,
