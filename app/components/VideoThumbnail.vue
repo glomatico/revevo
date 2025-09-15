@@ -4,6 +4,7 @@ const props = defineProps<{
   vertical?: boolean;
   pushOnly?: boolean;
   url?: string;
+  disabled?: boolean;
 }>();
 
 const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
@@ -21,7 +22,7 @@ const navigateToVideo = () => {
 </script>
 
 <template>
-  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo" :href="url">
+  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo" :href="url" :disabled="props.disabled">
     <v-row no-gutters>
       <v-col :cols="colsThumbnail">
         <v-img :src="video.basicMetaV3.thumbnailUrl" :alt="`Thumbnail for ${video.basicMetaV3.title}`"
