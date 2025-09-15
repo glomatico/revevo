@@ -1,4 +1,4 @@
-export const useVideo = () => {
+export const useVideo = (setupWatch?: boolean) => {
   const route = useRoute();
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
@@ -185,6 +185,8 @@ export const useVideo = () => {
   };
 
   onMounted(async () => {
+    if (!setupWatch) return;
+
     watch(route, async () => {
       videoId.value = route.params.id as string;
       await loadVideo();
