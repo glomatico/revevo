@@ -20,12 +20,12 @@ playlist.value = props.playlist;
       <div class="d-none d-sm-block">
         <VideoThumbnail :video="video"
           :url="`/video/${video.basicMetaV3.isrc}?playlist=${props.playlist.id}&i=${index + 1}`"
-          :disabled="index + 1 === playlistIndex" />
+          :disabled="index + 1 === playlistIndex" push-only />
       </div>
       <div class="d-sm-none">
         <VideoThumbnail :video="video" vertical
           :url="`/video/${video.basicMetaV3.isrc}?playlist=${props.playlist.id}&i=${index + 1}`"
-          :disabled="index + 1 === playlistIndex" />
+          :disabled="index + 1 === playlistIndex" push-only />
       </div>
     </v-col>
     <v-col v-if="loadingStatePage === LoadingState.LOADING" cols="12" class="text-center">
