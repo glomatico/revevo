@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const props = defineProps<{
-  captionsUrl?: string;
   streamUrl?: string;
+  captionsUrl?: string;
 }>();
 
 const emit = defineEmits<{
@@ -10,25 +10,20 @@ const emit = defineEmits<{
 
 const {
   loadVideoPlayer,
+  htmlVideo,
   streamUrl,
   captionsUrl,
-  htmlVideo
 } = useVideoPlayer();
 
-const onEnded = () => {
-  emit('ended');
-}
-
-watch(props, async () => {
+onMounted(async () => {
   streamUrl.value = props.streamUrl;
   captionsUrl.value = props.captionsUrl;
-
   await loadVideoPlayer();
-})
+});
 </script>
 
 <template>
-  <video ref="htmlVideo" controls class="video-player" @ended="onEnded">
+  <video ref="htmlVideo" controls class="video-player" @ended="emit('ended')">
   </video>
 </template>
 
