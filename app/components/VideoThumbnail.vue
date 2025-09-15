@@ -1,3 +1,25 @@
+<script lang="ts" setup>
+const props = defineProps<{
+  video: Video;
+  vertical?: boolean;
+  pushOnly?: boolean;
+  url?: string;
+}>();
+
+const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
+const colsInfo = computed(() => (props.vertical ? 12 : 7));
+const cardItemClass = computed(() => (props.vertical ? 'text-center' : ''));
+const url = computed(() => props.url || `/video/${props.video.basicMetaV3.isrc}`);
+
+const navigateToVideo = () => {
+  if (props.pushOnly) {
+    window.history.pushState({}, '', url.value);
+  } else {
+    navigateTo(url.value);
+  }
+};
+</script>
+
 <template>
   <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo"
     :href="`/video/${video.basicMetaV3.isrc}`">
@@ -25,24 +47,3 @@
     </v-row>
   </v-card>
 </template>
-
-<script lang="ts" setup>
-const props = defineProps<{
-  video: Video;
-  vertical?: boolean;
-  pushOnly?: boolean;
-}>();
-
-const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
-const colsInfo = computed(() => (props.vertical ? 12 : 7));
-const cardItemClass = computed(() => (props.vertical ? 'text-center' : ''));
-
-const navigateToVideo = () => {
-  const videoPath = `/video/${props.video.basicMetaV3.isrc}`;
-  if (props.pushOnly) {
-    window.history.pushState({}, '', videoPath);
-  } else {
-    navigateTo(videoPath);
-  }
-};
-</script>
