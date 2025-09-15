@@ -19,7 +19,6 @@ const {
 
 </script>
 
-
 <template>
 
   <Head>
@@ -27,7 +26,8 @@ const {
   </Head>
 
   <ClientOnly>
-    <VideoPlayer :stream-url="streamUrl!" :captions-url="captionsUrl!" />
+    <VideoPlayer v-if="loadingStateVideo !== LoadingState.LOADED" />
+    <VideoPlayer v-else :stream-url="streamUrl!" :captions-url="captionsUrl!" />
   </ClientOnly>
 
   <v-container>
