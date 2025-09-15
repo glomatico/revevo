@@ -17,10 +17,12 @@ playlist.value = props.playlist;
   <v-row>
     <v-col v-for="(video, index) in filteredPlaylistVideos" :key="video.basicMetaV3.isrc" cols="12">
       <div class="d-none d-sm-block">
-        <VideoThumbnail :video="video" :index="index + 1" />
+        <VideoThumbnail :video="video"
+          :url="`/video/${video.basicMetaV3.isrc}?playlist=${props.playlist.id}&i=${index + 1}`" />
       </div>
       <div class="d-sm-none">
-        <VideoThumbnail :video="video" :index="index + 1" vertical />
+        <VideoThumbnail :video="video" vertical
+          :url="`/video/${video.basicMetaV3.isrc}?playlist=${props.playlist.id}&i=${index + 1}`" />
       </div>
     </v-col>
     <v-col v-if="loadingStatePage === LoadingState.LOADING" cols="12" class="text-center">
