@@ -8,7 +8,12 @@ export const usePlaylist = () => {
   const playlistId = computed(() => useRoute().params.id as string);
   const playlist = ref<Playlist>();
   const validPlaylist = ref<boolean>();
-  const filteredPlaylistVideos = ref<Video[]>();
+  const filteredPlaylistVideos = computed<Video[]>(() =>
+    playlist.value?.videos.items
+      .map(item => item.videoData)
+      .filter(video => isVideoValid(video))!
+  );
+
 
   const getPlaylists = async (
     playlistId: string,
@@ -159,12 +164,6 @@ export const usePlaylist = () => {
     return playlists;
   };
 
-  const filterPlaylistVideos = () => {
-    filteredPlaylistVideos.value = playlist.value!.videos.items
-      .map(item => item.videoData)
-      .filter(video => isVideoValid(video));
-  };
-
   const loadPlaylistPage = async () => {
     loadingStatePage.value = LoadingState.LOADING;
 
@@ -172,11 +171,9 @@ export const usePlaylist = () => {
       offset.value!++;
       const playlistsPageResponse = await getPlaylistsPage(playlistId.value, offset.value! * 32);
       if (playlist.value) {
-        // push the items that are not already in the list
         playlist.value.videos.items.push(
           ...playlistsPageResponse[0]!.videos.items
         );
-        filterPlaylistVideos();
       }
       loadingStatePage.value = LoadingState.LOADED;
     } catch (error) {
@@ -190,12 +187,9 @@ export const usePlaylist = () => {
 
     try {
       const playlistsResponse = await getPlaylists(playlistId.value);
-      playlist.value = (playlistsResponse?.length == 1 ? playlistsResponse[0] : null)!;
 
+      playlist.value = (playlistsResponse?.length == 1 ? playlistsResponse[0] : null)!;
       validPlaylist.value = isPlaylistValid(playlist.value);
-      if (validPlaylist.value) {
-        filterPlaylistVideos();
-      }
 
       loadingStateGeneral.value = LoadingState.LOADED;
       loadingStatePage.value = LoadingState.LOADED;
