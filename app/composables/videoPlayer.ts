@@ -65,30 +65,20 @@ export const useVideoPlayer = (setupWatcher?: boolean) => {
   };
 
   const attachVideo = async () => {
-    if (!streamUrl.value) {
-      deatachVideo();
-      return;
-    }
-
     if (settings.value.playbackMethod === PlaybackMethod.MP4) {
       await attachNormalVideo();
     } else {
       await attachHlsVideo();
     }
-
-    await attachCaptions();
-  };
-
-  const deatachVideo = () => {
-    htmlVideo.value!.removeAttribute('src');
   };
 
   const loadVideoPlayer = async () => {
     loadSettings();
 
     await attachVideo();
-
+    await attachCaptions();
     addCaptionsEventListener();
+
   };
 
   onMounted(async () => {
