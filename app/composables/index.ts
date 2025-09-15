@@ -112,12 +112,25 @@ export interface SearchResult {
 export interface BasicPlaylistMeta {
   title: string;
   image_url: string;
+  description: string;
+  videoCount: number;
+  curated: boolean;
 };
 
 export interface Playlist {
   id: string;
   basicMeta: BasicPlaylistMeta;
+  videos: PlaylistVideoList;
 };
+
+export interface PlaylistVideoList {
+  id: string;
+  items: PlaylistVideoListItem[];
+};
+
+export interface PlaylistVideoListItem {
+  videoData: Video;
+}
 
 export interface HomePageContainerItem {
   item: {
