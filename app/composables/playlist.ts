@@ -1,4 +1,4 @@
-export const usePlaylist = () => {
+export const usePlaylist = (setupWatcher?: boolean) => {
   const route = useRoute();
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
@@ -7,7 +7,7 @@ export const usePlaylist = () => {
   const loadingStatePage = ref<LoadingState>(LoadingState.IDLE);
   const offset = ref<number>(0);
   const playlistId = ref<string>();
-  const playlistIndex = computed(() => parseInt(useRoute().query.i as string) || 0);
+  const playlistIndex = ref<number>(parseInt(route.query.i as string) || 0);
   const playlist = ref<Playlist>();
   const validPlaylist = ref<boolean>();
   const filteredPlaylistVideos = computed<Video[]>(() =>
@@ -201,21 +201,30 @@ export const usePlaylist = () => {
     }
   };
 
-  onMounted(async () => {
+  onMounted(() => {
+    if (!setupWatcher) return;
+
     watch(route, async () => {
-      playlistId.value = route.query.playlist as string || route.params.id as string;
-      await loadPlaylist();
+      const routePlaylistId = route.query.playlist as string || route.params.id as string;
+      console.log(routePlaylistId, playlistId.value);
+
+      if (routePlaylistId != playlistId.value) {
+        playlistId.value = routePlaylistId;
+        await loadPlaylist();
+      }
+
     }, { immediate: true });
   });
 
 
   return {
-    loadPlaylist,
+    setupWatcher,
     loadPlaylistPage,
     loadingStateGeneral,
     loadingStatePage,
     playlistId,
     playlistIndex,
+    offset,
     playlist,
     validPlaylist,
     filteredPlaylistVideos,
