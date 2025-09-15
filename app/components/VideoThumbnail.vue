@@ -14,7 +14,7 @@ const emit = defineEmits<{
 const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
 const colsInfo = computed(() => (props.vertical ? 12 : 7));
 const cardItemClass = computed(() => (props.vertical ? 'text-center' : ''));
-const url = computed(() => props.url || `/video/${props.video.basicMetaV3.isrc}`);
+const url = computed(() => props.url || `/video/?videoId=${props.video.basicMetaV3.isrc}`);
 
 const navigateToVideo = () => {
   if (props.pushOnly) {
