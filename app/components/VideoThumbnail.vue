@@ -1,25 +1,27 @@
 <script lang="ts" setup>
+const router = useRouter();
+
 const props = defineProps<{
   video: Video;
   vertical?: boolean;
-  pushOnly?: boolean;
-  url?: string;
   disabled?: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'click'): void;
+  playlistId?: string;
+  playlistIndex?: number;
 }>();
 
 const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
 const colsInfo = computed(() => (props.vertical ? 12 : 7));
 const cardItemClass = computed(() => (props.vertical ? 'text-center' : ''));
-const url = computed(() => props.url || `/video/?videoId=${props.video.basicMetaV3.isrc}`);
+const url = computed(() => (props.playlistId
+  ? `/video/?videoId=${props.video.basicMetaV3.isrc}&playlistId=${props.playlistId}&i=${props.playlistIndex || 0}`
+  : `/video/?videoId=${props.video.basicMetaV3.isrc}`));
 
-const navigateToVideo = () => {
-  if (props.pushOnly) {
-    window.history.pushState({}, '', url.value);
-    emit('click');
+const navigateToVideo = async () => {
+  if (props.playlistId) {
+    const query = router.resolve(url.value).query;
+    await router.push({
+      query,
+    });
   } else {
     navigateTo(url.value);
   }
