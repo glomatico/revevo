@@ -65,6 +65,8 @@ export const useVideoPlayer = (setupWatcher?: boolean) => {
   };
 
   const attachVideo = async () => {
+    if (!streamUrl.value) return;
+
     if (settings.value.playbackMethod === PlaybackMethod.MP4) {
       await attachNormalVideo();
     } else {
