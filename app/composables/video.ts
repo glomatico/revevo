@@ -201,6 +201,7 @@ export const useVideo = (setupWatch?: boolean) => {
     loadVideo,
     loadingState,
     video,
+    videoId,
     validVideo,
     streamUrl,
     captionsUrl,
