@@ -1,5 +1,6 @@
 <template>
-  <v-card class="mx-auto" :link="true" hover :to="`/video/${video.basicMetaV3.isrc}`">
+  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo"
+    :href="`/video/${video.basicMetaV3.isrc}`">
     <v-row no-gutters>
       <v-col :cols="colsThumbnail">
         <v-img :src="video.basicMetaV3.thumbnailUrl" :alt="`Thumbnail for ${video.basicMetaV3.title}`"
@@ -29,9 +30,19 @@
 const props = defineProps<{
   video: Video;
   vertical?: boolean;
+  pushOnly?: boolean;
 }>();
 
 const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
 const colsInfo = computed(() => (props.vertical ? 12 : 7));
 const cardItemClass = computed(() => (props.vertical ? 'text-center' : ''));
+
+const navigateToVideo = () => {
+  const videoPath = `/video/${props.video.basicMetaV3.isrc}`;
+  if (props.pushOnly) {
+    window.history.pushState({}, '', videoPath);
+  } else {
+    navigateTo(videoPath);
+  }
+};
 </script>
