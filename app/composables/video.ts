@@ -188,7 +188,12 @@ export const useVideo = (setupWatch?: boolean) => {
     if (!setupWatch) return;
 
     watch(route, async () => {
-      const routeVideoId = route.params.id as string;
+      const routeVideoId = route.query.videoId as string
+
+      if (!routeVideoId) {
+        navigateTo('/');
+        return;
+      }
 
       if (routeVideoId !== videoId.value) {
         videoId.value = routeVideoId;
