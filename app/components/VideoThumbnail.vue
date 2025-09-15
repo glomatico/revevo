@@ -21,8 +21,7 @@ const navigateToVideo = () => {
 </script>
 
 <template>
-  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo"
-    :href="`/video/${video.basicMetaV3.isrc}`">
+  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo" :href="url">
     <v-row no-gutters>
       <v-col :cols="colsThumbnail">
         <v-img :src="video.basicMetaV3.thumbnailUrl" :alt="`Thumbnail for ${video.basicMetaV3.title}`"
