@@ -1,11 +1,12 @@
 export const useVideo = () => {
+  const route = useRoute();
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
 
   const { loadSettings, settings } = useSettings();
 
   const loadingState = ref<LoadingState>(LoadingState.IDLE);
-  const videoId = computed(() => useRoute().params.id as string);
+  const videoId = ref<string>();
   const video = ref<Video>();
   const validVideo = ref<boolean>();
   const streamUrl = ref<string>();
@@ -182,6 +183,13 @@ export const useVideo = () => {
 
     loadingState.value = LoadingState.LOADED;
   };
+
+  onMounted(async () => {
+    watch(route, async () => {
+      videoId.value = route.params.id as string;
+      await loadVideo();
+    }, { immediate: true });
+  });
 
   return {
     loadVideo,
