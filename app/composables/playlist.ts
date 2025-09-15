@@ -5,7 +5,7 @@ export const usePlaylist = () => {
   const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
   const loadingStatePage = ref<LoadingState>(LoadingState.IDLE);
   const offset = ref<number>(0);
-  const playlistId = computed(() => useRoute().params.id as string);
+  const playlistId = computed(() => useRoute().query.playlist as string || useRoute().params.id as string);
   const playlistIndex = computed(() => parseInt(useRoute().query.i as string) || 0);
   const playlist = ref<Playlist>();
   const validPlaylist = ref<boolean>();
@@ -205,6 +205,7 @@ export const usePlaylist = () => {
     loadPlaylistPage,
     loadingStateGeneral,
     loadingStatePage,
+    playlistId,
     playlistIndex,
     playlist,
     validPlaylist,
