@@ -7,6 +7,10 @@ const props = defineProps<{
   disabled?: boolean;
 }>();
 
+const emit = defineEmits<{
+  (e: 'click'): void;
+}>();
+
 const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
 const colsInfo = computed(() => (props.vertical ? 12 : 7));
 const cardItemClass = computed(() => (props.vertical ? 'text-center' : ''));
@@ -15,9 +19,11 @@ const url = computed(() => props.url || `/video/${props.video.basicMetaV3.isrc}`
 const navigateToVideo = () => {
   if (props.pushOnly) {
     window.history.pushState({}, '', url.value);
+    emit('click');
   } else {
     navigateTo(url.value);
   }
+
 };
 </script>
 
