@@ -188,8 +188,12 @@ export const useVideo = (setupWatch?: boolean) => {
     if (!setupWatch) return;
 
     watch(route, async () => {
-      videoId.value = route.params.id as string;
-      await loadVideo();
+      const routeVideoId = route.params.id as string;
+
+      if (routeVideoId !== videoId.value) {
+        videoId.value = routeVideoId;
+        await loadVideo();
+      };
     }, { immediate: true });
   });
 
