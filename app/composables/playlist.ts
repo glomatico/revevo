@@ -1,11 +1,12 @@
 export const usePlaylist = () => {
+  const route = useRoute();
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
 
   const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
   const loadingStatePage = ref<LoadingState>(LoadingState.IDLE);
   const offset = ref<number>(0);
-  const playlistId = computed(() => useRoute().query.playlist as string || useRoute().params.id as string);
+  const playlistId = ref<string>();
   const playlistIndex = computed(() => parseInt(useRoute().query.i as string) || 0);
   const playlist = ref<Playlist>();
   const validPlaylist = ref<boolean>();
@@ -170,7 +171,7 @@ export const usePlaylist = () => {
 
     try {
       offset.value!++;
-      const playlistsPageResponse = await getPlaylistsPage(playlistId.value, offset.value! * 32);
+      const playlistsPageResponse = await getPlaylistsPage(playlistId.value!, offset.value! * 32);
       if (playlist.value) {
         playlist.value.videos.items.push(
           ...playlistsPageResponse[0]!.videos.items
@@ -187,7 +188,7 @@ export const usePlaylist = () => {
     loadingStateGeneral.value = LoadingState.LOADING;
 
     try {
-      const playlistsResponse = await getPlaylists(playlistId.value);
+      const playlistsResponse = await getPlaylists(playlistId.value!);
 
       playlist.value = (playlistsResponse?.length == 1 ? playlistsResponse[0] : null)!;
       validPlaylist.value = isPlaylistValid(playlist.value);
@@ -199,6 +200,14 @@ export const usePlaylist = () => {
       loadingStateGeneral.value = LoadingState.ERROR;
     }
   };
+
+  onMounted(async () => {
+    watch(route, async () => {
+      playlistId.value = route.query.playlist as string || route.params.id as string;
+      await loadPlaylist();
+    }, { immediate: true });
+  });
+
 
   return {
     loadPlaylist,
