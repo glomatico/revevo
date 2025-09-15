@@ -1,11 +1,11 @@
 import Hls from 'hls.js';
 
-export const useVideoPlayer = () => {
+export const useVideoPlayer = (setupWatcher?: boolean) => {
   const { loadSettings, settings } = useSettings();
 
   const htmlVideo = ref<HTMLVideoElement>();
-  const streamUrl = ref<string | null>();
-  const captionsUrl = ref<string | null>();
+  const streamUrl = ref<string>();
+  const captionsUrl = ref<string>();
 
   const addCaptionsEventListener = () => {
     if (!settings) return;
@@ -65,36 +65,44 @@ export const useVideoPlayer = () => {
   };
 
   const attachVideo = async () => {
-    if (!streamUrl.value) return;
+    if (!streamUrl.value) {
+      deatachVideo();
+      return;
+    }
 
     if (settings.value.playbackMethod === PlaybackMethod.MP4) {
       await attachNormalVideo();
     } else {
       await attachHlsVideo();
     }
+
+    await attachCaptions();
   };
 
   const deatachVideo = () => {
     htmlVideo.value!.removeAttribute('src');
   };
 
-
-  const loadVideoPlayer = async (
-  ) => {
+  const loadVideoPlayer = async () => {
     loadSettings();
 
-    deatachVideo();
-
     await attachVideo();
-    await attachCaptions();
 
     addCaptionsEventListener();
   };
 
+  onMounted(async () => {
+    if (!setupWatcher) return;
+
+    watch(streamUrl, async () => {
+      loadVideoPlayer();
+    }, { immediate: true });
+  });
+
   return {
     loadVideoPlayer,
+    htmlVideo,
     streamUrl,
     captionsUrl,
-    htmlVideo,
   };
 }
