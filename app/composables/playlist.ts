@@ -7,7 +7,9 @@ export const usePlaylist = (setupWatcher?: boolean) => {
   const loadingStatePage = ref<LoadingState>(LoadingState.IDLE);
   const offset = ref<number>(0);
   const playlistId = ref<string>();
-  const playlistIndex = ref<number>(parseInt(route.query.i as string) || 0);
+  const playlistIndex = computed<number>(() =>
+    parseInt(route.query.i as string || '0')
+  );
   const playlist = ref<Playlist>();
   const validPlaylist = ref<boolean>();
   const filteredPlaylistVideos = computed<Video[]>(() =>
@@ -204,22 +206,16 @@ export const usePlaylist = (setupWatcher?: boolean) => {
   onMounted(() => {
     if (!setupWatcher) return;
 
-    watch(route, async () => {
-      const routePlaylistId = route.query.playlist as string || route.params.id as string;
-      console.log(routePlaylistId, playlistId.value);
-
-      if (routePlaylistId != playlistId.value) {
-        playlistId.value = routePlaylistId;
-        await loadPlaylist();
-      }
-
+    watch(() => route.query.playlistId, (newPlaylistId) => {
+      playlistId.value = newPlaylistId as string;
+      loadPlaylist();
     }, { immediate: true });
   });
 
 
   return {
-    setupWatcher,
     loadPlaylistPage,
+    setupWatcher,
     loadingStateGeneral,
     loadingStatePage,
     playlistId,
