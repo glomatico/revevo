@@ -3,14 +3,22 @@ const props = defineProps<{
   playlist: Playlist;
 }>();
 
+const route = useRoute();
+
 const {
-  loadPlaylistPage,
-  filteredPlaylistVideos,
-  loadingStatePage,
-  playlistIndex,
+  loadPlaylistVideos,
+  page,
+  playlistId,
   playlist,
+  filteredPlaylistVideos,
+  loadingStateVideos,
+  isFullyLoaded,
 } = usePlaylist();
 
+const playlistIndex = computed<number>(() => parseInt(route.query.i as string) || 0);
+
+page.value = 2;
+playlistId.value = props.playlist.id;
 playlist.value = props.playlist;
 </script>
 
@@ -18,24 +26,26 @@ playlist.value = props.playlist;
   <v-row>
     <v-col v-for="(video, index) in filteredPlaylistVideos" :key="video.basicMetaV3.isrc" cols="12">
       <div class="d-none d-sm-block">
-        <VideoThumbnail :video="video"
-          :url="`/video/${video.basicMetaV3.isrc}?playlist=${props.playlist.id}&i=${index + 1}`"
-          :disabled="index + 1 === playlistIndex" push-only />
+        <VideoThumbnail :video="video" :playlist-id="playlist!.id" :playlist-index="index + 1"
+          :tonal="playlistIndex === index + 1" />
       </div>
+
       <div class="d-sm-none">
-        <VideoThumbnail :video="video" vertical
-          :url="`/video/${video.basicMetaV3.isrc}?playlist=${props.playlist.id}&i=${index + 1}`"
-          :disabled="index + 1 === playlistIndex" push-only />
+        <VideoThumbnail :video="video" :playlist-id="playlist!.id" :playlist-index="index + 1"
+          :tonal="playlistIndex === index + 1" vertical />
       </div>
     </v-col>
-    <v-col v-if="loadingStatePage === LoadingState.LOADING" cols="12" class="text-center">
+
+    <v-col v-if="loadingStateVideos === LoadingState.LOADING" cols="12" class="text-center">
       <LoadingSpinner />
     </v-col>
-    <v-col v-else-if="loadingStatePage === LoadingState.ERROR" cols="12">
+
+    <v-col v-else-if="loadingStateVideos === LoadingState.ERROR" cols="12">
       <v-alert type="error">Failed to load more videos.</v-alert>
     </v-col>
-    <v-col v-else-if="playlist!.videos.items.length! !== playlist!.basicMeta.videoCount!" cols="12" class="text-center">
-      <v-btn @click="loadPlaylistPage" block variant="text">
+
+    <v-col v-else-if="!isFullyLoaded" cols="12" class="text-center">
+      <v-btn @click="loadPlaylistVideos" block variant="text">
         Load More
       </v-btn>
     </v-col>
