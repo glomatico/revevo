@@ -1,4 +1,4 @@
-export const usePlaylist = (setupWatcher?: boolean) => {
+export const usePlaylist = (loadImmediately?: boolean) => {
   const route = useRoute();
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
@@ -6,15 +6,13 @@ export const usePlaylist = (setupWatcher?: boolean) => {
   const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
   const loadingStatePage = ref<LoadingState>(LoadingState.IDLE);
   const offset = ref<number>(0);
-  const playlistId = ref<string>();
-  const playlistIndex = computed<number>(() =>
-    parseInt(route.query.i as string || '0')
-  );
+  const playlistId = ref<string>()
+  const playlistIndex = ref<number>();
   const playlist = ref<Playlist>();
   const validPlaylist = ref<boolean>();
   const filteredPlaylistVideos = computed<Video[]>(() =>
-    playlist.value?.videos.items
-      .map(item => item.videoData)
+    playlist.value?.videos?.items
+      ?.map(item => item.videoData)
       .filter(video => isVideoValid(video))!
   );
 
@@ -92,7 +90,7 @@ export const usePlaylist = (setupWatcher?: boolean) => {
     const playlists: Playlist[] = playlistResponse?.data?.playlists;
 
     if (!playlists) {
-      throw new Error(`Playlist with ID ${playlistId} not found.`);
+      throw new Error(`Error when fetching playlists: ${response.status} ${response.statusText}`);
     }
 
     return playlists;
@@ -155,7 +153,7 @@ export const usePlaylist = (setupWatcher?: boolean) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Error when fetching playlis page: ${response.status} ${response.statusText}`);
+      throw new Error(`Error when fetching playlists page: ${response.status} ${response.statusText}`);
     }
 
     const playlistResponse: PlaylistResponse = await response.json();
@@ -204,23 +202,26 @@ export const usePlaylist = (setupWatcher?: boolean) => {
   };
 
   onMounted(() => {
-    if (!setupWatcher) return;
+    if (!loadImmediately) return;
 
     watch(() => route.query.playlistId, (newPlaylistId) => {
       playlistId.value = newPlaylistId as string;
       loadPlaylist();
     }, { immediate: true });
+
+    watch(() => route.query.playlistIndex, (newPlaylistIndex) => {
+      playlistIndex.value = parseInt(newPlaylistIndex as string || '0');
+    }, { immediate: true });
   });
 
-
   return {
+    loadPlaylist,
     loadPlaylistPage,
-    setupWatcher,
     loadingStateGeneral,
     loadingStatePage,
+    offset,
     playlistId,
     playlistIndex,
-    offset,
     playlist,
     validPlaylist,
     filteredPlaylistVideos,
