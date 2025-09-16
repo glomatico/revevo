@@ -10,7 +10,7 @@ const {
   filteredPlaylistVideos,
 } = usePlaylist();
 
-playlistId.value = route.query.playlistId as string;
+playlistId.value = route.params.id as string;
 
 onMounted(async () => {
   loadPlaylist();
