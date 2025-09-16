@@ -55,6 +55,7 @@ onMounted(async () => {
     () => route.query.v,
     async (newVideoId) => {
       videoId.value = newVideoId as string;
+      window.scrollTo(0, 0);
       await loadVideo();
     },
     { immediate: true }
