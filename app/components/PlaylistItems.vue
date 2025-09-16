@@ -26,12 +26,12 @@ playlist.value = props.playlist;
   <v-row>
     <v-col v-for="(video, index) in filteredPlaylistVideos" :key="video.basicMetaV3.isrc" cols="12">
       <div class="d-none d-sm-block">
-        <VideoThumbnail :video="video" :playlist-id="playlist!.id" :playlist-index="index + 1"
+        <VideoThumbnail :video="video" :playlist-id="playlist.id" :playlist-index="index + 1"
           :tonal="playlistIndex === index + 1" />
       </div>
 
       <div class="d-sm-none">
-        <VideoThumbnail :video="video" :playlist-id="playlist!.id" :playlist-index="index + 1"
+        <VideoThumbnail :video="video" :playlist-id="playlist.id" :playlist-index="index + 1"
           :tonal="playlistIndex === index + 1" vertical />
       </div>
     </v-col>

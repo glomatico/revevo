@@ -82,7 +82,7 @@ onMounted(async () => {
 
   <ClientOnly>
     <VideoPlayer v-if="loadingStateVideo !== LoadingState.LOADED" />
-    <VideoPlayer v-else :stream-url="streamUrl!" :captions-url="captionsUrl!" @ended="onVideoEnded" />
+    <VideoPlayer v-else :stream-url="streamUrl" :captions-url="captionsUrl" @ended="onVideoEnded" />
   </ClientOnly>
 
   <v-container>
@@ -98,7 +98,7 @@ onMounted(async () => {
 
         <v-alert v-else-if="!validVideo" type="warning">Video not found or is unavailable.</v-alert>
 
-        <VideoInfo v-else :video="video!" />
+        <VideoInfo v-else :video="video" />
       </v-col>
 
       <v-col cols="12" md="4">
@@ -121,7 +121,7 @@ onMounted(async () => {
 
             <v-alert v-else-if="!validPlaylist" type="warning">Playlist not found or is unavailable.</v-alert>
 
-            <PlaylistItems v-else :playlist="playlist!" />
+            <PlaylistItems v-else :playlist="playlist" />
           </v-col>
         </v-row>
 
