@@ -1,14 +1,19 @@
 <script lang="ts" setup>
+const route = useRoute();
+
 const {
   loadPlaylist,
   loadingStateGeneral,
+  playlistId,
   playlist,
   validPlaylist,
   filteredPlaylistVideos,
 } = usePlaylist();
 
+playlistId.value = route.query.playlistId as string;
+
 onMounted(async () => {
-  await loadPlaylist();
+  loadPlaylist();
 });
 </script>
 
@@ -27,24 +32,21 @@ onMounted(async () => {
       </v-col>
 
       <v-col v-else-if="loadingStateGeneral === LoadingState.ERROR" cols="12">
-        <v-alert type="error">Failed to load playlist information.</v-alert>
+        <v-alert type="error">Failed to load playlist.</v-alert>
       </v-col>
 
       <template v-else>
-        <v-col cols="12">
-          <v-alert v-if="!validPlaylist" type="warning">Playlist not found or is unavailable.</v-alert>
-        </v-col>
-
-        <v-col v-if="!filteredPlaylistVideos?.length" cols="12">
-          <v-alert type="info">No videos available in this playlist.</v-alert>
+        <v-col v-if="!validPlaylist" cols="12">
+          <v-alert type="warning">Playlist not found or is unavailable.</v-alert>
         </v-col>
 
         <template v-else>
           <v-col cols="12" sm="5">
-            <PlaylistInfo :playlist="playlist!" />
+            <PlaylistInfo :playlist="playlist" />
           </v-col>
           <v-col cols="12" sm="7">
-            <PlaylistItems :playlist="playlist!" />
+            <v-alert v-if="!filteredPlaylistVideos?.length" type="info">No videos available in this playlist.</v-alert>
+            <PlaylistItems v-else :playlist="playlist!" />
           </v-col>
         </template>
       </template>
