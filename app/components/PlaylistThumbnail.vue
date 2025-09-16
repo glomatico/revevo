@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-  <v-card :link="true" hover :to="`/playlist/${playlist.id}`" :width="200" height="180">
+  <v-card :link="true" hover :to="`/playlist?playlistId=${playlist.id}`" :width="200" height="180">
     <v-img :src="playlist.basicMeta.image_url" :alt="`Thumbnail for ${playlist.basicMeta.title}`" cover
       :aspect-ratio="16 / 9" />
     <v-card-item>
