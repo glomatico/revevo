@@ -1,18 +1,20 @@
-export const useVideo = (setupWatch?: boolean) => {
-  const route = useRoute();
+export const useVideo = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
 
   const { loadSettings, settings } = useSettings();
 
   const loadingState = ref<LoadingState>(LoadingState.IDLE);
-  const videoId = ref<string>();
-  const video = ref<Video>();
-  const validVideo = ref<boolean>();
-  const streamUrl = ref<string>();
-  const captionsUrl = ref<string>();
-  const filteredRelatedVideos = ref<Video[]>();
-
+  const videoId = ref<string>('');
+  const video = ref<Video>({} as Video);
+  const validVideo = computed<boolean>(() => isVideoValid(video.value));
+  const streamUrl = ref<string>('');
+  const captionsUrl = computed<string>(() => `/api/captions/${videoId.value}`);
+  const filteredRelatedVideos = computed<Video[]>(
+    () => video.value?.relatedVideos?.data?.filter(
+      v => isVideoValid(v, settings.value.hidePseudoCountryIsrc)
+    )
+  );
 
   const getVideos = async (
     videoIds: string[] | string,
@@ -114,7 +116,7 @@ export const useVideo = (setupWatch?: boolean) => {
     return videos;
   };
 
-  const getBestMp4Stream = (): string | null => {
+  const getBestMp4Stream = (): string => {
     const streams = video.value!.streamsV3!;
 
     const qualityPriority = ['high', 'medium', 'low'];
@@ -128,36 +130,20 @@ export const useVideo = (setupWatch?: boolean) => {
       if (stream) return stream.url;
     }
 
-    return null;
+    throw new Error('No MP4 stream available');
   };
 
   const loadStreamUrl = () => {
-    if (settings.value.playbackMethod === PlaybackMethod.HLS) {
-      streamUrl.value = video.value!.streamsV3.find(s => s.format === 'hls')!.url;
-    }
     if (settings.value.playbackMethod === PlaybackMethod.MP4) {
       streamUrl.value = getBestMp4Stream()!;
+    }
+    else {
+      streamUrl.value = video.value!.streamsV3.find(s => s.format === 'hls')!.url;
     }
 
     if (streamUrl.value) {
       streamUrl.value = streamUrl.value.replace('http://', 'https://');
     }
-  };
-
-  const loadCaptionsUrl = () => {
-    captionsUrl.value = `/api/captions/${videoId.value!}`;
-  };
-
-  const filterRelatedVideos = () => {
-    if (!video.value?.relatedVideos?.data) return;
-
-    filteredRelatedVideos.value = video.value.relatedVideos.data;
-    filteredRelatedVideos.value = filteredRelatedVideos.value.filter(
-      v =>
-        isVideoValid(v, settings.value.hidePseudoCountryIsrc)
-        &&
-        (v?.basicMetaV3?.isrc !== video.value?.basicMetaV3?.isrc)
-    );
   };
 
   const loadVideo = async () => {
@@ -168,45 +154,23 @@ export const useVideo = (setupWatch?: boolean) => {
     try {
       const videosResponse = await getVideos(videoId.value!);
 
-      video.value = (videosResponse.data?.length == 1 ? videosResponse.data[0] : null)!;
-      validVideo.value = isVideoValid(video.value, false, true);
-      filterRelatedVideos();
-
+      video.value = videosResponse.data[0]!;
       if (validVideo.value) {
         loadStreamUrl();
-        loadCaptionsUrl();
       }
+
+      loadingState.value = LoadingState.LOADED;
     } catch (error) {
       console.error(error);
       loadingState.value = LoadingState.ERROR;
     }
-
-    loadingState.value = LoadingState.LOADED;
   };
-
-  onMounted(async () => {
-    if (!setupWatch) return;
-
-    watch(route, async () => {
-      const routeVideoId = route.query.videoId as string
-
-      if (!routeVideoId) {
-        navigateTo('/');
-        return;
-      }
-
-      if (routeVideoId !== videoId.value) {
-        videoId.value = routeVideoId;
-        await loadVideo();
-      };
-    }, { immediate: true });
-  });
 
   return {
     loadVideo,
     loadingState,
-    video,
     videoId,
+    video,
     validVideo,
     streamUrl,
     captionsUrl,
