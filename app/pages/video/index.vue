@@ -52,7 +52,7 @@ onMounted(async () => {
   }
 
   watch(
-    () => route.query.videoId,
+    () => route.query.v,
     async (newVideoId) => {
       videoId.value = newVideoId as string;
       await loadVideo();
@@ -61,7 +61,7 @@ onMounted(async () => {
   );
 
   watch(
-    () => route.query.playlistId,
+    () => route.query.p,
     async (newPlaylistId) => {
       playlistId.value = newPlaylistId as string;
       if (playlistId.value) {

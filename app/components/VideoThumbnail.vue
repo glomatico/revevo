@@ -15,8 +15,8 @@ const colsInfo = ref<number>(props.vertical ? 12 : 7);
 const cardItemClass = ref<string>(props.vertical ? 'text-center' : '');
 const cardVariant = computed(() => (props.tonal ? 'tonal' : 'elevated'));
 const url = ref<string>(props.playlistId
-  ? `/video?videoId=${props.video.basicMetaV3.isrc}&playlistId=${props.playlistId}&i=${props.playlistIndex || 0}`
-  : `/video?videoId=${props.video.basicMetaV3.isrc}`);
+  ? `/video?v=${props.video.basicMetaV3.isrc}&p=${props.playlistId}&i=${props.playlistIndex || 0}`
+  : `/video?v=${props.video.basicMetaV3.isrc}`);
 
 const navigateToVideo = async () => {
   if (props.playlistId) {
