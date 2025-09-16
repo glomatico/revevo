@@ -1,19 +1,22 @@
-export const usePlaylist = (loadImmediately?: boolean) => {
-  const route = useRoute();
+export const usePlaylist = () => {
   const config = useRuntimeConfig();
   const graphqlApiUrl = config.public.graphqlApiUrl;
 
-  const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
-  const loadingStatePage = ref<LoadingState>(LoadingState.IDLE);
-  const offset = ref<number>(0);
-  const playlistId = ref<string>()
-  const playlistIndex = ref<number>();
-  const playlist = ref<Playlist>();
-  const validPlaylist = ref<boolean>();
+  const loadingStateGeneral = ref(LoadingState.IDLE);
+  const loadingStateVideos = ref(LoadingState.IDLE);
+  const playlistId = ref<string>('');
+  const page = ref(1);
+  const offset = computed(() => 32 * (page.value - 1));
+  const playlist = ref<Playlist>({} as Playlist);
+  const validPlaylist = computed<boolean>(() => isPlaylistValid(playlist.value));
   const filteredPlaylistVideos = computed<Video[]>(() =>
     playlist.value?.videos?.items
       ?.map(item => item.videoData)
-      .filter(video => isVideoValid(video))!
+      .filter(video => isVideoValid(video))
+  );
+  const isFullyLoaded = computed(() =>
+    playlist.value?.videos?.items?.length >=
+    playlist.value?.basicMeta?.videoCount
   );
 
 
@@ -82,10 +85,6 @@ export const usePlaylist = (loadImmediately?: boolean) => {
       body: JSON.stringify({ query, variables }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Error when fetching playlist: ${response.status} ${response.statusText}`);
-    }
-
     const playlistResponse: PlaylistResponse = await response.json();
     const playlists: Playlist[] = playlistResponse?.data?.playlists;
 
@@ -96,7 +95,7 @@ export const usePlaylist = (loadImmediately?: boolean) => {
     return playlists;
   };
 
-  const getPlaylistsPage = async (
+  const getPlaylistsVideos = async (
     playlistId: string,
     offset: number = 0,
     limit: number = 32,
@@ -152,35 +151,31 @@ export const usePlaylist = (loadImmediately?: boolean) => {
       body: JSON.stringify({ query, variables }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Error when fetching playlists page: ${response.status} ${response.statusText}`);
-    }
-
     const playlistResponse: PlaylistResponse = await response.json();
     const playlists: Playlist[] = playlistResponse?.data?.playlists;
 
     if (!playlists) {
-      throw new Error(`Playlist with ID ${playlistId} not found.`);
+      throw new Error(`Error when fetching playlists videos: ${response.status} ${response.statusText}`);
     }
 
     return playlists;
   };
 
-  const loadPlaylistPage = async () => {
-    loadingStatePage.value = LoadingState.LOADING;
+  const loadPlaylistVideos = async () => {
+    if (isFullyLoaded.value) return;
+
+    loadingStateVideos.value = LoadingState.LOADING;
 
     try {
-      offset.value!++;
-      const playlistsPageResponse = await getPlaylistsPage(playlistId.value!, offset.value! * 32);
-      if (playlist.value) {
-        playlist.value.videos.items.push(
-          ...playlistsPageResponse[0]!.videos.items
-        );
-      }
-      loadingStatePage.value = LoadingState.LOADED;
+      const fetchedPlaylistsVideos = await getPlaylistsVideos(playlistId.value!, offset.value);
+      playlist.value.videos.items.push(
+        ...fetchedPlaylistsVideos[0]!.videos.items
+      );
+      page.value++;
+      loadingStateVideos.value = LoadingState.LOADED;
     } catch (error) {
       console.error(error);
-      loadingStatePage.value = LoadingState.ERROR;
+      loadingStateVideos.value = LoadingState.ERROR;
     }
   };
 
@@ -188,42 +183,29 @@ export const usePlaylist = (loadImmediately?: boolean) => {
     loadingStateGeneral.value = LoadingState.LOADING;
 
     try {
-      const playlistsResponse = await getPlaylists(playlistId.value!);
+      const fetchedPlaylists = await getPlaylists(playlistId.value)
 
-      playlist.value = (playlistsResponse?.length == 1 ? playlistsResponse[0] : null)!;
-      validPlaylist.value = isPlaylistValid(playlist.value);
+      playlist.value = fetchedPlaylists[0]!;
+      page.value++;
 
       loadingStateGeneral.value = LoadingState.LOADED;
-      loadingStatePage.value = LoadingState.LOADED;
+      loadingStateVideos.value = LoadingState.LOADED;
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
     }
   };
 
-  onMounted(() => {
-    if (!loadImmediately) return;
-
-    watch(() => route.query.playlistId, (newPlaylistId) => {
-      playlistId.value = newPlaylistId as string;
-      loadPlaylist();
-    }, { immediate: true });
-
-    watch(() => route.query.playlistIndex, (newPlaylistIndex) => {
-      playlistIndex.value = parseInt(newPlaylistIndex as string || '0');
-    }, { immediate: true });
-  });
-
   return {
     loadPlaylist,
-    loadPlaylistPage,
+    loadPlaylistVideos,
     loadingStateGeneral,
-    loadingStatePage,
-    offset,
+    loadingStateVideos,
     playlistId,
-    playlistIndex,
+    page,
     playlist,
     validPlaylist,
     filteredPlaylistVideos,
+    isFullyLoaded,
   };
 }
