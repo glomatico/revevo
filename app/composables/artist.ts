@@ -182,8 +182,8 @@ export const useArtist = () => {
     try {
       const fetchedArtistVideos = await getArtistsVideos(artistId.value!, page.value);
 
-      artist.value.videoData.videos.data.push(
-        ...fetchedArtistVideos[0]!.videoData.videos.data
+      artist.value.videoData.videos.data = (
+        fetchedArtistVideos[0]!.videoData.videos.data
       );
       loadingStateVideos.value = LoadingState.LOADED;
     } catch (error) {
