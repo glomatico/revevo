@@ -1,5 +1,9 @@
 <script lang="ts" setup>
+const route = useRoute();
+const router = useRouter();
+
 const {
+  loadVideo,
   loadingState: loadingStateVideo,
   videoId,
   video,
@@ -7,15 +11,66 @@ const {
   streamUrl,
   captionsUrl,
   filteredRelatedVideos,
-} = useVideo(true);
+} = useVideo();
 
 const {
+  loadPlaylist,
+  loadPlaylistVideos,
   loadingStateGeneral: loadingStatePlaylist,
   playlist,
   playlistId,
   validPlaylist,
   filteredPlaylistVideos,
-} = usePlaylist(true);
+  isFullyLoaded,
+} = usePlaylist();
+
+const onVideoEnded = () => {
+  if (!validPlaylist.value) return;
+
+  const currentIndex = parseInt(route.query.i as string) || 1;
+  if (currentIndex >= filteredPlaylistVideos.value.length && !isFullyLoaded.value) {
+    loadPlaylistVideos();
+  }
+
+  const nextVideo = filteredPlaylistVideos.value[currentIndex];
+  if (nextVideo) {
+    router.push(
+      {
+        query: {
+          videoId: nextVideo.basicMetaV3.isrc,
+          playlistId: playlistId.value,
+          i: (currentIndex + 1).toString(),
+        }
+      }
+    );
+  }
+};
+
+onMounted(async () => {
+  if (playlistId.value) {
+    await loadPlaylist();
+  }
+
+  watch(
+    () => route.query.videoId,
+    async (newVideoId) => {
+      videoId.value = newVideoId as string;
+      await loadVideo();
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => route.query.playlistId,
+    async (newPlaylistId) => {
+      playlistId.value = newPlaylistId as string;
+      if (playlistId.value) {
+        await loadPlaylist();
+      }
+    },
+    { immediate: true }
+  );
+});
 
 </script>
 
@@ -27,7 +82,7 @@ const {
 
   <ClientOnly>
     <VideoPlayer v-if="loadingStateVideo !== LoadingState.LOADED" />
-    <VideoPlayer v-else :stream-url="streamUrl!" :captions-url="captionsUrl!" />
+    <VideoPlayer v-else :stream-url="streamUrl!" :captions-url="captionsUrl!" @ended="onVideoEnded" />
   </ClientOnly>
 
   <v-container>
@@ -37,8 +92,9 @@ const {
 
         <LoadingSpinner v-else-if="loadingStateVideo === LoadingState.LOADING" />
 
-        <v-alert v-else-if="loadingStateVideo === LoadingState.ERROR" type="error">Failed to load video
-          information.</v-alert>
+        <v-alert v-else-if="loadingStateVideo === LoadingState.ERROR" type="error">
+          Failed to load video.
+        </v-alert>
 
         <v-alert v-else-if="!validVideo" type="warning">Video not found or is unavailable.</v-alert>
 
@@ -56,10 +112,12 @@ const {
           <v-col cols="12">
             <LoadingSpinner v-if="loadingStatePlaylist === LoadingState.LOADING" />
 
-            <v-alert v-else-if="loadingStatePlaylist === LoadingState.ERROR" type="error">Failed to load playlist
-              information.</v-alert>
+            <v-alert v-else-if="loadingStatePlaylist === LoadingState.ERROR" type="error">
+              Failed to load playlist.
+            </v-alert>
 
-            <v-alert v-else-if="!filteredPlaylistVideos?.length" type="info">No videos found in this playlist.</v-alert>
+            <v-alert v-else-if="!filteredPlaylistVideos?.length" type="info">No videos available in this
+              playlist.</v-alert>
 
             <v-alert v-else-if="!validPlaylist" type="warning">Playlist not found or is unavailable.</v-alert>
 
