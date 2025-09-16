@@ -7,19 +7,22 @@ const props = defineProps<{
   disabled?: boolean;
   playlistId?: string;
   playlistIndex?: number;
+  tonal?: boolean;
 }>();
 
-const colsThumbnail = computed(() => (props.vertical ? 12 : 5));
-const colsInfo = computed(() => (props.vertical ? 12 : 7));
-const cardItemClass = computed(() => (props.vertical ? 'text-center' : ''));
-const url = computed(() => (props.playlistId
-  ? `/video/?videoId=${props.video.basicMetaV3.isrc}&playlistId=${props.playlistId}&i=${props.playlistIndex || 0}`
-  : `/video/?videoId=${props.video.basicMetaV3.isrc}`));
+const colsThumbnail = ref<number>(props.vertical ? 12 : 5);
+const colsInfo = ref<number>(props.vertical ? 12 : 7);
+const cardItemClass = ref<string>(props.vertical ? 'text-center' : '');
+const cardVariant = computed(() => (props.tonal ? 'tonal' : 'elevated'));
+const url = ref<string>(props.playlistId
+  ? `/video?videoId=${props.video.basicMetaV3.isrc}&playlistId=${props.playlistId}&i=${props.playlistIndex || 0}`
+  : `/video?videoId=${props.video.basicMetaV3.isrc}`);
 
 const navigateToVideo = async () => {
   if (props.playlistId) {
     const query = router.resolve(url.value).query;
     await router.push({
+      path: '/video',
       query,
     });
   } else {
@@ -30,7 +33,8 @@ const navigateToVideo = async () => {
 </script>
 
 <template>
-  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo" :href="url" :disabled="props.disabled">
+  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo" :href="url" :disabled="props.disabled"
+    :variant="cardVariant">
     <v-row no-gutters>
       <v-col :cols="colsThumbnail">
         <v-img :src="video.basicMetaV3.thumbnailUrl" :alt="`Thumbnail for ${video.basicMetaV3.title}`"
