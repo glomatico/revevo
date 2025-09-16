@@ -6,12 +6,18 @@ export const useArtist = () => {
 
   const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
   const loadingStateVideos = ref<LoadingState>(LoadingState.IDLE);
-  const page = ref<number>();
-  const artistId = ref<string>();
-  const artist = ref<Artist>();
-  const validArtist = ref<boolean>();
-  const filteredArtistVideos = ref<Video[]>();
-  const pageCount = ref<number>();
+  const page = ref<number>(1);
+  const artistId = ref<string>('');
+  const artist = ref<Artist>({} as Artist);
+  const validArtist = computed<boolean>(() => isArtistValid(artist.value));
+  const filteredArtistVideos = computed<Video[]>(() =>
+    artist.value?.videoData?.videos?.data?.filter(
+      video => isVideoValid(video, settings.value.hidePseudoCountryIsrc)
+    )
+  );
+  const pageCount = computed<number>(() =>
+    artist.value?.videoData?.videos?.paging?.pages || 0
+  );
 
   const getArtists = async (
     artistIds: string[] | string,
@@ -170,24 +176,20 @@ export const useArtist = () => {
     return artists;
   };
 
-  const filterArtistVideos = (artistVideos: Video[]) => {
-    filteredArtistVideos.value = artistVideos.filter(video => isVideoValid(video, settings.value.hidePseudoCountryIsrc));
-  };
-
   const loadArtistPage = async () => {
     loadingStateVideos.value = LoadingState.LOADING;
 
     try {
-      const artistsVideosResponse = await getArtistsVideos(artistId.value!, page.value);
+      const fetchedArtistVideos = await getArtistsVideos(artistId.value!, page.value);
 
-      const artistVideos = artistsVideosResponse[0]!.videoData.videos.data;
-      filterArtistVideos(artistVideos);
+      artist.value.videoData.videos.data.push(
+        ...fetchedArtistVideos[0]!.videoData.videos.data
+      );
+      loadingStateVideos.value = LoadingState.LOADED;
     } catch (error) {
       console.error(error);
       loadingStateVideos.value = LoadingState.ERROR;
     }
-
-    loadingStateVideos.value = LoadingState.LOADED;
   };
 
   const loadArtist = async () => {
@@ -196,21 +198,16 @@ export const useArtist = () => {
     loadingStateGeneral.value = LoadingState.LOADING;
 
     try {
-      const artistsResponse = await getArtists(artistId.value!, page.value);
+      const fetchedArtists = await getArtists(artistId.value!, page.value);
 
-      artist.value = (artistsResponse?.length == 1 ? artistsResponse[0] : null)!;
-      validArtist.value = isArtistValid(artist.value);
-      if (validArtist.value && artist.value?.videoData?.videos?.data) {
-        filterArtistVideos(artist.value.videoData.videos.data);
-        pageCount.value = artist.value.videoData.videos.paging.pages;
-      }
+      artist.value = fetchedArtists[0]!;
+
+      loadingStateGeneral.value = LoadingState.LOADED;
+      loadingStateVideos.value = LoadingState.LOADED;
     } catch (error) {
       console.error(error);
       loadingStateGeneral.value = LoadingState.ERROR;
     }
-
-    loadingStateGeneral.value = LoadingState.LOADED;
-    loadingStateVideos.value = LoadingState.LOADED;
   };
 
   return {
