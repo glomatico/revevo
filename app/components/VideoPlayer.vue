@@ -13,25 +13,49 @@ const {
   htmlVideo,
   streamUrl,
   captionsUrl,
+  captionsShowing,
+  captionsTrackExists,
+  toggleCaptions,
 } = useVideoPlayer();
 
+const videoRef = ref();
+
 onMounted(async () => {
-  streamUrl.value = props.streamUrl;
-  captionsUrl.value = props.captionsUrl;
-  await loadVideoPlayer();
+  watch(
+    () => props.streamUrl,
+    async (newStreamUrl) => {
+      htmlVideo.value = videoRef.value.video;
+
+      htmlVideo.value!.onended = () => {
+        emit('ended');
+      };
+
+      streamUrl.value = newStreamUrl!;
+      captionsUrl.value = props.captionsUrl!;
+
+      loadVideoPlayer();
+    }, { immediate: true }
+  );
 });
 </script>
 
 <template>
-  <video ref="htmlVideo" controls class="video-player" @ended="emit('ended')">
-  </video>
+  <v-video ref="videoRef" max-height="75vh" volume="50" eager class="video-container">
+    <template v-slot:append>
+      <v-tooltip text="Captions" location="top">
+        <template v-slot:activator="{ props }">
+          <v-icon-btn v-bind="props" v-if="captionsTrackExists"
+            :icon="captionsShowing ? `mdi-closed-caption` : `mdi-closed-caption-outline`" @click="toggleCaptions">
+          </v-icon-btn>
+        </template>
+      </v-tooltip>
+    </template>
+  </v-video>
 </template>
 
 <style scoped>
-.video-player {
-  width: 100%;
-  background-color: #000;
-  aspect-ratio: 16 / 9;
-  max-height: 75vh;
+.video-container :deep(.v-video__video) {
+  object-fit: contain;
+  background-color: black;
 }
 </style>
