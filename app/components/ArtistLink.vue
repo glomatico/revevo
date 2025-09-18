@@ -15,7 +15,7 @@ const artistsFiltered = ref<Artist[]>([]);
 
 onMounted(async () => {
   if (props.mainOnly) {
-    artistsFiltered.value = props.videoArtists.filter(artist => artist.basicMeta.role === 'main');
+    artistsFiltered.value = props.videoArtists.filter(artist => artist.basicMeta.role === 'Main');
   } else {
     artistsFiltered.value = props.videoArtists;
   }

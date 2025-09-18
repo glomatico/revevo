@@ -52,6 +52,7 @@ export const usePlaylist = () => {
                     basicMeta {
                       urlSafeName
                       name
+                      role
                     }
                   }
                 }
@@ -118,6 +119,7 @@ export const usePlaylist = () => {
                     basicMeta {
                       urlSafeName
                       name
+                      role
                     }
                   }
                 }
