@@ -1,13 +1,8 @@
 <template>
-  <div>
-    <p>
-      <span v-for="(artist, index) in artistsFiltered" :key="artist.basicMeta.name" class="text-truncate text-wrap">
-        <NuxtLink :to="`/artist/${artist.basicMeta.urlSafeName}`" class="text-decoration-none">
-          {{ artist.basicMeta.name + (index == artistsFiltered.length - 1 ? '' : ',&nbsp;') }}
-        </NuxtLink>
-      </span>
-    </p>
-  </div>
+  <NuxtLink v-for="(artist, index) in artistsFiltered" :key="artist.basicMeta.name"
+    :to="`/artist/${artist.basicMeta.urlSafeName}`" class="text-decoration-none">
+    {{ artist.basicMeta.name + (index == artistsFiltered.length - 1 ? '' : ',&nbsp;') }}
+  </NuxtLink>
 </template>
 
 <script lang="ts" setup>
