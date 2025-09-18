@@ -67,6 +67,7 @@ export const useVideo = () => {
                       name
                       urlSafeName
                       thumbnailUrl
+                      role
                     }
                   }
                 }
