@@ -53,6 +53,7 @@ export const useHomePage = () => {
                         basicMeta {
                           name
                           urlSafeName
+                          role
                         }
                       }
                     }
@@ -69,7 +70,6 @@ export const useHomePage = () => {
                       name
                       thumbnailUrl
                       urlSafeName
-                      genres
                     }
                     likes
                   }
