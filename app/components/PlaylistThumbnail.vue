@@ -5,13 +5,18 @@ defineProps<{
 </script>
 
 <template>
-  <v-card :link="true" hover :to="`/playlist/${playlist.id}`" :width="200" height="180">
-    <v-img :src="playlist.basicMeta.image_url" :alt="`Thumbnail for ${playlist.basicMeta.title}`" cover
-      :aspect-ratio="16 / 9" />
-    <v-card-item>
-      <v-card-title class="text-wrap text-center text-body-1">
-        {{ playlist.basicMeta.title }}
-      </v-card-title>
-    </v-card-item>
+  <v-card :to="`/playlist/${playlist.id}`" min-width="300">
+    <v-row no-gutters align="center">
+      <v-col cols="12">
+        <v-img :src="playlist.basicMeta.image_url" :alt="`Thumbnail for ${playlist.basicMeta.title}`"
+          :aspect-ratio="16 / 9" cover />
+      </v-col>
+
+      <v-col cols="12">
+        <v-card-item>
+          <p class="text-center text-truncate">{{ playlist.basicMeta.title }}</p>
+        </v-card-item>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
