@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const colsThumbnail = ref<number>(props.vertical ? 12 : 5);
 const colsInfo = ref<number>(props.vertical ? 12 : 7);
-const cardItemClass = ref<string>(props.vertical ? 'text-center' : '');
+const cardItemAlign = ref<string>(props.vertical ? 'center' : 'left');
 const cardVariant = computed(() => (props.tonal ? 'tonal' : 'elevated'));
 const url = ref<string>(props.playlistId
   ? `/video?v=${props.video.basicMetaV3.isrc}&p=${props.playlistId}&i=${props.playlistIndex || 0}`
@@ -33,27 +33,38 @@ const navigateToVideo = async () => {
 </script>
 
 <template>
-  <v-card class="mx-auto" :link="true" hover @click.prevent="navigateToVideo" :href="url" :disabled="props.disabled"
-    :variant="cardVariant">
+  <v-card @click.prevent="navigateToVideo" :href="url" :disabled="props.disabled" :variant="cardVariant">
     <v-row no-gutters>
       <v-col :cols="colsThumbnail">
         <v-img :src="video.basicMetaV3.thumbnailUrl" :alt="`Thumbnail for ${video.basicMetaV3.title}`"
           :aspect-ratio="16 / 9" cover />
       </v-col>
-      <v-col :cols="colsInfo">
-        <v-card-item :class="cardItemClass">
-          <v-card-title class="text-truncate text-body-2" :title="video.basicMetaV3.title">
-            <v-icon v-if="video.basicMetaV3.explicit" size="24" icon="mdi-alpha-e-box" />
-            {{ video.basicMetaV3.title }}
-          </v-card-title>
 
-          <v-card-subtitle>
-            <ArtistLink :video-artists="video.basicMetaV3.artists!" />
-            {{ formatDuration(video.basicMetaV3.duration!) }}
-            <template v-if="video.views && video.views.viewsTotal">
-              • {{ video.views.viewsTotal.toLocaleString() }} views
-            </template>
-          </v-card-subtitle>
+      <v-col :cols="colsInfo" align-self="center">
+        <v-card-item>
+          <v-row no-gutters>
+            <v-col :align="cardItemAlign" cols="12">
+              <p class="text-h6 text-truncate" :title="video.basicMetaV3.title">
+                <v-icon v-if="video.basicMetaV3.explicit" icon="mdi-alpha-e-box" />
+                {{ video.basicMetaV3.title }}
+              </p>
+            </v-col>
+
+            <v-col :align="cardItemAlign" cols="12">
+              <p class="text-truncate text-subtitle-2">
+                <ArtistLink :video-artists="video.basicMetaV3.artists!" main-only />
+              </p>
+            </v-col>
+
+            <v-col :align="cardItemAlign" cols="12">
+              <p class="text-truncate text-subtitle-2">
+                {{ formatDuration(video.basicMetaV3.duration!) }}
+                <template v-if="video.views && video.views.viewsTotal">
+                  • {{ video.views.viewsTotal.toLocaleString() }} views
+                </template>
+              </p>
+            </v-col>
+          </v-row>
         </v-card-item>
       </v-col>
     </v-row>
