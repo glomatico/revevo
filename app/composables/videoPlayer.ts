@@ -6,8 +6,6 @@ export const useVideoPlayer = () => {
   const htmlVideo = ref(null as HTMLVideoElement | null);
   const streamUrl = ref('');
   const captionsUrl = ref('');
-  const captionsShowing = ref(false);
-  const captionsTrackExists = ref(false);
 
   const attachCaptions = async () => {
     if (!captionsUrl.value) return;
@@ -25,31 +23,31 @@ export const useVideoPlayer = () => {
     track.src = url;
     track.default = false;
 
-    htmlVideo.value!.innerHTML = '';
-    htmlVideo.value!.appendChild(track);
-    captionsTrackExists.value = true;
+    htmlVideo.value!.innerHTML = track.outerHTML;
 
     toggleCaptionsFromStorage();
+    addCaptionsEventListener();
   };
 
   const toggleCaptionsFromStorage = async () => {
     Array.from(htmlVideo.value!.textTracks).forEach((track) => {
       if (track.kind === 'subtitles') {
         track.mode = settings.value.enableCaptions! ? 'showing' : 'hidden';
-        captionsShowing.value = track.mode === 'showing';
       }
     });
   };
 
-  const toggleCaptions = async () => {
-    if (!captionsTrackExists.value) return;
+  const addCaptionsEventListener = () => {
+    if (!settings) return;
 
-    Array.from(htmlVideo.value!.textTracks).forEach((track) => {
-      if (track.kind === 'subtitles') {
-        track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
+    htmlVideo.value!.textTracks.addEventListener('change', () => {
+      const tracks = htmlVideo.value?.textTracks;
+      if (!tracks) return;
+
+      Array.from(tracks).forEach((track) => {
+        if (track.kind !== 'subtitles') return;
         settings.value.enableCaptions = track.mode === 'showing';
-        captionsShowing.value = track.mode === 'showing';
-      }
+      });
     });
   };
 
@@ -73,7 +71,6 @@ export const useVideoPlayer = () => {
         track.mode = 'disabled';
       });
       htmlVideo.value!.src = '';
-      htmlVideo.value!.load();
       return;
     }
 
@@ -94,11 +91,8 @@ export const useVideoPlayer = () => {
 
   return {
     loadVideoPlayer,
-    toggleCaptions,
     htmlVideo,
     streamUrl,
     captionsUrl,
-    captionsShowing,
-    captionsTrackExists,
   };
 }
