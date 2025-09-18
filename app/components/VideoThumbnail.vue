@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const colsThumbnail = ref<number>(props.vertical ? 12 : 5);
 const colsInfo = ref<number>(props.vertical ? 12 : 7);
-const cardItemAlign = ref<string>(props.vertical ? 'center' : 'left');
+const cardTextAlign = ref<string>(props.vertical ? 'text-center' : '');
 const cardVariant = computed(() => (props.tonal ? 'tonal' : 'elevated'));
 const url = ref<string>(props.playlistId
   ? `/video?v=${props.video.basicMetaV3.isrc}&p=${props.playlistId}&i=${props.playlistIndex || 0}`
@@ -40,31 +40,23 @@ const navigateToVideo = async () => {
           :aspect-ratio="16 / 9" cover />
       </v-col>
 
-      <v-col :cols="colsInfo" align-self="center">
-        <v-card-item>
-          <v-row no-gutters>
-            <v-col :align="cardItemAlign" cols="12">
-              <p class="text-truncate" :title="video.basicMetaV3.title">
-                <v-icon v-if="video.basicMetaV3.explicit" icon="mdi-alpha-e-box" />
-                {{ video.basicMetaV3.title }}
-              </p>
-            </v-col>
+      <v-col :cols="colsInfo">
+        <v-card-item :class="cardTextAlign">
+          <p class="text-truncate" :title="video.basicMetaV3.title">
+            <v-icon v-if="video.basicMetaV3.explicit" icon="mdi-alpha-e-box" />
+            {{ video.basicMetaV3.title }}
+          </p>
 
-            <v-col :align="cardItemAlign" cols="12">
-              <p class="text-truncate text-caption">
-                <ArtistLink :video-artists="video.basicMetaV3.artists!" main-only />
-              </p>
-            </v-col>
+          <p class="text-truncate text-caption">
+            <ArtistLink :video-artists="video.basicMetaV3.artists!" main-only />
+          </p>
 
-            <v-col :align="cardItemAlign" cols="12">
-              <p class="text-truncate text-caption">
-                {{ formatDuration(video.basicMetaV3.duration!) }}
-                <template v-if="video.views && video.views.viewsTotal">
-                  • {{ video.views.viewsTotal.toLocaleString() }} views
-                </template>
-              </p>
-            </v-col>
-          </v-row>
+          <p class="text-truncate text-caption">
+            {{ formatDuration(video.basicMetaV3.duration!) }}
+            <template v-if="video.views && video.views.viewsTotal">
+              • {{ video.views.viewsTotal.toLocaleString() }} views
+            </template>
+          </p>
         </v-card-item>
       </v-col>
     </v-row>
