@@ -41,7 +41,7 @@ useSeoMeta({
 
       <template v-else>
         <v-col cols="12">
-          <p class="text-h4">
+          <p class="text-h4 font-weight-bold">
             {{ topVideosSection!.title }}
           </p>
         </v-col>
@@ -64,7 +64,7 @@ useSeoMeta({
         </v-col>
 
         <v-col cols="12">
-          <p class="text-h4">
+          <p class="text-h4 font-weight-bold">
             {{ trendingArtistsSection!.title }}
           </p>
         </v-col>
@@ -86,7 +86,7 @@ useSeoMeta({
         </v-col>
 
         <v-col cols="12">
-          <p class="text-h4">
+          <p class="text-h4 font-weight-bold">
             {{ playlistsSection!.title }}
           </p>
         </v-col>

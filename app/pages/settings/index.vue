@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <p class="text-h4">Options</p>
+        <p class="text-h4 font-weight-bold">Options</p>
       </v-col>
 
       <v-divider thickness="2" />
