@@ -77,10 +77,12 @@ useSeoMeta({
           </v-alert>
 
           <v-slide-group v-else>
-            <v-slide-group-item v-for="(artist, index) in filteredTrendingArtistsSectionItems" :key="index">
-              <div class="ma-2">
-                <ArtistThumbnail :artist="artist.basicMeta" />
-              </div>
+            <v-slide-group-item>
+              <v-row>
+                <v-col v-for="(artist, index) in filteredTrendingArtistsSectionItems" :key="index">
+                  <ArtistThumbnail :artist="artist.basicMeta" />
+                </v-col>
+              </v-row>
             </v-slide-group-item>
           </v-slide-group>
         </v-col>
@@ -99,10 +101,12 @@ useSeoMeta({
           </v-alert>
 
           <v-slide-group v-else>
-            <v-slide-group-item v-for="(playlist, index) in filteredPlaylistsSectionItems" :key="index">
-              <div class="ma-2">
-                <PlaylistThumbnail :playlist="playlist" :id="playlist.id!" />
-              </div>
+            <v-slide-group-item>
+              <v-row>
+                <v-col v-for="(playlist, index) in filteredPlaylistsSectionItems" :key="index">
+                  <PlaylistThumbnail :playlist="playlist" :id="playlist.id!" />
+                </v-col>
+              </v-row>
             </v-slide-group-item>
           </v-slide-group>
         </v-col>
