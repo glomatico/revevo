@@ -39,8 +39,8 @@ const search = async () => {
           <v-text-field rounded label="Search" variant="solo" single-line density="compact" outlined dense hide-details
             @keyup.enter="search" v-model="query" max-width="600">
             <template #append-inner>
-              <v-icon-btn variant="text" @click="search" icon="mdi-send">
-              </v-icon-btn>
+              <v-btn variant="text" @click="search" icon="mdi-send">
+              </v-btn>
             </template>
           </v-text-field>
         </v-col>
