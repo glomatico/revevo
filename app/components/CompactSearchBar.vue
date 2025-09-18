@@ -7,8 +7,8 @@
     <v-btn icon variant="text" @click="handleMagnifyClick">
       <v-icon>mdi-close</v-icon>
     </v-btn>
-    <v-text-field label="Search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify" outlined dense
-      hide-details @keyup.enter="search()" v-model="query">
+    <v-text-field rounded label="Search" variant="solo" density="compact" prepend-inner-icon="mdi-magnify" outlined
+      dense hide-details @keyup.enter="search()" v-model="query">
       <template #append-inner>
         <v-btn icon variant="text" @click="search">
           <v-icon>mdi-send</v-icon>
