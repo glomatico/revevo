@@ -34,7 +34,7 @@ const navigateToVideo = async () => {
 
 <template>
   <v-card @click.prevent="navigateToVideo" :href="url" :disabled="props.disabled" :variant="cardVariant">
-    <v-row no-gutters>
+    <v-row no-gutters align="center">
       <v-col :cols="colsThumbnail">
         <v-img :src="video.basicMetaV3.thumbnailUrl" :alt="`Thumbnail for ${video.basicMetaV3.title}`"
           :aspect-ratio="16 / 9" cover />
@@ -44,20 +44,20 @@ const navigateToVideo = async () => {
         <v-card-item>
           <v-row no-gutters>
             <v-col :align="cardItemAlign" cols="12">
-              <p class="text-h6 text-truncate" :title="video.basicMetaV3.title">
+              <p class="text-truncate" :title="video.basicMetaV3.title">
                 <v-icon v-if="video.basicMetaV3.explicit" icon="mdi-alpha-e-box" />
                 {{ video.basicMetaV3.title }}
               </p>
             </v-col>
 
             <v-col :align="cardItemAlign" cols="12">
-              <p class="text-truncate text-subtitle-2">
+              <p class="text-truncate text-caption">
                 <ArtistLink :video-artists="video.basicMetaV3.artists!" main-only />
               </p>
             </v-col>
 
             <v-col :align="cardItemAlign" cols="12">
-              <p class="text-truncate text-subtitle-2">
+              <p class="text-truncate text-caption">
                 {{ formatDuration(video.basicMetaV3.duration!) }}
                 <template v-if="video.views && video.views.viewsTotal">
                   • {{ video.views.viewsTotal.toLocaleString() }} views
