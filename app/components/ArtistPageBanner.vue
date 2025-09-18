@@ -6,7 +6,7 @@
         <v-icon v-else size="180">mdi-account-circle</v-icon>
       </v-avatar>
     </v-col>
-    <v-col cols="12" sm="auto" class="align-self-center text-center text-sm-left">
+    <v-col cols="12" sm="auto" align-self="center" class="text-center text-sm-left">
       <p class="text-h4 font-weight-bold">{{ artist.basicMeta.name }}</p>
       <p class="text-h6">
         <template v-if="artist.videoData?.videos?.paging?.total!">
