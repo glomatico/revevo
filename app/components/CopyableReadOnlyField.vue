@@ -1,5 +1,5 @@
 <template>
-  <v-text-field readonly dense :value="value">
+  <v-text-field rounded readonly density="comfortable" :value="value">
     <template #append-inner>
       <v-btn icon variant="text" @click="copyToClipboard">
         <v-icon>mdi-content-copy</v-icon>
