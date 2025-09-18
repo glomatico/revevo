@@ -5,6 +5,9 @@ import { createVuetify } from 'vuetify'
 import { VVideo } from 'vuetify/labs/VVideo'
 import { VIconBtn } from 'vuetify/labs/VIconBtn'
 
+import { md3 } from 'vuetify/blueprints'
+
+
 export default defineNuxtPlugin((app) => {
     const vuetify = createVuetify({
         theme: {
@@ -14,6 +17,7 @@ export default defineNuxtPlugin((app) => {
             VVideo,
             VIconBtn,
         },
+        blueprint: md3,
     })
     app.vueApp.use(vuetify)
 })
