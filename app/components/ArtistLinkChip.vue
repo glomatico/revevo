@@ -1,18 +1,25 @@
 <template>
-  <div class="d-flex ga-2 flex-wrap">
-    <v-chip v-for="artist in artistsFiltered" :key="artist.basicMeta.name"
-      :to="`/artist/${artist.basicMeta.urlSafeName}`">
-      <v-avatar v-if="addAvatar" class="mr-1">
-        <v-img v-if="artist.basicMeta.thumbnailUrl" :src="resizeImageUrl(artist.basicMeta.thumbnailUrl, 32, 32)"
-          :alt="`Avatar for ${artist.basicMeta.name}`" />
-        <v-icon v-else>mdi-account-circle</v-icon>
-      </v-avatar>
+  <v-row dense>
+    <v-col v-for="artist in artistsFiltered" :key="artist.basicMeta.name" cols="auto">
+      <v-chip rounded :to="`/artist/${artist.basicMeta.urlSafeName}`">
+        <v-row dense align="center">
+          <v-col>
+            <v-avatar v-if="addAvatar">
+              <v-img v-if="artist.basicMeta.thumbnailUrl" :src="resizeImageUrl(artist.basicMeta.thumbnailUrl, 32, 32)"
+                :alt="`Avatar for ${artist.basicMeta.name}`" />
+              <v-icon v-else size="26">mdi-account-circle</v-icon>
+            </v-avatar>
+          </v-col>
 
-      <p>
-        {{ artist.basicMeta.name }}
-      </p>
-    </v-chip>
-  </div>
+          <v-col>
+            <p>
+              {{ artist.basicMeta.name }}
+            </p>
+          </v-col>
+        </v-row>
+      </v-chip>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts" setup>
