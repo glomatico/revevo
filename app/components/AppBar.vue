@@ -1,42 +1,50 @@
 <script lang="ts" setup>
 const appMenu = ref();
-const isLogoVisible = ref<boolean>(true);
-
-const toggleLogo = (isSearchOpen: boolean) => {
-  isLogoVisible.value = !isSearchOpen;
-};
 </script>
 
 <template>
   <AppMenu ref="appMenu" />
+
   <v-toolbar color="surface">
     <v-container>
-      <div class="d-none d-sm-flex align-center">
-        <v-app-bar-nav-icon @click="appMenu.toggleDrawer()" />
+      <div class="d-none d-sm-block align-center">
+        <v-row align="center">
+          <v-col cols="auto">
+            <v-app-bar-nav-icon @click=" appMenu.toggleDrawer()" />
+          </v-col>
 
-        <v-toolbar-title>
-          <NuxtLink class="text-decoration-none text-white" to="/">
-            Revevo
-          </NuxtLink>
-        </v-toolbar-title>
+          <v-col cols="auto">
+            <v-toolbar-title>
+              <NuxtLink class="text-decoration-none text-white" to="/">
+                Revevo
+              </NuxtLink>
+            </v-toolbar-title>
+          </v-col>
 
-        <v-sheet width="400">
-          <SearchBar />
-        </v-sheet>
+          <v-col align="center">
+            <SearchBar />
+          </v-col>
+        </v-row>
       </div>
 
-      <div class="d-flex d-sm-none align-center">
-        <template v-if="isLogoVisible">
-          <v-app-bar-nav-icon @click="appMenu.toggleDrawer()" />
+      <div class="d-sm-none align-center">
+        <v-row align="center">
+          <v-col cols="auto">
+            <v-app-bar-nav-icon @click=" appMenu.toggleDrawer()" />
+          </v-col>
 
-          <v-toolbar-title>
-            <NuxtLink class="text-decoration-none text-white" to="/">
-              Revevo
-            </NuxtLink>
-          </v-toolbar-title>
-        </template>
+          <v-col cols="auto">
+            <v-toolbar-title>
+              <NuxtLink class="text-decoration-none text-white" to="/">
+                Revevo
+              </NuxtLink>
+            </v-toolbar-title>
+          </v-col>
 
-        <CompactSearchBar @magnify-clicked="toggleLogo" />
+          <v-col align="right">
+            <CompactSearchBar />
+          </v-col>
+        </v-row>
       </div>
     </v-container>
   </v-toolbar>
