@@ -5,8 +5,6 @@ const defaultTabRouteParamKey = 't';
 
 const route = useRoute();
 
-const tab = ref<string>((route.query[defaultTabRouteParamKey] as string) || defaultTab);
-
 const {
   loadSearch,
   loadSearchPage,
@@ -14,11 +12,12 @@ const {
   loadingStateResults,
   searchQuery,
   searchOffset,
-  searchResults,
   pageCount,
   filteredVideoSerchResults,
   filteredArtistSerchResults,
 } = useSearch();
+
+const tab = ref(route.query[defaultTabRouteParamKey] || defaultTab);
 
 const onPageChange = async (newPage: number) => {
   searchOffset.value = 32 * (newPage - 1);
@@ -29,7 +28,7 @@ const onTabChange = (newTab: string) => {
   tab.value = newTab;
 };
 
-const handleSearchInit = async () => {
+const onSearchQuery = async () => {
   if (searchQuery.value === route.query.q) {
     return;
   }
@@ -40,15 +39,20 @@ const handleSearchInit = async () => {
     return;
   }
 
-  searchOffset.value = 32 * (parseInt((route.query.p as string) || '1', 10) - 1);
-  console.log(searchOffset.value);
+  searchOffset.value = 32 * (parseInt(route.query.p as string || '1', 10) - 1);
 
   await loadSearch();
 };
 
-watch(route, handleSearchInit);
-
-onMounted(handleSearchInit);
+onMounted(async () => {
+  watch(
+    () => route.query.q,
+    async () => {
+      await onSearchQuery();
+    },
+    { immediate: true }
+  );
+});
 </script>
 
 <template>
