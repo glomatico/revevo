@@ -4,13 +4,13 @@ export const useVideo = () => {
 
   const { loadSettings, settings } = useSettings();
 
-  const loadingState = ref<LoadingState>(LoadingState.IDLE);
-  const videoId = ref<string>('');
-  const video = ref<Video>({} as Video);
-  const validVideo = computed<boolean>(() => isVideoValid(video.value));
-  const streamUrl = ref<string>('');
-  const captionsUrl = computed<string>(() => `/api/captions/${videoId.value}`);
-  const filteredRelatedVideos = computed<Video[]>(
+  const loadingState = ref(LoadingState.IDLE);
+  const videoId = ref('');
+  const video = ref({} as Video);
+  const validVideo = computed(() => isVideoValid(video.value, false, true));
+  const streamUrl = ref('');
+  const captionsUrl = computed(() => `/api/captions/${videoId.value}`);
+  const filteredRelatedVideos = computed(
     () => video.value?.relatedVideos?.data?.filter(
       v => isVideoValid(v, settings.value.hidePseudoCountryIsrc)
     )
@@ -131,7 +131,7 @@ export const useVideo = () => {
       if (stream) return stream.url;
     }
 
-    throw new Error('No MP4 stream available');
+    return '';
   };
 
   const loadStreamUrl = () => {

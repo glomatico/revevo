@@ -73,8 +73,8 @@ onMounted(async () => {
   </Head>
 
   <ClientOnly>
-    <VideoPlayer :load="loadingStateVideo === LoadingState.LOADED" :stream-url="streamUrl" :captions-url="captionsUrl"
-      @ended="onVideoEnded" />
+    <VideoPlayer :load="loadingStateVideo === LoadingState.LOADED && validVideo" :stream-url="streamUrl"
+      :captions-url="captionsUrl" @ended="onVideoEnded" />
   </ClientOnly>
 
   <v-container>
