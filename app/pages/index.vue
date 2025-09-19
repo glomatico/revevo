@@ -76,15 +76,15 @@ useSeoMeta({
             This section is empty.
           </v-alert>
 
-          <v-slide-group v-else>
-            <v-slide-group-item>
-              <v-row>
-                <v-col v-for="(artist, index) in filteredTrendingArtistsSectionItems" :key="index">
+          <v-row v-else>
+            <v-slide-group>
+              <v-col v-for="(artist, index) in filteredTrendingArtistsSectionItems" :key="index">
+                <v-slide-group-item>
                   <ArtistThumbnail :artist="artist.basicMeta" />
-                </v-col>
-              </v-row>
-            </v-slide-group-item>
-          </v-slide-group>
+                </v-slide-group-item>
+              </v-col>
+            </v-slide-group>
+          </v-row>
         </v-col>
 
         <v-col cols="12">
@@ -100,15 +100,15 @@ useSeoMeta({
             This section is empty.
           </v-alert>
 
-          <v-slide-group v-else>
-            <v-slide-group-item>
-              <v-row>
-                <v-col v-for="(playlist, index) in filteredPlaylistsSectionItems" :key="index">
+          <v-row v-else>
+            <v-slide-group>
+              <v-col v-for="(playlist, index) in filteredPlaylistsSectionItems" :key="index">
+                <v-slide-group-item>
                   <PlaylistThumbnail :playlist="playlist" :id="playlist.id!" />
-                </v-col>
-              </v-row>
-            </v-slide-group-item>
-          </v-slide-group>
+                </v-slide-group-item>
+              </v-col>
+            </v-slide-group>
+          </v-row>
         </v-col>
       </template>
     </v-row>
