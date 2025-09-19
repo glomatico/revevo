@@ -49,9 +49,14 @@ const onVideoEnded = () => {
 };
 
 onMounted(async () => {
-  if (playlistId.value) {
-    await loadPlaylist();
-  }
+  watch(
+    () => route.query.p,
+    async (newPlaylistId) => {
+      playlistId.value = newPlaylistId as string;
+      await loadPlaylist();
+    },
+    { immediate: true }
+  );
 
   watch(
     () => route.query.v,
