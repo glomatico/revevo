@@ -12,7 +12,9 @@ export const useVideo = () => {
   const captionsUrl = computed(() => `/api/captions/${videoId.value}`);
   const filteredRelatedVideos = computed(
     () => video.value?.relatedVideos?.data?.filter(
-      v => isVideoValid(v, settings.value.hidePseudoCountryIsrc)
+      v =>
+        isVideoValid(v, settings.value.hidePseudoCountryIsrc)
+        && v?.basicMetaV3?.isrc !== video.value?.basicMetaV3?.isrc
     )
   );
 
