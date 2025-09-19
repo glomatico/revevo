@@ -8,9 +8,8 @@
         </v-col>
 
         <v-col align="right">
-          <NuxtLink to="https://github.com/glomatico/revevo" target="_blank">
-            <v-icon-btn color="white" variant="plain" icon="mdi-github" />
-          </NuxtLink>
+          <v-btn href="https://github.com/glomatico/revevo" target="_blank" icon="mdi-github" class="mx-4" size="medium"
+            variant="plain" />
         </v-col>
       </v-row>
     </v-container>
