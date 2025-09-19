@@ -4,10 +4,14 @@ export const useVideoPlayer = () => {
   const { loadSettings, settings } = useSettings();
 
   const htmlVideo = ref(null as HTMLVideoElement | null);
+  const hlsInstance = ref(null as Hls | null);
+  const load = ref(false);
   const streamUrl = ref('');
   const captionsUrl = ref('');
 
   const attachCaptions = async () => {
+    if (!load.value) return;
+
     if (!captionsUrl.value) return;
 
     const response = await fetch(captionsUrl.value);
@@ -23,7 +27,8 @@ export const useVideoPlayer = () => {
     track.src = url;
     track.default = false;
 
-    htmlVideo.value!.innerHTML = track.outerHTML;
+    htmlVideo.value!.innerHTML = '';
+    htmlVideo.value!.appendChild(track);
 
     toggleCaptionsFromStorage();
     addCaptionsEventListener();
@@ -52,10 +57,15 @@ export const useVideoPlayer = () => {
   };
 
   const attachHlsVideo = async () => {
-    const hls = new Hls();
-    hls.loadSource(streamUrl.value!);
-    hls.attachMedia(htmlVideo.value!);
-    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+    if (hlsInstance.value) {
+      hlsInstance.value.destroy();
+      hlsInstance.value = null;
+    }
+
+    hlsInstance.value = new Hls();
+    hlsInstance.value.loadSource(streamUrl.value!);
+    hlsInstance.value.attachMedia(htmlVideo.value!);
+    hlsInstance.value.on(Hls.Events.MANIFEST_PARSED, function () {
       htmlVideo.value?.play();
     });
   };
@@ -65,12 +75,13 @@ export const useVideoPlayer = () => {
     htmlVideo.value!.play();
   };
 
+  const unloadVideo = () => {
+    htmlVideo.value!.src = '';
+  };
+
   const attachVideo = async () => {
-    if (!streamUrl.value) {
-      Array.from(htmlVideo.value!.textTracks).forEach((track) => {
-        track.mode = 'disabled';
-      });
-      htmlVideo.value!.src = '';
+    if (!load.value) {
+      unloadVideo();
       return;
     }
 
@@ -91,6 +102,7 @@ export const useVideoPlayer = () => {
 
   return {
     loadVideoPlayer,
+    load,
     htmlVideo,
     streamUrl,
     captionsUrl,

@@ -24,6 +24,8 @@ const {
   isFullyLoaded,
 } = usePlaylist();
 
+playlistId.value = route.query.p as string || '';
+
 const onVideoEnded = () => {
   if (!validPlaylist.value) return;
 
@@ -37,8 +39,8 @@ const onVideoEnded = () => {
     router.push(
       {
         query: {
-          videoId: nextVideo.basicMetaV3.isrc,
-          playlistId: playlistId.value,
+          v: nextVideo.basicMetaV3.isrc,
+          p: playlistId.value,
           i: (currentIndex + 1).toString(),
         }
       }
@@ -60,17 +62,6 @@ onMounted(async () => {
     },
     { immediate: true }
   );
-
-  watch(
-    () => route.query.p,
-    async (newPlaylistId) => {
-      playlistId.value = newPlaylistId as string;
-      if (playlistId.value) {
-        await loadPlaylist();
-      }
-    },
-    { immediate: true }
-  );
 });
 
 </script>
@@ -82,7 +73,7 @@ onMounted(async () => {
   </Head>
 
   <ClientOnly>
-    <VideoPlayer :stream-url="loadingStateVideo === LoadingState.LOADED ? streamUrl : ''" :captions-url="captionsUrl"
+    <VideoPlayer :load="loadingStateVideo === LoadingState.LOADED" :stream-url="streamUrl" :captions-url="captionsUrl"
       @ended="onVideoEnded" />
   </ClientOnly>
 

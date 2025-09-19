@@ -2,6 +2,7 @@
 const props = defineProps<{
   streamUrl?: string;
   captionsUrl?: string;
+  load?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -10,18 +11,18 @@ const emit = defineEmits<{
 
 const {
   loadVideoPlayer,
+  load,
   htmlVideo,
   streamUrl,
   captionsUrl,
 } = useVideoPlayer();
 
-const videoRef = ref();
-
 onMounted(async () => {
   watch(
-    () => props.streamUrl,
-    async (newStreamUrl) => {
-      streamUrl.value = newStreamUrl!;
+    () => props.load,
+    async () => {
+      load.value = props.load!;
+      streamUrl.value = props.streamUrl!;
       captionsUrl.value = props.captionsUrl!;
 
       loadVideoPlayer();
@@ -31,7 +32,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <video ref="htmlVideo" class="video-container" controls>
+  <video ref="htmlVideo" class="video-container" controls @ended="emit('ended')">
   </video>
 </template>
 
