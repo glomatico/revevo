@@ -70,7 +70,7 @@ onMounted(async () => {
 
       <template v-else>
         <v-col cols="12">
-          <p class="text-h4">
+          <p class="text-h4 font-weight-bold">
             Search results for "{{ searchQuery }}"
           </p>
         </v-col>
