@@ -102,7 +102,7 @@ onMounted(async () => {
       <v-col cols="12" md="4">
         <v-row v-if="playlistId">
           <v-col cols="12">
-            <p class="text-h5">
+            <p class="text-h6">
               Playlist
             </p>
           </v-col>
@@ -125,8 +125,8 @@ onMounted(async () => {
 
         <v-row v-if="videoId">
           <v-col cols="12">
-            <p class="text-h5">
-              Up next
+            <p class="text-h6">
+              Related Videos
             </p>
           </v-col>
 
