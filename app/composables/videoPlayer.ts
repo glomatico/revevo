@@ -6,6 +6,9 @@ export const useVideoPlayer = () => {
   const videoPlayer = ref<MediaPlayerElement | null>(null);
   const streamUrl = ref('');
   const captionsUrl = ref('');
+  const captionsEventHandler = (e: Event) => {
+    settings.value.enableCaptions = videoPlayer.value!.textTracks[0]?.mode === 'showing';
+  };
 
   const attachCaptions = async () => {
     const response = await fetch(captionsUrl.value);
@@ -21,15 +24,7 @@ export const useVideoPlayer = () => {
     });
 
     videoPlayer.value!.textTracks[0]?.setMode(settings.value.enableCaptions ? 'showing' : 'hidden');
-
-    await addCaptionsEventHandler();
-  };
-
-  const addCaptionsEventHandler = async () => {
-    videoPlayer.value!.addEventListener('text-track-change', (e) => {
-      if (!e.detail) return;
-      settings.value.enableCaptions = videoPlayer.value!.textTracks[0]?.mode === 'showing';
-    });
+    videoPlayer.value!.addEventListener('text-track-change', captionsEventHandler);
   };
 
   const attachVideo = async () => {
@@ -40,7 +35,7 @@ export const useVideoPlayer = () => {
   };
 
   const unloadVideoPlayer = async () => {
-    videoPlayer.value!.removeEventListener('text-track-change', () => { });
+    videoPlayer.value!.removeEventListener('text-track-change', captionsEventHandler);
     videoPlayer.value!.src = '';
     videoPlayer.value!.textTracks.clear();
   };
