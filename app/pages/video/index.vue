@@ -53,6 +53,7 @@ onMounted(async () => {
     () => route.query.p,
     async (newPlaylistId) => {
       playlistId.value = newPlaylistId as string;
+      if (!playlistId.value) return;
       await loadPlaylist();
     },
     { immediate: true }

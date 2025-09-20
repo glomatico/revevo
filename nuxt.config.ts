@@ -1,4 +1,5 @@
-import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
+import { vite as vidstack } from 'vidstack/plugins';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -27,6 +28,12 @@ export default defineNuxtConfig({
       template: {
         transformAssetUrls,
       },
+    },
+    plugins: [vidstack()],
+  },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.startsWith('media-'),
     },
   },
 })

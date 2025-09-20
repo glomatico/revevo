@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import 'vidstack/bundle';
+
 const props = defineProps<{
   streamUrl?: string;
   captionsUrl?: string;
@@ -11,8 +13,8 @@ const emit = defineEmits<{
 
 const {
   loadVideoPlayer,
-  load,
-  htmlVideo,
+  unloadVideoPlayer,
+  videoPlayer,
   streamUrl,
   captionsUrl,
 } = useVideoPlayer();
@@ -21,10 +23,12 @@ onMounted(async () => {
   watch(
     () => props.load,
     async () => {
-      load.value = props.load!;
+      if (!props.load) {
+        await unloadVideoPlayer();
+        return;
+      }
       streamUrl.value = props.streamUrl!;
       captionsUrl.value = props.captionsUrl!;
-
       loadVideoPlayer();
     }, { immediate: true }
   );
@@ -32,15 +36,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <video ref="htmlVideo" class="video-container" controls @ended="emit('ended')">
-  </video>
+  <media-player ref="videoPlayer">
+    <media-provider></media-provider>
+    <media-video-layout></media-video-layout>
+  </media-player>
 </template>
 
 <style scoped>
-.video-container {
-  width: 100%;
+media-player {
   max-height: 75vh;
+  aspect-ratio: 16 / 9;
   background-color: black;
-  aspect-ratio: 16/9;
+}
+
+media-player :deep(video) {
+  width: 100%;
+  height: 100%;
 }
 </style>
