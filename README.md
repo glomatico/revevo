@@ -8,6 +8,7 @@ Although the official Vevo website shut down years ago, many parts of its backen
 
 - [Nuxt 4](https://nuxt.com/) - The web framework used for building the application.
 - [Vuetify](https://vuetifyjs.com/) - The UI library used for styling and components.
+- [Vidstack Player](https://vidstack.io/) - The video player library used for video playback.
 
 ## Running Locally
 
