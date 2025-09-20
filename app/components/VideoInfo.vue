@@ -9,7 +9,7 @@
     <v-divider thickness="2" />
 
     <v-col cols="12">
-      <v-table>
+      <v-table class="rounded-lg">
         <tbody>
           <tr>
             <td>Artists</td>
