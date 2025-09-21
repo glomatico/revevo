@@ -31,4 +31,4 @@ Although the official Vevo website shut down years ago, many parts of its backen
 
 ## Online deployment
 
-The website is deployed at [revevo.glomatico.com](https://revevo.glomatico.com).
+The website is deployed at <https://revevo.glomatico.me>.
