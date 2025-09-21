@@ -205,6 +205,12 @@ export interface Settings {
   hidePseudoCountryIsrc: boolean;
 };
 
+export const raiseForStatus = (response: Response): void => {
+  if (!response.ok) {
+    throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+  }
+};
+
 export const formatDuration = (milliseconds: number): string => {
   let totalSeconds = Math.floor(milliseconds / 1000);
   let minutes = Math.floor(totalSeconds / 60);
