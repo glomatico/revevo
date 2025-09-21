@@ -1,6 +1,6 @@
 <template>
   <v-tabs v-model="tab" align-tabs="center">
-    <v-tab v-for="tab in tabs" :key="tab" :value="tab">{{ wordfy(tab) }}</v-tab>
+    <v-tab class="text-none" v-for="tab in tabs" :key="tab" :value="tab">{{ wordfy(tab) }}</v-tab>
   </v-tabs>
 </template>
 
