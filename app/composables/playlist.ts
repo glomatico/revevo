@@ -153,6 +153,8 @@ export const usePlaylist = () => {
       body: JSON.stringify({ query, variables }),
     });
 
+    raiseForStatus(response);
+
     const playlistResponse: PlaylistResponse = await response.json();
     const playlists: Playlist[] = playlistResponse?.data?.playlists;
 

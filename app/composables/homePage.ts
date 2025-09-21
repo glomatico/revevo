@@ -105,9 +105,7 @@ export const useHomePage = () => {
       body: JSON.stringify({ query, variables }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Error when fetching homepage: ${response.status} ${response.statusText}`);
-    }
+    raiseForStatus(response);
 
     const homePageResponse: HomePageResponse = await response.json();
     const homePage: HomePage = homePageResponse?.data?.homePage;

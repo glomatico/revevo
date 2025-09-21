@@ -109,6 +109,8 @@ export const useVideo = () => {
       })
     });
 
+    raiseForStatus(response);
+
     const videosResponse: VideoResponse = await response.json();
     const videos: VideoList = videosResponse?.data?.videos;
 

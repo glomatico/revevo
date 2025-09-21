@@ -100,6 +100,8 @@ export const useArtist = () => {
       })
     });
 
+    raiseForStatus(response);
+
     const artistsResponse: ArtistResponse = await response.json();
     const artists = artistsResponse?.data?.artists;
 
@@ -165,6 +167,8 @@ export const useArtist = () => {
         variables,
       })
     });
+
+    raiseForStatus(response);
 
     const artistsResponse: ArtistResponse = await response.json();
     const artists = artistsResponse?.data?.artists;

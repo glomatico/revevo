@@ -77,6 +77,9 @@ export const useSearch = () => {
         variables,
       })
     });
+
+    raiseForStatus(response);
+
     const searchResultsResponse: SearchResultResponse = await response.json();
     const searchResults: SearchResult = searchResultsResponse?.data?.search;
 
