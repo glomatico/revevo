@@ -36,7 +36,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <media-player ref="videoPlayer">
+  <media-player ref="videoPlayer" @ended="emit('ended')">
     <media-provider></media-provider>
     <media-video-layout></media-video-layout>
   </media-player>
