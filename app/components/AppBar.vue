@@ -1,13 +1,33 @@
 <script lang="ts" setup>
-
+const appMenu = ref();
 </script>
 
 <template>
-  <div class="d-none d-sm-block align-center">
-    <AppBarNormal />
-  </div>
+  <AppMenu ref="appMenu" />
 
-  <div class="d-sm-none align-center">
-    <AppBarCompact />
-  </div>
+  <v-toolbar>
+    <v-container>
+      <v-row dense align="center">
+        <v-col cols="auto">
+          <v-btn icon="mdi-menu" variant="text" @click="appMenu.toggleDrawer()" />
+        </v-col>
+
+        <v-col cols="auto">
+          <v-toolbar-title>
+            Revevo
+          </v-toolbar-title>
+        </v-col>
+
+        <v-col>
+          <div class="d-none d-sm-block align-center">
+            <NormalAppSearchBar />
+          </div>
+
+          <div class="d-sm-none align-center">
+            <CompactAppSearchBar />
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-toolbar>
 </template>
