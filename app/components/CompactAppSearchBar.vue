@@ -20,7 +20,7 @@ const onBackClick = () => {
     </v-col>
 
     <div v-if="searchOpened" class="position-absolute top-0 left-0 right-0 bottom-0">
-      <v-toolbar>
+      <v-toolbar color="surface">
         <v-container>
           <v-row dense align="center">
             <v-col cols="auto">

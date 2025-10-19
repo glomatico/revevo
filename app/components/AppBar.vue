@@ -5,7 +5,7 @@ const appMenu = ref();
 <template>
   <AppMenu ref="appMenu" />
 
-  <v-toolbar>
+  <v-toolbar color="surface">
     <v-container>
       <v-row dense align="center">
         <v-col cols="auto">
