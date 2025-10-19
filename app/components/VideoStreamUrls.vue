@@ -1,5 +1,5 @@
 <template>
-  <v-btn block variant="text" @click="isExtraInfoDialogVisible = true">Show Stream URLs</v-btn>
+  <v-btn block variant="text" class="text-none" @click="isExtraInfoDialogVisible = true">Show Stream URLs</v-btn>
 
   <v-dialog v-model="isExtraInfoDialogVisible" max-width="600px">
     <v-card>
