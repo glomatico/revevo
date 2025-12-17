@@ -16,11 +16,13 @@ export const useArtist = () => {
 
   const filteredVideos = computed(() => {
     const filtered = videos.value.filter((video) => {
-      if (!isVideoValid(video)) {
+      if (!isVideoValid(
+        video,
+        settings.value.hidePseudoCountryIsrc,
+        settings.value.hideExplicit,
+        settings.value.hideLyricVideos,
+      )) {
         return false;
-      }
-      if (settings.value.hidePseudoCountryIsrc) {
-        return !PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video?.id.substring(0, 2));
       }
       return true;
     });
@@ -52,12 +54,7 @@ export const useArtist = () => {
   const loadVideosData = async () => {
     const response = await vevoTvApi.getArtistVideos(artistId.value, videos.value.length);
     const pageVideos = response?.data?.artist?.videos?.items || [];
-
-    if (pageVideos.length === 0) {
-      hasLoadedAllVideos.value = true;
-    } else {
-      videos.value.push(...pageVideos);
-    }
+    videos.value.push(...pageVideos);
   };
 
   const loadArtist = async () => {
