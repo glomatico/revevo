@@ -6,7 +6,7 @@ export enum PlaybackMethod {
 export enum LoadingState {
   IDLE = "idle",
   LOADING = "loading",
-  SUCCESS = "loaded",
+  SUCCESS = "success",
   ERROR = "error",
 };
 
