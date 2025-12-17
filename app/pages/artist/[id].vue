@@ -76,6 +76,10 @@ onMounted(async () => {
           <v-alert type="error">Failed to load videos.</v-alert>
         </v-col>
 
+        <v-col v-else-if="filteredVideos.length === 0" cols="12">
+          <v-alert type="info">No videos found for this artist.</v-alert>
+        </v-col>
+
         <v-col v-else cols="12">
           <v-infinite-scroll @load="loadVideos">
             <v-row class="mx-0">
