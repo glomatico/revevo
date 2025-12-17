@@ -54,6 +54,10 @@ export const useArtist = () => {
   const loadVideosData = async () => {
     const response = await vevoTvApi.getArtistVideos(artistId.value, videos.value.length);
     const pageVideos = response?.data?.artist?.videos?.items || [];
+    if (pageVideos.length === 0) {
+      hasLoadedAllVideos.value = true;
+      return;
+    }
     videos.value.push(...pageVideos);
   };
 
