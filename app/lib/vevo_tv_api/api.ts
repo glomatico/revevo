@@ -1,4 +1,4 @@
-import { QUERY_GET_ARTIST, VEVO_TV_API_BASE_URL, QUERY_GET_ARTIST_VIDEOS } from "./constants";
+import { QUERY_GET_ARTIST, VEVO_TV_API_BASE_URL, QUERY_GET_ARTIST_VIDEOS, QUERY_GET_VIDEO } from "./constants";
 
 export class VevoTvApi {
     constructor(private readonly token: string) { }
@@ -47,5 +47,9 @@ export class VevoTvApi {
             limit,
             explicit,
         });
+    }
+
+    async getVideo(id: string): Promise<any> {
+        return this.request(QUERY_GET_VIDEO, { id });
     }
 }

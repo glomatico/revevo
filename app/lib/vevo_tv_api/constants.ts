@@ -75,3 +75,38 @@ query GetArtistVideos(
   }
 }
 `;
+
+export const QUERY_GET_VIDEO = `
+query GetVideo($id: String!) {
+  video(id: $id) {
+    id
+    title
+    thumbnail
+    genre
+    artists {
+      role
+      artist {
+        id
+        name
+        thumbnail
+      }
+    }
+    explicit
+    lyricVideo
+    hls
+    dash
+    mp4 {
+      quality
+      url
+    }
+    created
+    duration
+    copyright
+    copyrightYear
+    label
+    viewCounts {
+      total
+    }
+  }
+}
+`;
