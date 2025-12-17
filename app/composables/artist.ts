@@ -18,9 +18,10 @@ export const useArtist = () => {
     const filtered = videos.value.filter((video) => {
       if (!isVideoValid(
         video,
-        settings.value.hidePseudoCountryIsrc,
-        settings.value.hideExplicit,
-        settings.value.hideLyricVideos,
+        {
+          ...settings.value,
+          checkStreams: false,
+        }
       )) {
         return false;
       }
