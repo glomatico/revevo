@@ -14,17 +14,27 @@ export const isVideoValid = (
   hideLyricVideos: boolean = false,
   checkStreams: boolean = false,
 ): boolean => {
-  return Boolean(
-    video?.title
-    &&
-    (!checkStreams || (video?.hls || video?.mp4))
-    &&
-    (!hidePseudoCountryIsrc || !PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video?.id.substring(0, 2)))
-    &&
-    (!hideExplicit || !video?.isExplicit)
-    &&
-    (!hideLyricVideos || !video?.isLyric)
-  );
+  if (!video?.title) {
+    return false;
+  }
+
+  if (checkStreams && !video?.hls && !video?.mp4) {
+    return false;
+  }
+
+  if (hidePseudoCountryIsrc && video?.id && PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video.id.substring(0, 2))) {
+    return false;
+  }
+
+  if (hideExplicit && video?.explicit) {
+    return false;
+  }
+
+  if (hideLyricVideos && video?.lyricVideo) {
+    return false;
+  }
+
+  return true;
 };
 
 export const isArtistValid = (artist: any): boolean => {
