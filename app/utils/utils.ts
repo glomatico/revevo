@@ -6,14 +6,17 @@ export const formatDuration = (milliseconds: number): string => {
   return String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
 };
 
-
 export const isVideoValid = (
   video: any,
-  hidePseudoCountryIsrc: boolean = false,
-  hideExplicit: boolean = false,
-  hideLyricVideos: boolean = false,
-  checkStreams: boolean = false,
+  options: any = {},
 ): boolean => {
+  const {
+    hidePseudoCountryIsrc = false,
+    hideExplicit = false,
+    hideLyricVideos = false,
+    checkStreams = false,
+  } = options;
+
   if (!video?.title) {
     return false;
   }
