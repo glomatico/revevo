@@ -1,37 +1,45 @@
+
 export const useSettings = () => {
-  const defaultSettings: Settings = {
-    playbackMethod: PlaybackMethod.HLS,
-    enableCaptions: false,
-    hidePseudoCountryIsrc: false,
-  };
-  const settings = ref<Settings>(defaultSettings);
+  const settings = ref(DEFAULT_SETTINGS);
 
   const loadSettings = () => {
-    Object.keys(defaultSettings).forEach((key) => {
-      const stored = localStorage.getItem(key);
-      const defaultValue = (defaultSettings as any)[key];
-
-      if (stored !== null) {
-        if (typeof defaultValue === 'boolean') {
-          (settings.value as any)[key] = stored === 'true';
-        } else if (typeof defaultValue === 'number') {
-          (settings.value as any)[key] = Number(stored);
-        } else {
-          (settings.value as any)[key] = stored;
+    try {
+      Object.keys(DEFAULT_SETTINGS).forEach((key) => {
+        const stored = localStorage.getItem(key);
+        if (stored !== null) {
+          const defaultValue = (DEFAULT_SETTINGS as any)[key];
+          if (typeof defaultValue === 'boolean') {
+            (settings.value as any)[key] = stored === 'true';
+          } else if (typeof defaultValue === 'number') {
+            (settings.value as any)[key] = Number(stored);
+          } else {
+            (settings.value as any)[key] = stored;
+          }
         }
-      }
+      });
+    } catch (error) {
+      console.error('Failed to load settings from localStorage:', error);
+    }
+  };
 
+  const initializeWatchers = () => {
+    Object.keys(DEFAULT_SETTINGS).forEach((key) => {
       watch(
         () => (settings.value as any)[key],
         (newValue) => {
-          localStorage.setItem(key, newValue.toString());
+          try {
+            localStorage.setItem(key, newValue.toString());
+          } catch (error) {
+            console.error(`Failed to save setting ${key}:`, error);
+          }
         }
       );
     });
   };
 
   return {
-    loadSettings,
     settings,
+    loadSettings,
+    initializeWatchers,
   };
 };
