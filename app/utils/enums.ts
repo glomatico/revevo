@@ -9,9 +9,3 @@ export enum LoadingState {
   SUCCESS = "success",
   ERROR = "error",
 };
-
-export interface Settings {
-  playbackMethod: PlaybackMethod;
-  enableCaptions: boolean;
-  hidePseudoCountryIsrc: boolean;
-}
