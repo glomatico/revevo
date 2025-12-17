@@ -1,37 +1,21 @@
 <script lang="ts" setup>
-const tabs = ['videos', 'about', 'related-artists'];
-const defaultTabRouteParamKey = 't';
-const defaultTab = 'videos';
-
 const route = useRoute();
 
-const tab = ref<string>((route.query.t as string) || defaultTab);
 
 const {
-  loadArtist,
-  loadArtistPage,
-  loadingStateGeneral,
+  loadingStateArtist,
   loadingStateVideos,
-  page,
   artistId,
   artist,
+  sortVideos,
+  filteredVideos,
   validArtist,
-  filteredArtistVideos,
-  pageCount,
+  loadArtist,
+  loadVideos,
+  loadAllVideos,
 } = useArtist();
 
-
-const onTabChange = (newTab: string) => {
-  tab.value = newTab;
-};
-
-const onPageChange = (newPage: number) => {
-  page.value = newPage;
-  loadArtistPage();
-};
-
 onMounted(async () => {
-  page.value = parseInt((route.query.p as string) || '1', 10);
   artistId.value = route.params.id as string;
   await loadArtist();
 });
@@ -40,18 +24,21 @@ onMounted(async () => {
 <template>
 
   <Head>
-    <Title>{{ validArtist ? `${artist?.basicMeta.name} - Revevo` : 'Revevo' }}</Title>
+    <Title>
+      {{ validArtist ? `${artist.name} - ` : '' }}
+      Revevo
+    </Title>
   </Head>
 
   <v-container>
     <v-row>
-      <template v-if="loadingStateGeneral === LoadingState.IDLE" />
+      <template v-if="loadingStateArtist === LoadingState.IDLE" />
 
-      <v-col v-else-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
+      <v-col v-else-if="loadingStateArtist === LoadingState.LOADING" cols="12">
         <LoadingSpinner />
       </v-col>
 
-      <v-col v-else-if="loadingStateGeneral === LoadingState.ERROR" cols="12">
+      <v-col v-else-if="loadingStateArtist === LoadingState.ERROR" cols="12">
         <v-alert type="error">Failed to load artist information.</v-alert>
       </v-col>
 
@@ -61,55 +48,45 @@ onMounted(async () => {
 
       <template v-else>
         <v-col cols="12">
-          <ArtistPageBanner :artist="artist!" />
+          <ArtistPageBanner :artist-avatar-url="artist.thumbnail" :artist-name="artist.name"
+            :video-count="artist.videos.itemsCount" :view-count="artist.viewCounts.total" />
         </v-col>
 
         <v-col cols="12">
-          <AppTabs :tabs="tabs" :route-param-key="defaultTabRouteParamKey" :default-tab="defaultTab"
-            @tab-change="onTabChange" />
           <v-divider thickness="2" />
         </v-col>
 
-        <v-col cols="12">
-          <v-tabs-window v-model="tab">
-            <v-tabs-window-item value="videos">
-              <v-row>
-                <template v-if="loadingStateVideos === LoadingState.IDLE" />
+        <v-col cols="12" align="center">
+          <v-btn-toggle v-model="sortVideos" @update:model-value="loadAllVideos"
+            :disabled="loadingStateVideos === LoadingState.LOADING">
+            <v-btn v-for="option in ['views', 'date', 'a-z']" :key="option" class="text-none text-capitalize"
+              :value="option" variant="outlined">
+              {{ option }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
 
-                <v-col v-if="loadingStateVideos === LoadingState.LOADING" cols="12">
-                  <LoadingSpinner />
-                </v-col>
+        <template v-if="loadingStateVideos === LoadingState.IDLE" />
 
-                <v-col v-else-if="loadingStateVideos === LoadingState.ERROR" cols="12">
-                  <v-alert type="error">Failed to load artist videos.</v-alert>
-                </v-col>
+        <v-col v-else-if="loadingStateVideos === LoadingState.LOADING" cols="12">
+          <LoadingSpinner />
+        </v-col>
 
-                <v-col v-else-if="!filteredArtistVideos?.length" cols="12">
-                  <v-alert type="warning">No videos found for this artist or no videos found in this page</v-alert>
-                </v-col>
+        <v-col v-else-if="loadingStateVideos === LoadingState.ERROR" cols="12">
+          <v-alert type="error">Failed to load videos.</v-alert>
+        </v-col>
 
-                <v-col v-else v-for="video in filteredArtistVideos" cols="12" sm="6" md="4" lg="3">
-                  <ArtistPageVideoThumbnail :video="video" />
-                </v-col>
-
-                <v-col cols="12">
-                  <v-divider thickness="2" />
-                </v-col>
-
-                <v-col cols="12">
-                  <AppPagination :page-count="pageCount!" @page-change="onPageChange" />
-                </v-col>
-              </v-row>
-            </v-tabs-window-item>
-
-            <v-tabs-window-item value="about">
-              <ArtistPageAbout :artist="artist!" />
-            </v-tabs-window-item>
-
-            <v-tabs-window-item value="related-artists">
-              <ArtistPageRelatedArtists :artist="artist!" />
-            </v-tabs-window-item>
-          </v-tabs-window>
+        <v-col v-else cols="12">
+          <v-infinite-scroll @load="loadVideos">
+            <v-row class="mx-0">
+              <v-col v-for="video in filteredVideos" cols="12" sm="6" md="4" lg="3">
+                <VideoThumbnail :id="video.id" :title="video.title" :created="video.created"
+                  :thumbnail-url="video.thumbnail" :explicit="video.explicit" :duration="video.duration"
+                  :views="video.viewCounts.total" vertical>
+                </VideoThumbnail>
+              </v-col>
+            </v-row>
+          </v-infinite-scroll>
         </v-col>
       </template>
     </v-row>

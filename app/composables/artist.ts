@@ -1,229 +1,121 @@
 export const useArtist = () => {
-  const config = useRuntimeConfig();
-  const graphqlApiUrl = config.public.graphqlApiUrl;
+  const vevoTvApi = useVevoTvApi();
+  const {
+    settings,
+    loadSettings,
+  } = useSettings();
 
-  const { loadSettings, settings } = useSettings();
+  const videos = ref<any[]>([]);
+  const hasLoadedAllVideos = ref(false);
 
-  const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
-  const loadingStateVideos = ref<LoadingState>(LoadingState.IDLE);
-  const page = ref<number>(1);
-  const artistId = ref<string>('');
-  const artist = ref<Artist>({} as Artist);
-  const validArtist = computed<boolean>(() => isArtistValid(artist.value));
-  const filteredArtistVideos = computed<Video[]>(() =>
-    artist.value?.videoData?.videos?.data?.filter(
-      video => isVideoValid(video, settings.value.hidePseudoCountryIsrc)
-    )
-  );
-  const pageCount = computed<number>(() =>
-    artist.value?.videoData?.videos?.paging?.pages || 0
-  );
+  const loadingStateArtist = ref(LoadingState.IDLE);
+  const loadingStateVideos = ref(LoadingState.IDLE);
+  const artistId = ref('');
+  const artist = ref<any>(null);
+  const sortVideos = ref('normal');
 
-  const getArtists = async (
-    artistIds: string[] | string,
-    videosPage: number = 1,
-    videosSize: number = 32,
-    videosSort: string = "viewsTotal",
-  ): Promise<Artist[]> => {
-    const query = `
-      query Artist($artistIds: [String]!, $videosSize: Int, $videosPage: Int, $videosSort: String) {
-        artists(ids: $artistIds) {
-          basicMeta {
-            name
-            thumbnailUrl
-            genres
-            bio {
-              text
-              source
-              birthCity
-              birthName
-              origin
-              dateOfBirth
-            }
-            links {
-              type
-              url
-            }
-            views {
-              viewsTotal
-            }
-          }
-          videoData(size: $videosSize, page: $videosPage, sort: $videosSort) {
-            videos {
-              data {
-                basicMetaV3 {
-                  isrc
-                  title
-                  thumbnailUrl
-                  releaseDate
-                  duration
-                  explicit
-                }
-                basicMeta {
-                  duration
-                }
-                views {
-                  viewsTotal
-                }
-              }
-              paging {
-                total
-                pages
-              }
-            }
-          }
-          relatedArtists {
-            name
-            urlSafeName
-            thumbnailUrl
-          }
-        }
+  const filteredVideos = computed(() => {
+    const filtered = videos.value.filter((video) => {
+      if (!isVideoValid(video)) {
+        return false;
       }
-    `;
-
-    const variables = {
-      artistIds: Array.isArray(artistIds) ? artistIds : [artistIds],
-      videosSize,
-      videosPage,
-      videosSort,
-    };
-
-    const response = await fetch(graphqlApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${useCookie('token').value}`,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      })
+      if (settings.value.hidePseudoCountryIsrc) {
+        return !PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video?.id.substring(0, 2));
+      }
+      return true;
     });
 
-    raiseForStatus(response);
-
-    const artistsResponse: ArtistResponse = await response.json();
-    const artists = artistsResponse?.data?.artists;
-
-    if (!artists) {
-      throw new Error(`Error when fetching artists: ${response.status} ${response.statusText}`);
+    if (sortVideos.value === 'views') {
+      return filtered.sort((a, b) => (b?.viewCounts?.total || 0) - (a?.viewCounts?.total || 0));
+    }
+    if (sortVideos.value === 'date') {
+      return filtered.sort((a, b) => new Date(b?.created || 0).getTime() - new Date(a?.created || 0).getTime());
+    }
+    if (sortVideos.value === 'a-z') {
+      return filtered.sort((a, b) => {
+        const titleA = a?.title?.toLowerCase() || '';
+        const titleB = b?.title?.toLowerCase() || '';
+        return titleA.localeCompare(titleB);
+      });
     }
 
-    return artists;
+    return filtered;
+  });
+  const validArtist = computed(() => isArtistValid(artist.value));
+
+  const loadArtistData = async () => {
+    const response = await vevoTvApi.getArtist(artistId.value);
+    artist.value = response?.data?.artist;
+    videos.value = artist.value?.videos?.items || [];
   };
 
-  const getArtistsVideos = async (
-    artistIds: string[] | string,
-    videosPage: number = 1,
-    videosSize: number = 32,
-    videosSort: string = "viewsTotal",
-  ): Promise<Artist[]> => {
-    const query = `
-      query Artist($artistIds: [String]!, $videosSize: Int, $videosPage: Int, $videosSort: String) {
-        artists(ids: $artistIds) {
-          videoData(size: $videosSize, page: $videosPage, sort: $videosSort) {
-            videos {
-              data {
-                basicMetaV3 {
-                  isrc
-                  title
-                  releaseDate
-                  thumbnailUrl
-                  duration
-                  explicit
-                }
-                basicMeta {
-                  duration
-                }
-                views {
-                  viewsTotal
-                }
-              }
-              paging {
-                total
-                pages
-              }
-            }
-          }
-        }
-      }
-    `;
+  const loadVideosData = async () => {
+    const response = await vevoTvApi.getArtistVideos(artistId.value, videos.value.length);
+    const pageVideos = response?.data?.artist?.videos?.items || [];
 
-    const variables = {
-      artistIds: Array.isArray(artistIds) ? artistIds : [artistIds],
-      videosSize,
-      videosPage,
-      videosSort,
-    };
-
-    const response = await fetch(graphqlApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${useCookie('token').value}`,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      })
-    });
-
-    raiseForStatus(response);
-
-    const artistsResponse: ArtistResponse = await response.json();
-    const artists = artistsResponse?.data?.artists;
-
-    if (!artists) {
-      throw new Error(`Error when fetching artists videos: ${response.status} ${response.statusText}`);
-    }
-
-    return artists;
-  };
-
-  const loadArtistPage = async () => {
-    loadingStateVideos.value = LoadingState.LOADING;
-
-    try {
-      const fetchedArtistVideos = await getArtistsVideos(artistId.value!, page.value);
-
-      artist.value.videoData.videos.data = (
-        fetchedArtistVideos[0]!.videoData.videos.data
-      );
-      loadingStateVideos.value = LoadingState.LOADED;
-    } catch (error) {
-      console.error(error);
-      loadingStateVideos.value = LoadingState.ERROR;
+    if (pageVideos.length === 0) {
+      hasLoadedAllVideos.value = true;
+    } else {
+      videos.value.push(...pageVideos);
     }
   };
 
   const loadArtist = async () => {
-    loadSettings();
+    loadingStateArtist.value = LoadingState.LOADING;
+    try {
+      loadSettings();
+      await loadArtistData();
+    } catch (error) {
+      console.error('Error loading artist:', error);
+      loadingStateArtist.value = LoadingState.ERROR;
+      return;
+    }
 
-    loadingStateGeneral.value = LoadingState.LOADING;
+    loadingStateArtist.value = LoadingState.SUCCESS;
+    loadingStateVideos.value = LoadingState.SUCCESS;
+  };
+
+  const loadVideos = async ({ done }: any) => {
+    if (hasLoadedAllVideos.value) {
+      done('empty');
+      return;
+    }
 
     try {
-      const fetchedArtists = await getArtists(artistId.value!, page.value);
-
-      artist.value = fetchedArtists[0]!;
-
-      loadingStateGeneral.value = LoadingState.LOADED;
-      loadingStateVideos.value = LoadingState.LOADED;
+      await loadVideosData();
+      done('ok');
     } catch (error) {
-      console.error(error);
-      loadingStateGeneral.value = LoadingState.ERROR;
+      console.error('Error loading artist videos:', error);
+      done('error');
     }
   };
 
+  const loadAllVideos = async () => {
+    loadingStateVideos.value = LoadingState.LOADING;
+
+    try {
+      while (!hasLoadedAllVideos.value) {
+        await loadVideosData();
+      }
+    } catch (error) {
+      console.error('Error loading all artist videos:', error);
+      loadingStateVideos.value = LoadingState.ERROR;
+      return;
+    }
+
+    loadingStateVideos.value = LoadingState.SUCCESS;
+  };
+
   return {
-    loadArtist,
-    loadArtistPage,
-    loadingStateGeneral,
+    loadingStateArtist,
     loadingStateVideos,
-    page,
     artistId,
     artist,
+    sortVideos,
+    filteredVideos,
     validArtist,
-    filteredArtistVideos,
-    pageCount,
+    loadArtist,
+    loadVideos,
+    loadAllVideos,
   };
 };
