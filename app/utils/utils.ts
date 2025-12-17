@@ -7,11 +7,23 @@ export const formatDuration = (milliseconds: number): string => {
 };
 
 
-export const isVideoValid = (video: any, checkStreams: boolean = false): boolean => {
+export const isVideoValid = (
+  video: any,
+  hidePseudoCountryIsrc: boolean = false,
+  hideExplicit: boolean = false,
+  hideLyricVideos: boolean = false,
+  checkStreams: boolean = false,
+): boolean => {
   return Boolean(
     video?.title
     &&
-    (checkStreams ? video?.hls || video?.mp4 : true)
+    (!checkStreams || (video?.hls || video?.mp4))
+    &&
+    (!hidePseudoCountryIsrc || !PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video?.id.substring(0, 2)))
+    &&
+    (!hideExplicit || !video?.isExplicit)
+    &&
+    (!hideLyricVideos || !video?.isLyric)
   );
 };
 
