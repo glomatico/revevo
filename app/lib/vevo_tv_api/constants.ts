@@ -22,6 +22,7 @@ query GetArtist(
         created
         thumbnail
         explicit
+        lyricVideo
         duration
         viewCounts {
           total
@@ -56,6 +57,7 @@ query GetArtistVideos(
         created
         thumbnail
         explicit
+        lyricVideo
         duration
         viewCounts {
           total
