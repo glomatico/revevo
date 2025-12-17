@@ -9,6 +9,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
+      vevoTvApiToken: process.env.VEVO_TV_API_TOKEN || 'fny8q3azy3jy94wsjavj3hr3gc',
+
+
       tokenApiUrl: process.env.TOKEN_API_URL || 'https://accounts.vevo.com/token',
       graphqlApiUrl: process.env.VEVO_GRAPHQL_API_URL || 'https://veil.vevoprd.com/graphql',
       captionsApiUrl: process.env.CAPTIONS_API_URL || 'https://api.vevo.com/captions',
