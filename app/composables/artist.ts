@@ -15,18 +15,15 @@ export const useArtist = () => {
   const sortVideos = ref('normal');
 
   const filteredVideos = computed(() => {
-    const filtered = videos.value.filter((video) => {
-      if (!isVideoValid(
+    const filtered = videos.value.filter((video) =>
+      isVideoValid(
         video,
         {
           ...settings.value,
           checkStreams: false,
         }
-      )) {
-        return false;
-      }
-      return true;
-    });
+      )
+    );
 
     if (sortVideos.value === 'views') {
       return filtered.sort((a, b) => (b?.viewCounts?.total || 0) - (a?.viewCounts?.total || 0));
