@@ -49,18 +49,18 @@ const navigateToVideo = async () => {
 </script>
 
 <template>
-  <v-card @click.prevent="navigateToVideo" :href="url" :disabled="props.disabled" :variant="cardVariant">
+  <v-card @click.prevent="navigateToVideo" :href="url" :disabled="disabled" :variant="cardVariant">
     <v-row no-gutters align="center">
       <v-col :cols="colsThumbnail">
-        <v-img :src="props.thumbnailUrl" :alt="`Thumbnail for ${props.title}`" :aspect-ratio="16 / 9" cover />
+        <v-img :src="thumbnailUrl" :alt="`Thumbnail for ${title}`" :aspect-ratio="16 / 9" cover />
       </v-col>
 
       <v-col :cols="colsInfo">
         <v-card-item :class="cardTextAlign">
-          <p class="text-truncate" :title="props.title">
+          <p class="text-truncate" :title="title">
             <v-icon v-if="isNewRelease" icon="mdi-new-box" />
-            <v-icon v-if="props.explicit" icon="mdi-alpha-e-box" />
-            {{ props.title }}
+            <v-icon v-if="explicit" icon="mdi-alpha-e-box" />
+            {{ title }}
           </p>
 
           <p class="text-truncate text-caption">
@@ -68,12 +68,12 @@ const navigateToVideo = async () => {
           </p>
 
           <p class="text-truncate text-caption">
-            <template v-if="props.duration">
-              {{ formatDuration(props.duration) }}
+            <template v-if="duration">
+              {{ formatDuration(duration) }}
             </template>
 
-            <template v-if="props.views">
-              • {{ props.views.toLocaleString() }} views
+            <template v-if="views">
+              • {{ views.toLocaleString() }} views
             </template>
           </p>
         </v-card-item>
