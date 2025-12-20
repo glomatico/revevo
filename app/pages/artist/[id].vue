@@ -59,8 +59,8 @@ onMounted(async () => {
         <v-col cols="12" align="center">
           <v-btn-toggle v-model="sortVideos" @update:model-value="loadAllVideos"
             :disabled="loadingStateVideos === LoadingState.LOADING">
-            <v-btn v-for="option in ['views', 'date', 'a-z']" :key="option" class="text-none text-capitalize"
-              :value="option" variant="outlined">
+            <v-btn v-for="option in ['views', 'date', 'a-z']" class="text-none text-capitalize" :value="option"
+              variant="outlined">
               {{ option }}
             </v-btn>
           </v-btn-toggle>
