@@ -12,7 +12,7 @@ export const useArtist = () => {
   const loadingStateVideos = ref(LoadingState.IDLE);
   const artistId = ref('');
   const artist = ref<any>(null);
-  const sortVideos = ref('normal');
+  const sortVideos = ref(null);
 
   const filteredVideos = computed(() => {
     const filtered = videos.value.filter((video) =>
@@ -61,6 +61,7 @@ export const useArtist = () => {
 
   const loadArtist = async () => {
     loadingStateArtist.value = LoadingState.LOADING;
+
     try {
       loadSettings();
       await loadArtistData();
