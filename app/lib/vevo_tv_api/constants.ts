@@ -99,6 +99,17 @@ query GetVideo($id: String!) {
       quality
       url
     }
+    captions {
+      srt {
+        url
+      }
+      vtt {
+        url
+      }
+      ttml {
+        url
+      }
+    }
     created
     duration
     copyright
