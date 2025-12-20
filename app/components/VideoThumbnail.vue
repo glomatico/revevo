@@ -63,7 +63,7 @@ const navigateToVideo = async () => {
             {{ title }}
           </p>
 
-          <p class="text-truncate text-caption">
+          <p v-if="$slots.artists" class="text-truncate text-caption">
             <slot name="artists" />
           </p>
 
