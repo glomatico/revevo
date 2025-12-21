@@ -6,7 +6,7 @@ const router = useRouter();
 const props = defineProps<{
   id: string;
   title: string;
-  created: string;
+  created?: string;
   thumbnailUrl: string;
   explicit: boolean;
   duration?: number;
