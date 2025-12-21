@@ -1,5 +1,6 @@
 export const useVideo = () => {
   const route = useRoute();
+  const router = useRouter();
 
   const vevoTvApi = useVevoTvApi();
   const {
@@ -20,6 +21,8 @@ export const useVideo = () => {
     }
   ));
   const videoPlayer = ref<any>(null);
+  const continuousPlay = ref<any>(null);
+  const playlist = ref<any>(null);
 
   const getBestMp4Stream = (): string => {
     const mp4Streams = (video.value?.mp4 || []) as any[];
@@ -81,13 +84,32 @@ export const useVideo = () => {
     );
   };
 
+  const playNextVideo = async () => {
+    let nextVideoId;
+
+    if (playlist.value != null) {
+      nextVideoId = await playlist.value.getNextVideoId();
+    } else if (continuousPlay.value != null) {
+      nextVideoId = await continuousPlay.value.getNextVideoId();
+    }
+
+    if (nextVideoId != null) {
+      router.push({
+        name: 'video',
+        query: { v: nextVideoId },
+      });
+    }
+  };
+
   return {
     loadingState,
     videoId,
     video,
     validVideo,
     videoPlayer,
-    loadVideo,
+    continuousPlay,
+    playlist,
     initializeWatcher,
+    playNextVideo,
   };
 };

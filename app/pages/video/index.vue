@@ -5,10 +5,11 @@ const {
   video,
   validVideo,
   videoPlayer,
+  continuousPlay,
+  playlist,
   initializeWatcher,
+  playNextVideo,
 } = useVideo();
-
-const continuousPlay = ref();
 
 onMounted(async () => {
   initializeWatcher();
@@ -25,7 +26,7 @@ onMounted(async () => {
   </Head>
 
   <ClientOnly>
-    <VideoPlayer ref="videoPlayer" @ended="continuousPlay?.playNextVideo" />
+    <VideoPlayer ref="videoPlayer" @ended="playNextVideo" />
   </ClientOnly>
 
   <v-container>

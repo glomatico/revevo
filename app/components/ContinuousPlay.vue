@@ -11,11 +11,11 @@ const {
   title,
   loadContinuousPlay,
   loadContinuousPlayScroll,
-  playNextVideo,
+  getNextVideoId,
 } = useContinuousPlay();
 
 defineExpose({
-  playNextVideo,
+  getNextVideoId,
 });
 
 onMounted(async () => {

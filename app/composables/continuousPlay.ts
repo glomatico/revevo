@@ -1,5 +1,4 @@
 export const useContinuousPlay = () => {
-  const router = useRouter();
   const route = useRoute();
   const vevoTvApi = useVevoTvApi();
   const {
@@ -67,7 +66,7 @@ export const useContinuousPlay = () => {
     }
   };
 
-  const playNextVideo = async () => {
+  const getNextVideoId = async () => {
     const currentIndex = items.value.findIndex((item: any) => item.video.id === currentVideoId.value);
 
     if (currentIndex === -1) {
@@ -75,23 +74,24 @@ export const useContinuousPlay = () => {
     }
 
     if (currentIndex + 1 >= items.value.length && !allItemsLoaded.value) {
+      loadingState.value = LoadingState.LOADING;
+
       try {
         await loadContinuousPlayData();
       } catch (error) {
         console.error('Error loading continuous play data for next video:', error);
+        loadingState.value = LoadingState.ERROR;
         return;
       }
+
+      loadingState.value = LoadingState.SUCCESS;
     }
 
     if (currentIndex + 1 >= items.value.length) {
       return;
     }
 
-    const nextVideoId = items.value[currentIndex + 1].video.id;
-    router.push({
-      name: 'video',
-      query: { v: nextVideoId },
-    });
+    return items.value[currentIndex + 1].video.id;
   };
 
   return {
@@ -102,6 +102,6 @@ export const useContinuousPlay = () => {
     title,
     loadContinuousPlay,
     loadContinuousPlayScroll,
-    playNextVideo,
+    getNextVideoId,
   };
 }
