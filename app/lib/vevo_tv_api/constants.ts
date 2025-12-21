@@ -121,3 +121,38 @@ query GetVideo($id: String!) {
   }
 }
 `;
+
+export const QUERY_CONTINUOUS_PLAY = `
+query GetContinuousPlay(
+  $videoId: String!
+  $offset: Int
+  $limit: Int
+  $explicit: Boolean
+) {
+  continuousPlay(videoId: $videoId) {
+    id
+    title
+    items(limit: $limit, offset: $offset, explicit: $explicit)
+    {
+      video {
+        id
+        title
+        thumbnail
+        duration
+        explicit
+        viewCounts {
+          total
+        }
+        artists {
+          role
+          artist {
+            id
+            name
+            thumbnail
+          }
+        }
+      }
+    }
+  }
+}
+`;
