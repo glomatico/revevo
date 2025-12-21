@@ -39,7 +39,7 @@ export const useArtist = () => {
       artistId.value,
       0,
       32,
-      settings.value.hideExplicit,
+      !settings.value.hideExplicit,
     );
     artist.value = response?.data?.artist;
     videos.value = artist.value?.videos?.items || [];
@@ -50,7 +50,7 @@ export const useArtist = () => {
       artistId.value,
       videos.value.length,
       32,
-      settings.value.hideExplicit,
+      !settings.value.hideExplicit,
     );
     const pageVideos = response?.data?.artist?.videos?.items || [];
     if (pageVideos.length === 0) {
