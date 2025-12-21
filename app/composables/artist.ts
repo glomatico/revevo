@@ -16,42 +16,42 @@ export const useArtist = () => {
   const sortVideos = ref(null);
 
   const filteredVideos = computed(() => {
-    const filtered = videos.value.filter((video) =>
-      isVideoValid(
-        video,
-        {
-          ...settings.value,
-          checkStreams: false,
-        }
-      )
-    );
-
     if (sortVideos.value === 'views') {
-      return filtered.sort((a, b) => (b?.viewCounts?.total || 0) - (a?.viewCounts?.total || 0));
+      return videos.value.slice().sort((a, b) => (b?.viewCounts?.total || 0) - (a?.viewCounts?.total || 0));
     }
     if (sortVideos.value === 'date') {
-      return filtered.sort((a, b) => new Date(b?.created || 0).getTime() - new Date(a?.created || 0).getTime());
+      return videos.value.slice().sort((a, b) => new Date(b?.created || 0).getTime() - new Date(a?.created || 0).getTime());
     }
     if (sortVideos.value === 'a-z') {
-      return filtered.sort((a, b) => {
+      return videos.value.slice().sort((a, b) => {
         const titleA = a?.title?.toLowerCase() || '';
         const titleB = b?.title?.toLowerCase() || '';
         return titleA.localeCompare(titleB);
       });
     }
 
-    return filtered;
+    return videos.value;
   });
   const validArtist = computed(() => isArtistValid(artist.value));
 
   const loadArtistData = async () => {
-    const response = await vevoTvApi.getArtist(artistId.value);
+    const response = await vevoTvApi.getArtist(
+      artistId.value,
+      0,
+      32,
+      settings.value.hideExplicit,
+    );
     artist.value = response?.data?.artist;
     videos.value = artist.value?.videos?.items || [];
   };
 
   const loadVideosData = async () => {
-    const response = await vevoTvApi.getArtistVideos(artistId.value, videos.value.length);
+    const response = await vevoTvApi.getArtistVideos(
+      artistId.value,
+      videos.value.length,
+      32,
+      settings.value.hideExplicit,
+    );
     const pageVideos = response?.data?.artist?.videos?.items || [];
     if (pageVideos.length === 0) {
       hasLoadedAllVideos.value = true;
