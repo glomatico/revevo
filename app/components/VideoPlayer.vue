@@ -1,12 +1,6 @@
 <script lang="ts" setup>
 import 'vidstack/bundle';
 
-const props = defineProps<{
-  streamUrl?: string;
-  captionsUrl?: string;
-  load?: boolean;
-}>();
-
 const emit = defineEmits<{
   (e: 'ended'): void;
 }>();
@@ -15,23 +9,11 @@ const {
   loadVideoPlayer,
   unloadVideoPlayer,
   videoPlayer,
-  streamUrl,
-  captionsUrl,
 } = useVideoPlayer();
 
-onMounted(async () => {
-  watch(
-    () => props.load,
-    async () => {
-      if (!props.load) {
-        await unloadVideoPlayer();
-        return;
-      }
-      streamUrl.value = props.streamUrl!;
-      captionsUrl.value = props.captionsUrl!;
-      loadVideoPlayer();
-    }, { immediate: true }
-  );
+defineExpose({
+  loadVideoPlayer,
+  unloadVideoPlayer,
 });
 </script>
 
