@@ -28,20 +28,9 @@ onMounted(() => {
         <p class="text-h6">Enable captions</p>
         <v-switch v-model="settings.enableCaptions"></v-switch>
       </v-col>
-
-      <v-col cols="12">
-        <p class="text-h6">Hide videos with pseudo-country ISRC codes (QM, QN, QT, QZ)</p>
-        <v-switch v-model="settings.hidePseudoCountryIsrc"></v-switch>
-      </v-col>
-
       <v-col cols="12">
         <p class="text-h6">Hide explicit videos</p>
         <v-switch v-model="settings.hideExplicit"></v-switch>
-      </v-col>
-
-      <v-col cols="12">
-        <p class="text-h6">Hide lyric videos</p>
-        <v-switch v-model="settings.hideLyricVideos"></v-switch>
       </v-col>
     </v-row>
   </v-container>
