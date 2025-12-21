@@ -4,14 +4,12 @@ export const useVideoPlayer = () => {
   const { loadSettings, settings } = useSettings();
 
   const videoPlayer = ref<MediaPlayerElement | null>(null);
-  const streamUrl = ref('');
-  const captionsUrl = ref('');
   const captionsEventHandler = (e: Event) => {
     settings.value.enableCaptions = videoPlayer.value!.textTracks[0]?.mode === 'showing';
   };
 
-  const attachCaptions = async () => {
-    const response = await fetch(captionsUrl.value);
+  const attachCaptions = async (captionsUrl: string) => {
+    const response = await fetch(captionsUrl);
     if (!response.ok) return;
 
     const blob = new Blob([await response.text()], { type: 'text/vtt' });
@@ -27,8 +25,8 @@ export const useVideoPlayer = () => {
     videoPlayer.value!.addEventListener('text-track-change', captionsEventHandler);
   };
 
-  const attachVideo = async () => {
-    videoPlayer.value!.src = streamUrl.value;
+  const attachVideo = async (streamUrl: string) => {
+    videoPlayer.value!.src = streamUrl;
     videoPlayer.value!.addEventListener('can-play', () => {
       videoPlayer.value!.play();
     });
@@ -40,18 +38,16 @@ export const useVideoPlayer = () => {
     videoPlayer.value!.textTracks.clear();
   };
 
-  const loadVideoPlayer = async () => {
+  const loadVideoPlayer = async (streamUrl: string, captionsUrl: string) => {
     loadSettings();
 
-    await attachCaptions();
-    await attachVideo();
+    await attachCaptions(captionsUrl);
+    await attachVideo(streamUrl);
   };
 
   return {
+    videoPlayer,
     loadVideoPlayer,
     unloadVideoPlayer,
-    videoPlayer,
-    streamUrl,
-    captionsUrl,
   };
 }

@@ -1,138 +1,33 @@
 export const useVideo = () => {
-  const config = useRuntimeConfig();
-  const graphqlApiUrl = config.public.graphqlApiUrl;
+  const route = useRoute();
 
-  const { loadSettings, settings } = useSettings();
+  const vevoTvApi = useVevoTvApi();
+  const {
+    settings,
+    loadSettings,
+  } = useSettings();
+
+  const streamUrl = ref('');
+  const captionsUrl = computed(() => `/api/captions/${videoId.value}`);
 
   const loadingState = ref(LoadingState.IDLE);
   const videoId = ref('');
-  const video = ref({} as Video);
-  const validVideo = computed(() => isVideoValid(video.value, false, true));
-  const streamUrl = ref('');
-  const captionsUrl = computed(() => `/api/captions/${videoId.value}`);
-  const filteredRelatedVideos = computed(
-    () => video.value?.relatedVideos?.data?.filter(
-      v =>
-        isVideoValid(v, settings.value.hidePseudoCountryIsrc)
-        && v?.basicMetaV3?.isrc !== video.value?.basicMetaV3?.isrc
-    )
-  );
-
-  const getVideos = async (
-    videoIds: string[] | string,
-    relatedVideosPage: number = 1,
-    relatedVideosSize: number = 32,
-  ): Promise<VideoList> => {
-    const query = `
-      query Video($videoIds: [String]!, $relatedVideosPage: Int, $relatedVideosSize: Int) {
-        videos(ids: $videoIds) {
-          data {
-            id
-            basicMetaV3 {
-              isrc
-              title
-              releaseDate
-              copyright
-              credits {
-                role
-                name
-              }
-              genres
-              thumbnailUrl
-              duration
-              explicit
-              artists {
-                id
-                basicMeta {
-                  name
-                  thumbnailUrl
-                  urlSafeName
-                }
-              }
-              categories
-            }
-            streamsV3 {
-              format
-              quality
-              url
-            }
-            relatedVideos(size: $relatedVideosSize, page: $relatedVideosPage) {
-              data {
-                basicMetaV3 {
-                  title
-                  isrc
-                  explicit
-                  thumbnailUrl
-                  duration
-                  artists {
-                    basicMeta {
-                      name
-                      urlSafeName
-                      thumbnailUrl
-                      role
-                    }
-                  }
-                }
-                views {
-                  viewsTotal
-                }
-              }
-              paging {
-                total
-                pages
-              }
-            }
-            views {
-              viewsTotal
-              youTubeId
-            }
-          }
-        }
-      }
-    `;
-
-    const variables = {
-      videoIds: Array.isArray(videoIds) ? videoIds : [videoIds],
-      relatedVideosPage,
-      relatedVideosSize,
-    };
-
-    const response = await fetch(graphqlApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      })
-    });
-
-    raiseForStatus(response);
-
-    const videosResponse: VideoResponse = await response.json();
-    const videos: VideoList = videosResponse?.data?.videos;
-
-    if (!videos) {
-      throw new Error('Invalid response structure: missing videos data');
+  const video = ref<any>(null);
+  const validVideo = computed(() => isVideoValid(
+    video.value,
+    {
+      checkStreams: true,
     }
-
-    return videos;
-  };
+  ));
+  const videoPlayer = ref<any>(null);
 
   const getBestMp4Stream = (): string => {
-    const streams = video.value!.streamsV3!;
-
+    const mp4Streams = (video.value?.mp4 || []) as any[];
     const qualityPriority = ['high', 'medium', 'low'];
 
-    const mp4Streams = streams.filter(stream =>
-      stream.format === 'mp4' && stream.url
-    );
-
     for (const quality of qualityPriority) {
-      const stream = mp4Streams.find(s => s.quality === quality);
-      if (stream) return stream.url;
+      const stream = mp4Streams.find(stream => stream?.quality === quality);
+      if (stream) return stream?.url;
     }
 
     return '';
@@ -140,15 +35,15 @@ export const useVideo = () => {
 
   const loadStreamUrl = () => {
     if (settings.value.playbackMethod === PlaybackMethod.MP4) {
-      streamUrl.value = getBestMp4Stream()!;
+      streamUrl.value = getBestMp4Stream();
+    } else {
+      streamUrl.value = video.value?.hls
     }
-    else {
-      streamUrl.value = video.value!.streamsV3.find(s => s.format === 'hls')!.url;
-    }
+  };
 
-    if (streamUrl.value) {
-      streamUrl.value = streamUrl.value.replace('http://', 'https://');
-    }
+  const loadVideoData = async () => {
+    const response = await vevoTvApi.getVideo(videoId.value);
+    video.value = response.data?.video;
   };
 
   const loadVideo = async () => {
@@ -157,28 +52,42 @@ export const useVideo = () => {
     loadingState.value = LoadingState.LOADING;
 
     try {
-      const videosResponse = await getVideos(videoId.value!);
+      await loadVideoData();
 
-      video.value = videosResponse.data[0]!;
       if (validVideo.value) {
         loadStreamUrl();
       }
 
-      loadingState.value = LoadingState.LOADED;
+      loadingState.value = LoadingState.SUCCESS;
     } catch (error) {
-      console.error(error);
+      console.error('Error loading video:', error);
       loadingState.value = LoadingState.ERROR;
     }
   };
 
+  const initializeWatcher = () => {
+    watch(
+      () => route.query.v,
+      async (newVideoId) => {
+        videoId.value = newVideoId as string;
+        window.scrollTo(0, 0);
+        await videoPlayer.value?.unloadVideoPlayer();
+        await loadVideo();
+        if (validVideo.value) {
+          await videoPlayer.value?.loadVideoPlayer(streamUrl.value, captionsUrl.value);
+        }
+      },
+      { immediate: true }
+    );
+  };
+
   return {
-    loadVideo,
     loadingState,
     videoId,
     video,
     validVideo,
-    streamUrl,
-    captionsUrl,
-    filteredRelatedVideos,
+    videoPlayer,
+    loadVideo,
+    initializeWatcher,
   };
-}
+};

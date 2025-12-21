@@ -1,156 +1,75 @@
 <script lang="ts" setup>
-const route = useRoute();
-const router = useRouter();
-
 const {
-  loadVideo,
-  loadingState: loadingStateVideo,
+  loadingState,
   videoId,
   video,
   validVideo,
-  streamUrl,
-  captionsUrl,
-  filteredRelatedVideos,
+  videoPlayer,
+  initializeWatcher,
 } = useVideo();
 
-const {
-  loadPlaylist,
-  loadPlaylistVideos,
-  loadingStateGeneral: loadingStatePlaylist,
-  playlist,
-  playlistId,
-  validPlaylist,
-  filteredPlaylistVideos,
-  isFullyLoaded,
-} = usePlaylist();
-
-playlistId.value = route.query.p as string || '';
-
-const onVideoEnded = () => {
-  if (!validPlaylist.value) return;
-
-  const currentIndex = parseInt(route.query.i as string) || 1;
-  if (currentIndex >= filteredPlaylistVideos.value.length && !isFullyLoaded.value) {
-    loadPlaylistVideos();
-  }
-
-  const nextVideo = filteredPlaylistVideos.value[currentIndex];
-  if (nextVideo) {
-    router.push(
-      {
-        query: {
-          v: nextVideo.basicMetaV3.isrc,
-          p: playlistId.value,
-          i: (currentIndex + 1).toString(),
-        }
-      }
-    );
-  }
-};
+const continuousPlay = ref();
 
 onMounted(async () => {
-  watch(
-    () => route.query.p,
-    async (newPlaylistId) => {
-      playlistId.value = newPlaylistId as string;
-      if (!playlistId.value) return;
-      await loadPlaylist();
-    },
-    { immediate: true }
-  );
-
-  watch(
-    () => route.query.v,
-    async (newVideoId) => {
-      videoId.value = newVideoId as string;
-      window.scrollTo(0, 0);
-      await loadVideo();
-    },
-    { immediate: true }
-  );
+  initializeWatcher();
 });
-
 </script>
 
 <template>
 
   <Head>
-    <Title>{{ validVideo ? `${video?.basicMetaV3.title} - Revevo` : 'Revevo' }}</Title>
+    <Title>
+      {{ validVideo ? `${video.title} - ` : '' }}
+      Revevo
+    </Title>
   </Head>
 
   <ClientOnly>
-    <VideoPlayer :load="loadingStateVideo === LoadingState.LOADED && validVideo" :stream-url="streamUrl"
-      :captions-url="captionsUrl" @ended="onVideoEnded" />
+    <VideoPlayer ref="videoPlayer" @ended="continuousPlay?.playNextVideo" />
   </ClientOnly>
 
   <v-container>
     <v-row>
       <v-col cols="12" md="8">
-        <template v-if="loadingStateVideo === LoadingState.IDLE" />
+        <template v-if="loadingState === LoadingState.IDLE" />
 
-        <LoadingSpinner v-else-if="loadingStateVideo === LoadingState.LOADING" />
+        <LoadingSpinner v-else-if="loadingState === LoadingState.LOADING" />
 
-        <v-alert v-else-if="loadingStateVideo === LoadingState.ERROR" type="error">
+        <v-alert v-else-if="loadingState === LoadingState.ERROR" type="error">
           Failed to load video.
         </v-alert>
 
         <v-alert v-else-if="!validVideo" type="warning">Video not found or is unavailable.</v-alert>
 
-        <VideoInfo v-else :video="video" />
+        <VideoInfo v-else :id="video.id" :title="video.title" :genre="video.genre" :duration="video.duration"
+          :explicit="video.explicit" :lyric-video="video.lyricVideo" :date="video.created" :copyright="video.copyright"
+          :label="video.label" :copyright-year="video.copyrightYear" :views="video.viewCounts?.total">
+          <template #artists>
+            <v-row dense class="my-2">
+              <v-col v-for="artist in video.artists" :key="artist" cols="auto">
+                <ArtistLinkChip :artist-id="artist.artist.id" :artist-name="artist.artist.name"
+                  :artist-thumbnail="artist.artist.thumbnail" />
+              </v-col>
+            </v-row>
+          </template>
+
+          <template #streamurls>
+            <VideoStreamUrls>
+              <template #default>
+                <VideoStreamsUrlRow label="HLS" :url="video.hls" />
+                <VideoStreamsUrlRow v-for="mp4Item in video.mp4" :key="mp4Item.quality"
+                  :label="`MP4 ${mp4Item.quality}`" :url="mp4Item.url" />
+                <VideoStreamsUrlRow label="Captions (SRT)" :url="video.captions.srt.url" />
+                <VideoStreamsUrlRow label="Captions (VTT)" :url="video.captions.vtt.url" />
+                <VideoStreamsUrlRow label="Captions (TTML)" :url="video.captions.ttml.url" />
+              </template>
+            </VideoStreamUrls>
+          </template>
+        </VideoInfo>
       </v-col>
 
-      <v-col cols="12" md="4">
-        <v-row v-if="playlistId">
-          <v-col cols="12">
-            <p class="text-h6">
-              Playlist
-            </p>
-          </v-col>
-
-          <v-col cols="12">
-            <LoadingSpinner v-if="loadingStatePlaylist === LoadingState.LOADING" />
-
-            <v-alert v-else-if="loadingStatePlaylist === LoadingState.ERROR" type="error">
-              Failed to load playlist.
-            </v-alert>
-
-            <v-alert v-else-if="!filteredPlaylistVideos?.length" type="info">No videos available in this
-              playlist.</v-alert>
-
-            <v-alert v-else-if="!validPlaylist" type="warning">Playlist not found or is unavailable.</v-alert>
-
-            <PlaylistItems v-else :playlist="playlist" />
-          </v-col>
-        </v-row>
-
-        <v-row v-if="videoId">
-          <v-col cols="12">
-            <p class="text-h6">
-              Related Videos
-            </p>
-          </v-col>
-
-          <template v-if="loadingStateVideo === LoadingState.IDLE" />
-
-          <v-col v-else-if="loadingStateVideo === LoadingState.LOADING" cols="12">
-            <LoadingSpinner />
-          </v-col>
-
-          <template v-else-if="loadingStateVideo === LoadingState.ERROR" />
-
-          <v-col v-else-if="!filteredRelatedVideos?.length" cols="12">
-            <v-alert type="info">No related videos found.</v-alert>
-          </v-col>
-
-          <v-col v-else v-for="item in filteredRelatedVideos" :key="item.basicMetaV3.isrc" cols="12">
-            <div class="d-none d-sm-block">
-              <VideoThumbnail :video="item" />
-            </div>
-            <div class="d-sm-none">
-              <VideoThumbnail :video="item" :vertical="true" />
-            </div>
-          </v-col>
-        </v-row>
+      <v-col v-if="videoId" cols="12" md="4">
+        <ContinuousPlay ref="continuousPlay" :video-id="videoId" />
       </v-col>
     </v-row>
   </v-container>
