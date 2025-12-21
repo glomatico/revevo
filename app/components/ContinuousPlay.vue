@@ -55,6 +55,11 @@ onMounted(async () => {
                 <VideoThumbnail :id="item.id" :title="item.title" :created="item.created"
                   :thumbnail-url="item.thumbnail" :explicit="item.explicit" :duration="item.duration"
                   :views="item.viewCounts?.total" :tonal="item.id === currentVideoId">
+                  <template #artists>
+                    <ArtistLink v-for="(artist, index) in item.artists" :key="artist.artist.id"
+                      :artist-id="artist.artist.id" :artist-name="artist.artist.name"
+                      :last="index === item.artists.length - 1" />
+                  </template>
                 </VideoThumbnail>
               </div>
 
@@ -62,6 +67,11 @@ onMounted(async () => {
                 <VideoThumbnail :id="item.id" :title="item.title" :created="item.created"
                   :thumbnail-url="item.thumbnail" :explicit="item.explicit" :duration="item.duration"
                   :views="item.viewCounts?.total" vertical :tonal="item.id === currentVideoId">
+                  <template #artists>
+                    <ArtistLink v-for="(artist, index) in item.artists" :key="artist.artist.id"
+                      :artist-id="artist.artist.id" :artist-name="artist.artist.name"
+                      :last="index === item.artists.length - 1" />
+                  </template>
                 </VideoThumbnail>
               </div>
             </v-col>
