@@ -75,7 +75,7 @@ export const useArtist = () => {
     loadingStateVideos.value = LoadingState.SUCCESS;
   };
 
-  const loadVideos = async ({ done }: any) => {
+  const loadVideosScroll = async ({ done }: any) => {
     if (hasLoadedAllVideos.value) {
       done('empty');
       return;
@@ -115,7 +115,7 @@ export const useArtist = () => {
     filteredVideos,
     validArtist,
     loadArtist,
-    loadVideos,
+    loadVideosScroll,
     loadAllVideos,
   };
 };

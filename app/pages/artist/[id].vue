@@ -11,7 +11,7 @@ const {
   filteredVideos,
   validArtist,
   loadArtist,
-  loadVideos,
+  loadVideosScroll,
   loadAllVideos,
 } = useArtist();
 
@@ -81,7 +81,7 @@ onMounted(async () => {
         </v-col>
 
         <v-col v-else cols="12">
-          <v-infinite-scroll @load="loadVideos">
+          <v-infinite-scroll @load="loadVideosScroll">
             <v-row class="mx-0">
               <v-col v-for="video in filteredVideos" :key="video" cols="12" sm="6" md="4" lg="3">
                 <VideoThumbnail :id="video.id" :title="video.title" :created="video.created"
