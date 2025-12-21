@@ -4,6 +4,7 @@ export const useArtist = () => {
     settings,
     loadSettings,
   } = useSettings();
+  loadSettings();
 
   const videos = ref<any[]>([]);
   const hasLoadedAllVideos = ref(false);
@@ -63,7 +64,6 @@ export const useArtist = () => {
     loadingStateArtist.value = LoadingState.LOADING;
 
     try {
-      loadSettings();
       await loadArtistData();
     } catch (error) {
       console.error('Error loading artist:', error);
