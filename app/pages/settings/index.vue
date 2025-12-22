@@ -28,9 +28,15 @@ onMounted(() => {
         <p class="text-h6">Enable captions</p>
         <v-switch v-model="settings.enableCaptions"></v-switch>
       </v-col>
+
       <v-col cols="12">
         <p class="text-h6">Hide explicit videos</p>
         <v-switch v-model="settings.hideExplicit"></v-switch>
+      </v-col>
+
+      <v-col cols="12">
+        <p class="text-h6">Disable autoplay</p>
+        <v-switch v-model="settings.disableAutoplay"></v-switch>
       </v-col>
     </v-row>
   </v-container>

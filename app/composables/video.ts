@@ -85,6 +85,10 @@ export const useVideo = () => {
   };
 
   const playNextVideo = async () => {
+    if (settings.value.disableAutoplay) {
+      return;
+    }
+
     let nextVideoId;
 
     if (playlist.value != null) {

@@ -3,4 +3,5 @@ export const DEFAULT_SETTINGS = {
     playbackMethod: PlaybackMethod.HLS,
     enableCaptions: false,
     hideExplicit: false,
+    disableAutoplay: false,
 };
