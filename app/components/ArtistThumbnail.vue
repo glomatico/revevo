@@ -1,22 +1,18 @@
 <script lang="ts" setup>
 const props = defineProps<{
-  artist: BasicArtistMeta;
+  artistId: string;
+  artistName: string;
+  artistAvatarUrl?: string;
 }>();
-
-const resizedAvatarlUrl = ref('');
-
-if (props.artist?.thumbnailUrl) {
-  resizedAvatarlUrl.value = resizeImageUrl(props.artist.thumbnailUrl, 256, 256);
-}
 </script>
 
 <template>
-  <v-card :to="`/artist/${artist.urlSafeName}`">
+  <v-card :to="`/artist/${artistId}`">
     <v-row no-gutters>
       <v-col cols="12" align="center">
-        <v-img class="ma-2" :src="resizedAvatarlUrl" :alt="`Profile avatar of ${artist.name}.`" rounded="circle"
+        <v-img class="ma-2" :src="artistAvatarUrl" :alt="`Profile avatar of ${artistName}.`" rounded="circle"
           :aspect-ratio="1" width="120">
-          <div v-if="!resizedAvatarlUrl">
+          <div v-if="!artistAvatarUrl">
             <v-icon size="120">
               mdi-account-circle
             </v-icon>
@@ -26,7 +22,7 @@ if (props.artist?.thumbnailUrl) {
 
       <v-col cols="12">
         <v-card-item>
-          <p class="text-center text-truncate">{{ artist.name }}</p>
+          <p class="text-center text-truncate">{{ artistName }}</p>
         </v-card-item>
       </v-col>
     </v-row>
