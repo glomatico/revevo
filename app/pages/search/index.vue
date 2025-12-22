@@ -30,7 +30,7 @@ onMounted(async () => {
       </v-col>
 
       <template v-else>
-        <v-col>
+        <v-col v-if="query" cols="12">
           <p class="text-h4 font-weight-bold">
             Search results for "{{ query }}"
           </p>
