@@ -156,3 +156,68 @@ query GetContinuousPlay(
   }
 }
 `;
+
+export const QUERY_SEARCH = `
+query SearchAll(
+  $query: String!
+  $explicit: Boolean
+  $offset: Int
+  $limit: Int
+) {
+  videoSearch(
+    query: $query
+    explicit: $explicit
+    offset: $offset
+    limit: $limit
+  ) {
+    itemsCount
+    items {
+      id
+      title
+      thumbnail
+      duration
+      explicit
+      artists {
+        role
+        artist {
+          id
+          name
+          thumbnail
+        }
+      }
+      viewCounts {
+        total
+      }
+    }
+  }
+  artistSearch(
+    query: $query
+    explicit: $explicit
+    offset: $offset
+    limit: $limit
+  ) {
+    itemsCount
+    items {
+      id
+      name
+      thumbnail
+      viewCounts {
+        total
+      }
+    }
+  }
+  playlistSearch(
+    query: $query
+    explicit: $explicit
+    offset: $offset
+    limit: $limit
+  ) {
+    itemsCount
+    items {
+      id
+      title
+      thumbnail
+    }
+  }
+}
+`;

@@ -1,4 +1,4 @@
-import { QUERY_GET_ARTIST, VEVO_TV_API_BASE_URL, QUERY_GET_ARTIST_VIDEOS, QUERY_GET_VIDEO, QUERY_CONTINUOUS_PLAY } from "./constants";
+import { QUERY_GET_ARTIST, VEVO_TV_API_BASE_URL, QUERY_GET_ARTIST_VIDEOS, QUERY_GET_VIDEO, QUERY_CONTINUOUS_PLAY, QUERY_SEARCH } from "./constants";
 
 export class VevoTvApi {
     constructor(private readonly token: string) { }
@@ -65,6 +65,20 @@ export class VevoTvApi {
     ): Promise<any> {
         return this.request(QUERY_CONTINUOUS_PLAY, {
             videoId,
+            offset,
+            limit,
+            explicit,
+        });
+    }
+
+    async search(
+        query: string,
+        offset = 0,
+        limit = 32,
+        explicit = true,
+    ): Promise<any> {
+        return this.request(QUERY_SEARCH, {
+            query,
             offset,
             limit,
             explicit,
