@@ -73,14 +73,22 @@ export class VevoTvApi {
 
     async search(
         query: string,
-        offset = 0,
-        limit = 32,
+        videosOffset = 0,
+        videosLimit = 32,
+        artistsOffset = 0,
+        artistsLimit = 32,
+        playlistsOffset = 0,
+        playlistsLimit = 32,
         explicit = true,
     ): Promise<any> {
         return this.request(QUERY_SEARCH, {
             query,
-            offset,
-            limit,
+            videosOffset,
+            videosLimit,
+            artistsOffset,
+            artistsLimit,
+            playlistsOffset,
+            playlistsLimit,
             explicit,
         });
     }

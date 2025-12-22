@@ -160,15 +160,19 @@ query GetContinuousPlay(
 export const QUERY_SEARCH = `
 query SearchAll(
   $query: String!
+  $videosOffset: Int
+  $videosLimit: Int
+  $artistsOffset: Int
+  $artistsLimit: Int
+  $playlistsOffset: Int
+  $playlistsLimit: Int
   $explicit: Boolean
-  $offset: Int
-  $limit: Int
 ) {
   videoSearch(
     query: $query
     explicit: $explicit
-    offset: $offset
-    limit: $limit
+    offset: $videosOffset
+    limit: $videosLimit
   ) {
     itemsCount
     items {
@@ -177,6 +181,7 @@ query SearchAll(
       thumbnail
       duration
       explicit
+      created
       artists {
         role
         artist {
@@ -193,8 +198,8 @@ query SearchAll(
   artistSearch(
     query: $query
     explicit: $explicit
-    offset: $offset
-    limit: $limit
+    offset: $artistsOffset
+    limit: $artistsLimit
   ) {
     itemsCount
     items {
@@ -209,8 +214,8 @@ query SearchAll(
   playlistSearch(
     query: $query
     explicit: $explicit
-    offset: $offset
-    limit: $limit
+    offset: $playlistsOffset
+    limit: $playlistsLimit
   ) {
     itemsCount
     items {
