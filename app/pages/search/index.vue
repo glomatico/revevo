@@ -45,7 +45,7 @@ onMounted(async () => {
                 </v-col>
               </v-row>
 
-              <v-infinite-scroll v-else @load="loadSearchVideoScroll">
+              <v-infinite-scroll v-else @load="loadSearchVideoScroll" class="overflow-x-hidden">
                 <v-row>
                   <v-col v-for="item in videos" :key="item" cols="12" sm="6" md="4" lg="3">
                     <VideoThumbnail :id="item.id" :title="item.title" :created="item.created"
@@ -69,7 +69,7 @@ onMounted(async () => {
                 </v-col>
               </v-row>
 
-              <v-infinite-scroll v-else @load="loadSearchArtistScroll">
+              <v-infinite-scroll v-else @load="loadSearchArtistScroll" class="overflow-x-hidden">
                 <v-row>
                   <v-col v-for="item in artists" :key="item" cols="12" sm="6" md="4" lg="3">
                     <ArtistThumbnail :artist-id="item.id" :artist-name="item.name"
@@ -86,7 +86,7 @@ onMounted(async () => {
                 </v-col>
               </v-row>
 
-              <v-infinite-scroll v-else @load="loadSearchPlaylistScroll">
+              <v-infinite-scroll v-else @load="loadSearchPlaylistScroll" class="overflow-x-hidden">
                 <v-row>
                   <v-col v-for="item in playlists" :key="item" cols="12" sm="6" md="4" lg="3">
                     <PlaylistThumbnail :id="item.id" :thumbnail-url="item.thumbnail" :title="item.title" />

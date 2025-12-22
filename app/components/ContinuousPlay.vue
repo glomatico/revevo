@@ -42,7 +42,7 @@ onMounted(async () => {
 
     <template v-else>
       <v-col cols="12">
-        <v-infinite-scroll @load="loadContinuousPlayScroll">
+        <v-infinite-scroll @load="loadContinuousPlayScroll" class="overflow-x-hidden">
           <v-row>
             <v-col cols="12">
               <p class="text-h6">
