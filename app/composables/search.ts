@@ -1,149 +1,145 @@
 export const useSearch = () => {
-  const config = useRuntimeConfig();
-  const graphqlApiUrl = config.public.graphqlApiUrl;
+  const route = useRoute();
+  const router = useRouter();
 
-  const { loadSettings, settings } = useSettings();
+  const vevoTvApi = useVevoTvApi();
+  const {
+    settings,
+    loadSettings,
+  } = useSettings();
+  loadSettings();
 
-  const loadingStateGeneral = ref<LoadingState>(LoadingState.IDLE);
-  const loadingStateResults = ref<LoadingState>(LoadingState.IDLE);
-  const searchQuery = ref<string>();
-  const searchOffset = ref<number>();
-  const searchResults = ref<SearchResult>();
-  const pageCount = ref<number>();
-  const filteredVideoSerchResults = ref<Video[]>();
-  const filteredArtistSerchResults = ref<Artist[]>();
+  const allVideosLoaded = ref(false);
+  const allArtistsLoaded = ref(false);
+  const allPlaylistsLoaded = ref(false);
 
+  const loadingState = ref(LoadingState.IDLE);
+  const query = ref('');
+  const videos = ref<any[]>([]);
+  const artists = ref<any[]>([]);
+  const playlists = ref<any[]>([]);
 
-  const getSearchResults = async (
-    searchQuery: string,
-    offsetArtists: number = 0,
-    offsetVideos: number = 0,
-    limit: number = 32,
-  ): Promise<SearchResult> => {
-    const query = `
-      query Search($search: String!, $limit: Int, $offsetArtists: Int, $offsetVideos: Int) {
-        search {
-          artists(search: $search, limit: $limit, offset: $offsetArtists) {
-            items {
-              id
-              basicMeta {
-                name
-                urlSafeName
-                thumbnailUrl
-              }
-            }
-            total
-          }
-          videos(search: $search, limit: $limit, offset: $offsetVideos) {
-            items {
-              basicMetaV3 {
-                isrc
-                title
-                thumbnailUrl
-                duration
-                explicit
-                artists {
-                  basicMeta {
-                    name
-                    urlSafeName
-                    role
-                  }
-                }
-              }
-              views {
-                viewsTotal
-              }
-            }
-            total
-          }
-        }
-      }
-    `
-    const variables = {
-      search: searchQuery,
-      limit,
-      offsetArtists,
-      offsetVideos,
-    };
+  const loadSearchData = async () => {
+    const response = await vevoTvApi.search(
+      query.value,
+      videos.value.length,
+      32,
+      artists.value.length,
+      32,
+      playlists.value.length,
+      32,
+      !settings.value.hideExplicit,
+    );
 
-    const response = await fetch(graphqlApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${useCookie<string | null>('token').value}`,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      })
-    });
-
-    raiseForStatus(response);
-
-    const searchResultsResponse: SearchResultResponse = await response.json();
-    const searchResults: SearchResult = searchResultsResponse?.data?.search;
-
-    if (!searchResults) {
-      throw new Error(`Error when fetching search results: ${response.status} ${response.statusText}`);
+    const videosResponse = response?.data?.videoSearch?.items || [];
+    if (videosResponse.length === 0) {
+      allVideosLoaded.value = true;
+    } else {
+      videos.value.push(...videosResponse);
     }
 
-    return searchResults;
-  };
-
-  const filterSearchResults = (searchResultsResponse: SearchResult) => {
-    filteredVideoSerchResults.value = searchResultsResponse.videos.items
-      .filter(video => isVideoValid(video, settings.value.hidePseudoCountryIsrc));
-    filteredArtistSerchResults.value = searchResultsResponse.artists.items
-      .filter(artist => isArtistValid(artist));
-  };
-
-  const loadSearchPage = async () => {
-    loadingStateResults.value = LoadingState.LOADING;
-
-    try {
-      const searchResultsResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
-
-      const totalVideos = searchResultsResponse.videos.total;
-      const totalArtists = searchResultsResponse.artists.total;
-      pageCount.value = Math.ceil(Math.max(totalVideos, totalArtists) / 32);
-      filterSearchResults(searchResultsResponse);
-    } catch (error) {
-      console.error(error);
-      loadingStateResults.value = LoadingState.ERROR;
+    const artistsResponse = response?.data?.artistSearch?.items || [];
+    if (artistsResponse.length === 0) {
+      allArtistsLoaded.value = true;
+    } else {
+      artists.value.push(...artistsResponse);
     }
 
-    loadingStateResults.value = LoadingState.LOADED;
+    const playlistsResponse = response?.data?.playlistSearch?.items || [];
+    if (playlistsResponse.length === 0) {
+      allPlaylistsLoaded.value = true;
+    } else {
+      playlists.value.push(...playlistsResponse);
+    }
   };
 
   const loadSearch = async () => {
-    loadSettings();
+    videos.value = [];
+    artists.value = [];
+    playlists.value = [];
+    allVideosLoaded.value = false;
+    allArtistsLoaded.value = false;
+    allPlaylistsLoaded.value = false;
 
-    loadingStateGeneral.value = LoadingState.LOADING;
+    loadingState.value = LoadingState.LOADING;
 
     try {
-      const searchResultsResponse = await getSearchResults(searchQuery.value!, searchOffset.value, searchOffset.value);
-
-      searchResults.value = searchResultsResponse;
-      filterSearchResults(searchResultsResponse);
+      await loadSearchData();
     } catch (error) {
-      console.error(error);
-      loadingStateGeneral.value = LoadingState.ERROR;
+      console.error('Error loading search data:', error);
+      loadingState.value = LoadingState.ERROR;
+      return;
     }
 
-    loadingStateGeneral.value = LoadingState.LOADED;
-    loadingStateResults.value = LoadingState.LOADED;
+    loadingState.value = LoadingState.SUCCESS;
+  };
+
+  const loadSearchVideoScroll = async ({ done }: any) => {
+    if (allVideosLoaded.value) {
+      done('empty');
+      return;
+    }
+
+    try {
+      await loadSearchData();
+      done('ok');
+    }
+    catch (error) {
+      console.error('Error loading search videos:', error);
+      done('error');
+    }
+  };
+
+  const loadSearchArtistScroll = async ({ done }: any) => {
+    if (allArtistsLoaded.value) {
+      done('empty');
+      return;
+    }
+
+    try {
+      await loadSearchData();
+      done('ok');
+    } catch (error) {
+      console.error('Error loading search artists:', error);
+      done('error');
+    }
+  };
+
+  const loadSearchPlaylistScroll = async ({ done }: any) => {
+    if (allPlaylistsLoaded.value) {
+      done('empty');
+      return;
+    }
+
+    try {
+      await loadSearchData();
+      done('ok');
+    } catch (error) {
+      console.error('Error loading search playlists:', error);
+      done('error');
+    }
+  };
+
+  const initializeWatcher = () => {
+    watch(
+      () => route.query.q,
+      async (newQuery) => {
+        query.value = newQuery as string || '';
+        await loadSearch();
+      },
+      { immediate: true }
+    );
   };
 
   return {
-    loadSearch,
-    loadSearchPage,
-    loadingStateGeneral,
-    loadingStateResults,
-    searchQuery,
-    searchOffset,
-    searchResults,
-    pageCount,
-    filteredVideoSerchResults,
-    filteredArtistSerchResults,
+    loadingState,
+    query,
+    videos,
+    artists,
+    playlists,
+    loadSearchVideoScroll,
+    loadSearchArtistScroll,
+    loadSearchPlaylistScroll,
+    initializeWatcher,
   };
 };
