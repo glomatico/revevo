@@ -7,7 +7,7 @@ export const useArtist = () => {
   loadSettings();
 
   const videos = ref<any[]>([]);
-  const hasLoadedAllVideos = ref(false);
+  const allVideosLoaded = ref(false);
 
   const loadingStateArtist = ref(LoadingState.IDLE);
   const loadingStateVideos = ref(LoadingState.IDLE);
@@ -54,7 +54,7 @@ export const useArtist = () => {
     );
     const pageVideos = response?.data?.artist?.videos?.items || [];
     if (pageVideos.length === 0) {
-      hasLoadedAllVideos.value = true;
+      allVideosLoaded.value = true;
       return;
     }
     videos.value.push(...pageVideos);
@@ -76,7 +76,7 @@ export const useArtist = () => {
   };
 
   const loadVideosScroll = async ({ done }: any) => {
-    if (hasLoadedAllVideos.value) {
+    if (allVideosLoaded.value) {
       done('empty');
       return;
     }
@@ -94,7 +94,7 @@ export const useArtist = () => {
     loadingStateVideos.value = LoadingState.LOADING;
 
     try {
-      while (!hasLoadedAllVideos.value) {
+      while (!allVideosLoaded.value) {
         await loadVideosData();
       }
     } catch (error) {
