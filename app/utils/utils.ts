@@ -8,32 +8,12 @@ export const formatDuration = (milliseconds: number): string => {
 
 export const isVideoValid = (
   video: any,
-  options: any = {},
 ): boolean => {
-  const {
-    hidePseudoCountryIsrc = false,
-    hideExplicit = false,
-    hideLyricVideos = false,
-    checkStreams = false,
-  } = options;
-
   if (!video?.title) {
     return false;
   }
 
-  if (checkStreams && !video?.hls && !video?.mp4) {
-    return false;
-  }
-
-  if (hidePseudoCountryIsrc && video?.id && PSEUDO_COUNTRY_ISRC_PREFIXES.includes(video.id.substring(0, 2))) {
-    return false;
-  }
-
-  if (hideExplicit && video?.explicit) {
-    return false;
-  }
-
-  if (hideLyricVideos && video?.lyricVideo) {
+  if (!video?.hls && !video?.mp4) {
     return false;
   }
 

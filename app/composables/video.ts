@@ -14,12 +14,7 @@ export const useVideo = () => {
   const loadingState = ref(LoadingState.IDLE);
   const videoId = ref('');
   const video = ref<any>(null);
-  const validVideo = computed(() => isVideoValid(
-    video.value,
-    {
-      checkStreams: true,
-    }
-  ));
+  const validVideo = computed(() => isVideoValid(video.value));
   const videoPlayer = ref<any>(null);
   const continuousPlay = ref<any>(null);
   const playlist = ref<any>(null);
