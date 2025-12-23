@@ -5,3 +5,4 @@ export const DEFAULT_SETTINGS = {
     hideExplicit: false,
     disableAutoplay: false,
 };
+export const DEFAULT_API_LIMIT = 32;

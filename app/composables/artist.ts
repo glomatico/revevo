@@ -38,7 +38,7 @@ export const useArtist = () => {
     const response = await vevoTvApi.getArtist(
       artistId.value,
       0,
-      32,
+      DEFAULT_API_LIMIT,
       !settings.value.hideExplicit,
     );
     artist.value = response?.data?.artist;
@@ -49,7 +49,7 @@ export const useArtist = () => {
     const response = await vevoTvApi.getArtistVideos(
       artistId.value,
       videos.value.length,
-      32,
+      DEFAULT_API_LIMIT,
       !settings.value.hideExplicit,
     );
     const pageVideos = response?.data?.artist?.videos?.items || [];

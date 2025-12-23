@@ -23,11 +23,11 @@ export const useSearch = () => {
     const response = await vevoTvApi.search(
       query.value,
       videos.value.length,
-      32,
+      DEFAULT_API_LIMIT,
       artists.value.length,
-      32,
+      DEFAULT_API_LIMIT,
       playlists.value.length,
-      32,
+      DEFAULT_API_LIMIT,
       !settings.value.hideExplicit,
     );
 
