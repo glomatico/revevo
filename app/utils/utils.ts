@@ -23,3 +23,7 @@ export const isVideoValid = (
 export const isArtistValid = (artist: any): boolean => {
   return Boolean(artist?.name);
 };
+
+export const isPlaylistValid = (playlist: any): boolean => {
+  return Boolean(playlist?.title);
+};
