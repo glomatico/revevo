@@ -226,3 +226,80 @@ query SearchAll(
   }
 }
 `;
+
+export const QUERY_GET_CONTAINER = `
+query GetContainer(
+  $id: String!
+  $explicit: Boolean
+  $offset: Int
+  $limit: Int
+) {
+  container(id: $id) {
+    id
+    type
+    title
+    description
+    thumbnail
+    items(explicit: $explicit, offset: $offset, limit: $limit) {
+      video {
+        id
+        title
+        created
+        thumbnail
+        explicit
+        lyricVideo
+        duration
+        viewCounts {
+          total
+        }
+        artists {
+          role
+          artist {
+            id
+            name
+            thumbnail
+          }
+        }
+      }
+    }
+    itemsCount
+    created
+    updated
+  }
+}
+`;
+
+export const QUERY_GET_CONTAINER_VIDEOS = `
+query GetContainerVideos(
+  $id: String!
+  $explicit: Boolean
+  $offset: Int
+  $limit: Int
+) {
+  container(id: $id) {
+    items(explicit: $explicit, offset: $offset, limit: $limit) {
+      video {
+        id
+        title
+        created
+        thumbnail
+        explicit
+        lyricVideo
+        duration
+        viewCounts {
+          total
+        }
+        artists {
+          role
+          artist {
+            id
+            name
+            thumbnail
+          }
+        }
+      }
+    }
+    itemsCount
+  }
+}
+`;
