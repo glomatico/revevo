@@ -32,24 +32,33 @@ export const useSearch = () => {
     );
 
     const videosResponse = response?.data?.videoSearch?.items || [];
-    if (videosResponse.length === 0) {
+    videos.value.push(...videosResponse);
+    if (
+      videos.value.length >= response?.data?.videoSearch?.itemsCount ||
+      videosResponse.length < DEFAULT_API_LIMIT ||
+      videosResponse.length === 0
+    ) {
       allVideosLoaded.value = true;
-    } else {
-      videos.value.push(...videosResponse);
     }
 
     const artistsResponse = response?.data?.artistSearch?.items || [];
-    if (artistsResponse.length === 0) {
+    artists.value.push(...artistsResponse);
+    if (
+      artists.value.length >= response?.data?.artistSearch?.itemsCount ||
+      artistsResponse.length < DEFAULT_API_LIMIT ||
+      artistsResponse.length === 0
+    ) {
       allArtistsLoaded.value = true;
-    } else {
-      artists.value.push(...artistsResponse);
     }
 
     const playlistsResponse = response?.data?.playlistSearch?.items || [];
-    if (playlistsResponse.length === 0) {
+    playlists.value.push(...playlistsResponse);
+    if (
+      playlists.value.length >= response?.data?.playlistSearch?.itemsCount ||
+      playlistsResponse.length < DEFAULT_API_LIMIT ||
+      playlistsResponse.length === 0
+    ) {
       allPlaylistsLoaded.value = true;
-    } else {
-      playlists.value.push(...playlistsResponse);
     }
   };
 
