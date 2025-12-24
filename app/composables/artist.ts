@@ -43,6 +43,14 @@ export const useArtist = () => {
     );
     artist.value = response?.data?.artist;
     videos.value = artist.value?.videos?.items || [];
+
+    if (
+      videos.value.length >= artist.value?.videos?.itemsCount ||
+      videos.value.length < DEFAULT_API_LIMIT ||
+      videos.value.length === 0
+    ) {
+      allVideosLoaded.value = true;
+    }
   };
 
   const loadVideosData = async () => {
@@ -53,11 +61,15 @@ export const useArtist = () => {
       !settings.value.hideExplicit,
     );
     const pageVideos = response?.data?.artist?.videos?.items || [];
-    if (pageVideos.length === 0) {
-      allVideosLoaded.value = true;
-      return;
-    }
     videos.value.push(...pageVideos);
+
+    if (
+      videos.value.length >= artist.value?.videos?.itemsCount ||
+      pageVideos.length < DEFAULT_API_LIMIT ||
+      pageVideos.length === 0
+    ) {
+      allVideosLoaded.value = true;
+    }
   };
 
   const loadArtist = async () => {
