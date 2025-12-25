@@ -7,17 +7,16 @@ export const useContinuousPlay = () => {
   } = useSettings();
   loadSettings();
 
-  const continuousPlay = ref<any>(null);
   const allItemsLoaded = ref(false);
   const items = ref<any[]>([]);
 
   const loadingState = ref(LoadingState.IDLE);
+  const continuousPlay = ref<any>(null);
   const videoId = ref('');
   const currentVideoId = computed(() => route.query.v as string || '');
   const mappedItems = computed(() => {
     return items.value.map((item: any) => item.video);
   });
-  const title = computed(() => continuousPlay.value?.title || '');
 
 
   const loadContinuousPlayData = async () => {
@@ -96,10 +95,10 @@ export const useContinuousPlay = () => {
 
   return {
     loadingState,
+    continuousPlay,
     videoId,
     currentVideoId,
     mappedItems,
-    title,
     loadContinuousPlay,
     loadContinuousPlayScroll,
     getNextVideoId,

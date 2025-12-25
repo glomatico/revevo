@@ -6,9 +6,9 @@ const props = defineProps<{
 const {
   loadingState,
   videoId,
+  continuousPlay,
   currentVideoId,
   mappedItems,
-  title,
   loadContinuousPlay,
   loadContinuousPlayScroll,
   getNextVideoId,
@@ -46,7 +46,7 @@ onMounted(async () => {
           <v-row>
             <v-col cols="12">
               <p class="text-h6">
-                {{ title }}
+                {{ continuousPlay.title }}
               </p>
             </v-col>
 
