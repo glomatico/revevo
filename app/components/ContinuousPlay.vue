@@ -51,22 +51,10 @@ onMounted(async () => {
             </v-col>
 
             <v-col v-for="item in mappedItems" :key="item" cols="12">
-              <div class="d-none d-sm-block">
+              <div v-for="className in ['d-none d-sm-block', 'd-sm-none']" :class="className" :key="className">
                 <VideoThumbnail :id="item.id" :title="item.title" :created="item.created"
                   :thumbnail-url="item.thumbnail" :explicit="item.explicit" :duration="item.duration"
-                  :views="item.viewCounts?.total" :tonal="item.id === currentVideoId">
-                  <template #artists>
-                    <ArtistLink v-for="(artist, index) in item.artists" :key="artist.artist.id"
-                      :artist-id="artist.artist.id" :artist-name="artist.artist.name"
-                      :last="index === item.artists.length - 1" />
-                  </template>
-                </VideoThumbnail>
-              </div>
-
-              <div class="d-sm-none">
-                <VideoThumbnail :id="item.id" :title="item.title" :created="item.created"
-                  :thumbnail-url="item.thumbnail" :explicit="item.explicit" :duration="item.duration"
-                  :views="item.viewCounts?.total" vertical :tonal="item.id === currentVideoId">
+                  :views="item.viewCounts?.total" :vertical="className === 'd-sm-none'">
                   <template #artists>
                     <ArtistLink v-for="(artist, index) in item.artists" :key="artist.artist.id"
                       :artist-id="artist.artist.id" :artist-name="artist.artist.name"
