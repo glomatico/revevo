@@ -31,22 +31,16 @@ onMounted(async () => {
   </Head>
 
   <v-container>
-    <v-row>
-      <template v-if="loadingStateArtist === LoadingState.IDLE" />
+    <StatusContainer :loading-state="loadingStateArtist" :empty="!validArtist">
+      <template #error-message>
+        Failed to load artist information.
+      </template>
 
-      <v-col v-else-if="loadingStateArtist === LoadingState.LOADING" cols="12">
-        <LoadingSpinner />
-      </v-col>
+      <template #empty-message>
+        Artist not found.
+      </template>
 
-      <v-col v-else-if="loadingStateArtist === LoadingState.ERROR" cols="12">
-        <v-alert type="error">Failed to load artist information.</v-alert>
-      </v-col>
-
-      <v-col v-else-if="!validArtist" cols="12">
-        <v-alert type="warning">Artist not found.</v-alert>
-      </v-col>
-
-      <template v-else>
+      <v-row>
         <v-col cols="12">
           <ArtistPageBanner :artist-avatar-url="artist.thumbnail" :artist-name="artist.name"
             :video-count="artist.videos.itemsCount" :view-count="artist.viewCounts.total" />
@@ -66,33 +60,29 @@ onMounted(async () => {
           </v-btn-toggle>
         </v-col>
 
-        <template v-if="loadingStateVideos === LoadingState.IDLE" />
+        <v-col cols="12">
+          <StatusContainer :loading-state="loadingStateVideos" :empty="filteredVideos.length === 0">
+            <template #error-message>
+              Failed to load videos.
+            </template>
 
-        <v-col v-else-if="loadingStateVideos === LoadingState.LOADING" cols="12">
-          <LoadingSpinner />
-        </v-col>
+            <template #empty-message>
+              No videos found for this artist.
+            </template>
 
-        <v-col v-else-if="loadingStateVideos === LoadingState.ERROR" cols="12">
-          <v-alert type="error">Failed to load videos.</v-alert>
+            <v-infinite-scroll @load="loadVideosScroll" class="overflow-x-hidden">
+              <v-row class="mx-0">
+                <v-col v-for="video in filteredVideos" :key="video" cols="12" sm="6" md="4" lg="3">
+                  <VideoThumbnail :id="video.id" :title="video.title" :created="video.created"
+                    :thumbnail-url="video.thumbnail" :explicit="video.explicit" :duration="video.duration"
+                    :views="video.viewCounts.total" vertical>
+                  </VideoThumbnail>
+                </v-col>
+              </v-row>
+            </v-infinite-scroll>
+          </StatusContainer>
         </v-col>
-
-        <v-col v-else-if="filteredVideos.length === 0" cols="12">
-          <v-alert type="info">No videos found for this artist.</v-alert>
-        </v-col>
-
-        <v-col v-else cols="12">
-          <v-infinite-scroll @load="loadVideosScroll" class="overflow-x-hidden">
-            <v-row class="mx-0">
-              <v-col v-for="video in filteredVideos" :key="video" cols="12" sm="6" md="4" lg="3">
-                <VideoThumbnail :id="video.id" :title="video.title" :created="video.created"
-                  :thumbnail-url="video.thumbnail" :explicit="video.explicit" :duration="video.duration"
-                  :views="video.viewCounts.total" vertical>
-                </VideoThumbnail>
-              </v-col>
-            </v-row>
-          </v-infinite-scroll>
-        </v-col>
-      </template>
-    </v-row>
+      </v-row>
+    </StatusContainer>
   </v-container>
 </template>
