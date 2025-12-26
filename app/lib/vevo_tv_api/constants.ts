@@ -277,6 +277,8 @@ query GetContainerVideos(
   $limit: Int
 ) {
   container(id: $id) {
+    id
+    title
     items(explicit: $explicit, offset: $offset, limit: $limit) {
       video {
         id
