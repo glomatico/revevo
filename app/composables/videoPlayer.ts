@@ -3,13 +3,17 @@ import { MediaPlayerElement } from 'vidstack/elements';
 export const useVideoPlayer = () => {
   const { loadSettings, settings } = useSettings();
 
+  const streamUrl = ref<string | null>(null);
+  const captionsUrl = ref<string | null>(null);
   const videoPlayer = ref<MediaPlayerElement | null>(null);
   const captionsEventHandler = (e: Event) => {
     settings.value.enableCaptions = videoPlayer.value!.textTracks[0]?.mode === 'showing';
   };
 
-  const attachCaptions = async (captionsUrl: string) => {
-    const response = await fetch(captionsUrl);
+  const attachCaptions = async () => {
+    if (!captionsUrl.value) return;
+
+    const response = await fetch(captionsUrl.value);
     if (!response.ok) return;
 
     const blob = new Blob([await response.text()], { type: 'text/vtt' });
@@ -25,11 +29,18 @@ export const useVideoPlayer = () => {
     videoPlayer.value!.addEventListener('text-track-change', captionsEventHandler);
   };
 
-  const attachVideo = async (streamUrl: string) => {
-    videoPlayer.value!.src = streamUrl;
+  const attachVideo = async () => {
+    if (!streamUrl.value) return;
+
+    videoPlayer.value!.src = streamUrl.value;
     videoPlayer.value!.addEventListener('can-play', () => {
       videoPlayer.value!.play();
     });
+  };
+
+  const loadVideoPlayer = async () => {
+    await attachVideo();
+    await attachCaptions();
   };
 
   const unloadVideoPlayer = async () => {
@@ -38,16 +49,30 @@ export const useVideoPlayer = () => {
     videoPlayer.value!.textTracks.clear();
   };
 
-  const loadVideoPlayer = async (streamUrl: string, captionsUrl: string) => {
+  const initialize = async () => {
     loadSettings();
 
-    await attachCaptions(captionsUrl);
-    await attachVideo(streamUrl);
+    await unloadVideoPlayer();
+    await loadVideoPlayer();
   };
 
+  const initializeWatcher = () => {
+    watch(
+      () => [streamUrl.value, captionsUrl.value],
+      async () => {
+        await initialize();
+      },
+      { immediate: true },
+    );
+  }
+
   return {
+    streamUrl,
+    captionsUrl,
     videoPlayer,
     loadVideoPlayer,
     unloadVideoPlayer,
+    initialize,
+    initializeWatcher,
   };
 }
