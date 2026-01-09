@@ -4,7 +4,7 @@ const {
   loadingStateVideos,
   artist,
   sortVideos,
-  filteredVideos,
+  sortedVideos,
   validArtist,
   loadVideosScroll,
   loadAllVideos,
@@ -56,7 +56,7 @@ onMounted(async () => {
         </v-col>
 
         <v-col cols="12">
-          <StatusContainer :loading-state="loadingStateVideos" :empty="filteredVideos.length === 0">
+          <StatusContainer :loading-state="loadingStateVideos" :empty="sortedVideos.length === 0">
             <template #error-message>
               Failed to load videos.
             </template>
@@ -66,8 +66,8 @@ onMounted(async () => {
             </template>
 
             <v-infinite-scroll @load="loadVideosScroll" class="overflow-x-hidden">
-              <v-row class="mx-0">
-                <v-col v-for="video in filteredVideos" :key="video" cols="12" sm="6" md="4" lg="3">
+              <v-row>
+                <v-col v-for="video in sortedVideos" :key="video" cols="12" sm="6" md="4" lg="3">
                   <VideoThumbnail :id="video.id" :title="video.title" :created="video.created"
                     :thumbnail-url="video.thumbnail" :explicit="video.explicit" :duration="video.duration"
                     :views="video.viewCounts.total" vertical>

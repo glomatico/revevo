@@ -15,7 +15,7 @@ export const useArtist = () => {
   const artist = ref<any>(null);
   const sortVideos = ref<string>('');
 
-  const filteredVideos = computed(() => {
+  const sortedVideos = computed(() => {
     if (sortVideos.value === 'views') {
       return videos.value.slice().sort((a, b) => (b?.viewCounts?.total || 0) - (a?.viewCounts?.total || 0));
     }
@@ -128,7 +128,7 @@ export const useArtist = () => {
     artistId,
     artist,
     sortVideos,
-    filteredVideos,
+    sortedVideos,
     validArtist,
     loadArtistData,
     loadVideosData,
