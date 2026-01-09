@@ -9,13 +9,13 @@ export const useArtist = () => {
 
   const videos = ref<any[]>([]);
   const allVideosLoaded = ref<boolean>(false);
-  const loadingStateArtist = ref(LoadingState.IDLE);
-  const loadingStateVideos = ref(LoadingState.IDLE);
+  const loadingStateArtist = ref<LoadingState>(LoadingState.IDLE);
+  const loadingStateVideos = ref<LoadingState>(LoadingState.IDLE);
   const artistId = ref<string>('');
   const artist = ref<any>(null);
   const sortVideos = ref<string>('');
 
-  const sortedVideos = computed(() => {
+  const sortedVideos = computed<any[]>(() => {
     if (sortVideos.value === 'views') {
       return videos.value.slice().sort((a, b) => (b?.viewCounts?.total || 0) - (a?.viewCounts?.total || 0));
     }
@@ -34,7 +34,7 @@ export const useArtist = () => {
 
     return videos.value;
   });
-  const validArtist = computed(() => isArtistValid(artist.value));
+  const validArtist = computed<boolean>(() => isArtistValid(artist.value));
 
   const loadArtistData = async () => {
     const response = await vevoTvApi.getArtist(
