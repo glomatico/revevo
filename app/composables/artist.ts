@@ -130,8 +130,6 @@ export const useArtist = () => {
     sortVideos,
     sortedVideos,
     validArtist,
-    loadArtistData,
-    loadVideosData,
     loadVideosScroll,
     loadAllVideos,
     initialize,
