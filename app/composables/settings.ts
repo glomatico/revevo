@@ -1,6 +1,6 @@
 
 export const useSettings = () => {
-  const settings = ref(DEFAULT_SETTINGS);
+  const settings = ref<Record<string, unknown>>(DEFAULT_SETTINGS);
 
   const loadSettings = () => {
     try {
