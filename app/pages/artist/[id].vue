@@ -1,23 +1,18 @@
 <script lang="ts" setup>
-const route = useRoute();
-
-
 const {
   loadingStateArtist,
   loadingStateVideos,
-  artistId,
   artist,
   sortVideos,
   filteredVideos,
   validArtist,
-  loadArtist,
   loadVideosScroll,
   loadAllVideos,
+  initializeFromRoute,
 } = useArtist();
 
 onMounted(async () => {
-  artistId.value = route.params.id as string;
-  await loadArtist();
+  await initializeFromRoute();
 });
 </script>
 

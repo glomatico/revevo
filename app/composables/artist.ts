@@ -1,27 +1,29 @@
 export const useArtist = () => {
+  const route = useRoute();
+
   const vevoTvApi = useVevoTvApi();
   const {
     settings,
     loadSettings,
   } = useSettings();
-  loadSettings();
 
   const videos = ref<any[]>([]);
-  const allVideosLoaded = ref(false);
-
+  const allVideosLoaded = ref<boolean>(false);
   const loadingStateArtist = ref(LoadingState.IDLE);
   const loadingStateVideos = ref(LoadingState.IDLE);
-  const artistId = ref('');
+  const artistId = ref<string>('');
   const artist = ref<any>(null);
-  const sortVideos = ref(null);
+  const sortVideos = ref<string>('');
 
   const filteredVideos = computed(() => {
     if (sortVideos.value === 'views') {
       return videos.value.slice().sort((a, b) => (b?.viewCounts?.total || 0) - (a?.viewCounts?.total || 0));
     }
+
     if (sortVideos.value === 'date') {
       return videos.value.slice().sort((a, b) => new Date(b?.created || 0).getTime() - new Date(a?.created || 0).getTime());
     }
+
     if (sortVideos.value === 'a-z') {
       return videos.value.slice().sort((a, b) => {
         const titleA = a?.title?.toLowerCase() || '';
@@ -42,15 +44,9 @@ export const useArtist = () => {
       !settings.value.hideExplicit,
     );
     artist.value = response?.data?.artist;
-    videos.value = artist.value?.videos?.items || [];
 
-    if (
-      videos.value.length >= artist.value?.videos?.itemsCount ||
-      videos.value.length < DEFAULT_API_LIMIT ||
-      videos.value.length === 0
-    ) {
-      allVideosLoaded.value = true;
-    }
+    videos.value = artist.value?.videos?.items || [];
+    allVideosLoaded.value = videos.value.length >= artist.value?.videos?.itemsCount || videos.value.length < DEFAULT_API_LIMIT;
   };
 
   const loadVideosData = async () => {
@@ -60,46 +56,10 @@ export const useArtist = () => {
       DEFAULT_API_LIMIT,
       !settings.value.hideExplicit,
     );
+
     const pageVideos = response?.data?.artist?.videos?.items || [];
     videos.value.push(...pageVideos);
-
-    if (
-      videos.value.length >= artist.value?.videos?.itemsCount ||
-      pageVideos.length < DEFAULT_API_LIMIT ||
-      pageVideos.length === 0
-    ) {
-      allVideosLoaded.value = true;
-    }
-  };
-
-  const loadArtist = async () => {
-    loadingStateArtist.value = LoadingState.LOADING;
-
-    try {
-      await loadArtistData();
-    } catch (error) {
-      console.error('Error loading artist:', error);
-      loadingStateArtist.value = LoadingState.ERROR;
-      return;
-    }
-
-    loadingStateArtist.value = LoadingState.SUCCESS;
-    loadingStateVideos.value = LoadingState.SUCCESS;
-  };
-
-  const loadVideosScroll = async ({ done }: any) => {
-    if (allVideosLoaded.value) {
-      done('empty');
-      return;
-    }
-
-    try {
-      await loadVideosData();
-      done('ok');
-    } catch (error) {
-      console.error('Error loading artist videos:', error);
-      done('error');
-    }
+    allVideosLoaded.value = videos.value.length >= artist.value?.videos?.itemsCount || pageVideos.length < DEFAULT_API_LIMIT;
   };
 
   const loadAllVideos = async () => {
@@ -118,7 +78,51 @@ export const useArtist = () => {
     loadingStateVideos.value = LoadingState.SUCCESS;
   };
 
+  const loadVideosScroll = async ({ done }: any) => {
+    if (allVideosLoaded.value) {
+      done('empty');
+      return;
+    }
+
+    try {
+      await loadVideosData();
+      done('ok');
+    } catch (error) {
+      console.error('Error loading artist videos:', error);
+      done('error');
+    }
+  };
+
+  const initialize = async () => {
+    loadSettings();
+
+    artist.value = null;
+    videos.value = [];
+    allVideosLoaded.value = false;
+
+    loadingStateArtist.value = LoadingState.LOADING;
+
+    try {
+      await loadArtistData();
+    } catch (error) {
+      console.error('Error loading artist:', error);
+      loadingStateArtist.value = LoadingState.ERROR;
+      return;
+    }
+
+    loadingStateArtist.value = LoadingState.SUCCESS;
+    loadingStateVideos.value = LoadingState.SUCCESS;
+  };
+
+  const initializeFromRoute = async () => {
+    artistId.value = route.params.id as string;
+
+    await initialize();
+  };
+
   return {
+    videos,
+    allVideosLoaded,
     loadingStateArtist,
     loadingStateVideos,
     artistId,
@@ -126,8 +130,11 @@ export const useArtist = () => {
     sortVideos,
     filteredVideos,
     validArtist,
-    loadArtist,
+    loadArtistData,
+    loadVideosData,
     loadVideosScroll,
     loadAllVideos,
+    initialize,
+    initializeFromRoute,
   };
 };
