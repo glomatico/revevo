@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-const { settings, loadSettings, initializeWatchers } = useSettings();
+const { settings, initializeWatchers } = useSettings();
 
 onMounted(() => {
   initializeWatchers();
-  loadSettings();
 });
 </script>
 

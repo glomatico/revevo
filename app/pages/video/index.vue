@@ -1,16 +1,22 @@
 <script lang="ts" setup>
 const {
+  settings,
+  initialize: initializeSettings,
+} = useSettings();
+
+const {
   loadingState,
   video,
   validVideo,
   streamUrl,
   captionsUrl,
   initializeWatcher,
-} = useVideo();
+} = useVideo(settings.value);
 
-const playQueue = usePlayQueue();
+const playQueue = usePlayQueue(settings.value);
 
 onMounted(async () => {
+  initializeSettings();
   initializeWatcher();
 });
 </script>

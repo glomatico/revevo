@@ -1,14 +1,20 @@
 <script lang="ts" setup>
 const {
+  settings,
+  initialize: initializeSettings,
+} = useSettings();
+
+const {
   mappedVideos,
   loadingState,
   playlist,
   validPlaylist,
   loadPlaylistVideosScroll,
   initializeFromRoute,
-} = usePlaylist();
+} = usePlaylist(settings.value);
 
 onMounted(async () => {
+  initializeSettings();
   await initializeFromRoute();
 });
 </script>

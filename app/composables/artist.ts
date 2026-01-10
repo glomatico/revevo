@@ -1,11 +1,6 @@
-export const useArtist = () => {
+export const useArtist = (settings: Record<string, unknown> = DEFAULT_SETTINGS) => {
   const route = useRoute();
-
   const vevoTvApi = useVevoTvApi();
-  const {
-    settings,
-    loadSettings,
-  } = useSettings();
 
   const videos = ref<any[]>([]);
   const allVideosLoaded = ref<boolean>(false);
@@ -41,7 +36,7 @@ export const useArtist = () => {
       artistId.value,
       0,
       DEFAULT_API_LIMIT,
-      !settings.value.hideExplicit,
+      !settings.hideExplicit,
     );
     artist.value = response?.data?.artist;
 
@@ -54,7 +49,7 @@ export const useArtist = () => {
       artistId.value,
       videos.value.length,
       DEFAULT_API_LIMIT,
-      !settings.value.hideExplicit,
+      !settings.hideExplicit,
     );
 
     const pageVideos = response?.data?.artist?.videos?.items || [];
@@ -94,8 +89,6 @@ export const useArtist = () => {
   };
 
   const initialize = async () => {
-    loadSettings();
-
     artist.value = null;
     videos.value = [];
     allVideosLoaded.value = false;

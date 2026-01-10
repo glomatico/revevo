@@ -1,5 +1,10 @@
 <script lang="ts" setup>
 const {
+  settings,
+  initialize: initializeSettings,
+} = useSettings();
+
+const {
   loadingState,
   query,
   videos,
@@ -9,9 +14,10 @@ const {
   loadSearchArtistScroll,
   loadSearchPlaylistScroll,
   initializeWatcher,
-} = useSearch();
+} = useSearch(settings.value);
 
 onMounted(async () => {
+  initializeSettings();
   initializeWatcher();
 });
 </script>

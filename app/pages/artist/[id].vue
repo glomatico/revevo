@@ -1,5 +1,10 @@
 <script lang="ts" setup>
 const {
+  settings,
+  initialize: initializeSettings,
+} = useSettings();
+
+const {
   loadingStateArtist,
   loadingStateVideos,
   artist,
@@ -9,9 +14,10 @@ const {
   loadVideosScroll,
   loadAllVideos,
   initializeFromRoute,
-} = useArtist();
+} = useArtist(settings.value);
 
 onMounted(async () => {
+  initializeSettings();
   await initializeFromRoute();
 });
 </script>

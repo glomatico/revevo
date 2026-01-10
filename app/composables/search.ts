@@ -1,11 +1,7 @@
-export const useSearch = () => {
+export const useSearch = (settings: Record<string, unknown> = DEFAULT_SETTINGS) => {
   const route = useRoute();
 
   const vevoTvApi = useVevoTvApi();
-  const {
-    settings,
-    loadSettings,
-  } = useSettings();
 
   const allVideosLoaded = ref<boolean>(false);
   const allArtistsLoaded = ref<boolean>(false);
@@ -27,7 +23,7 @@ export const useSearch = () => {
       DEFAULT_API_LIMIT,
       playlists.value.length,
       DEFAULT_API_LIMIT,
-      !settings.value.hideExplicit,
+      !settings.hideExplicit,
     );
 
     const videosResponse = response?.data?.videoSearch?.items || [];
@@ -108,8 +104,6 @@ export const useSearch = () => {
   };
 
   const initialize = async () => {
-    loadSettings();
-
     videos.value = [];
     artists.value = [];
     playlists.value = [];

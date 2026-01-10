@@ -2,7 +2,7 @@
 export const useSettings = () => {
   const settings = ref<Record<string, unknown>>(DEFAULT_SETTINGS);
 
-  const loadSettings = () => {
+  const initialize = () => {
     try {
       Object.keys(DEFAULT_SETTINGS).forEach((key) => {
         const stored = localStorage.getItem(key);
@@ -23,6 +23,8 @@ export const useSettings = () => {
   };
 
   const initializeWatchers = () => {
+    initialize();
+
     Object.keys(DEFAULT_SETTINGS).forEach((key) => {
       watch(
         () => (settings.value as any)[key],
@@ -39,7 +41,7 @@ export const useSettings = () => {
 
   return {
     settings,
-    loadSettings,
+    initialize,
     initializeWatchers,
   };
 };

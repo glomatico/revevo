@@ -1,11 +1,7 @@
-export const useVideo = () => {
+export const useVideo = (settings: Record<string, unknown> = DEFAULT_SETTINGS) => {
   const route = useRoute();
 
   const vevoTvApi = useVevoTvApi();
-  const {
-    settings,
-    loadSettings,
-  } = useSettings();
 
   const loadingState = ref<LoadingState>(LoadingState.IDLE);
   const videoId = ref<string>('');
@@ -16,7 +12,7 @@ export const useVideo = () => {
   const streamUrl = computed<string>(() => {
     if (!validVideo.value) return '';
 
-    if (settings.value.playbackMethod === PlaybackMethod.MP4) {
+    if (settings.playbackMethod === PlaybackMethod.MP4) {
       return getBestMp4Stream();
     } else {
       return video.value?.hls || '';
@@ -42,8 +38,6 @@ export const useVideo = () => {
   };
 
   const initialize = async () => {
-    loadSettings();
-
     video.value = null;
 
     loadingState.value = LoadingState.LOADING;

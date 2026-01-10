@@ -1,10 +1,6 @@
-export const usePlaylist = () => {
+export const usePlaylist = (settings: Record<string, unknown> = DEFAULT_SETTINGS) => {
   const route = useRoute();
   const vevoTvApi = useVevoTvApi();
-  const {
-    settings,
-    loadSettings,
-  } = useSettings();
 
   const videos = ref<any[]>([]);
   const allVideosLoaded = ref(false);
@@ -21,7 +17,7 @@ export const usePlaylist = () => {
       playlistId.value,
       0,
       DEFAULT_API_LIMIT,
-      !settings.value.hideExplicit,
+      !settings.hideExplicit,
     );
     playlist.value = response?.data?.container;
     videos.value = playlist.value?.items || [];
@@ -40,7 +36,7 @@ export const usePlaylist = () => {
       playlistId.value,
       videos.value.length,
       DEFAULT_API_LIMIT,
-      !settings.value.hideExplicit,
+      !settings.hideExplicit,
     );
     const pageVideos = response?.data?.container?.items || [];
     videos.value.push(...pageVideos);
@@ -70,8 +66,6 @@ export const usePlaylist = () => {
   };
 
   const initialize = async () => {
-    loadSettings();
-
     playlist.value = null;
     videos.value = [];
     allVideosLoaded.value = false;
