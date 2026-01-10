@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+const props = defineProps<{
+  video: any;
+}>();
+
 const dialogVisible = ref(false);
 </script>
 
@@ -16,7 +20,36 @@ const dialogVisible = ref(false);
           <v-col>
             <v-table>
               <tbody>
-                <slot />
+                <tr v-if="props.video.hls">
+                  <td>HLS</td>
+                  <td>
+                    <CopyableReadOnlyField :value="props.video.hls" />
+                  </td>
+                </tr>
+                <tr v-for="mp4Item in props.video.mp4" :key="mp4Item.quality">
+                  <td>MP4 {{ mp4Item.quality }}</td>
+                  <td>
+                    <CopyableReadOnlyField :value="mp4Item.url" />
+                  </td>
+                </tr>
+                <tr v-if="props.video.captions?.srt?.url">
+                  <td>Captions (SRT)</td>
+                  <td>
+                    <CopyableReadOnlyField :value="props.video.captions.srt.url" />
+                  </td>
+                </tr>
+                <tr v-if="props.video.captions?.vtt?.url">
+                  <td>Captions (VTT)</td>
+                  <td>
+                    <CopyableReadOnlyField :value="props.video.captions.vtt.url" />
+                  </td>
+                </tr>
+                <tr v-if="props.video.captions?.ttml?.url">
+                  <td>Captions (TTML)</td>
+                  <td>
+                    <CopyableReadOnlyField :value="props.video.captions.ttml.url" />
+                  </td>
+                </tr>
               </tbody>
             </v-table>
           </v-col>

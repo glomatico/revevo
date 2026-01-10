@@ -1,8 +1,14 @@
+<script lang="ts" setup>
+const props = defineProps<{
+  video: any;
+}>();
+</script>
+
 <template>
   <v-row>
     <v-col cols="12">
       <p class="text-h4 text-wrap text-break">
-        {{ title }}
+        {{ props.video.title }}
       </p>
     </v-col>
 
@@ -11,76 +17,65 @@
     <v-col cols="12">
       <v-table class="rounded-lg">
         <tbody>
-          <tr v-if="$slots.artists">
+          <tr v-if="props.video.artists?.length">
             <td>Artists</td>
             <td>
-              <slot name="artists" />
+              <v-row dense class="my-2">
+                <v-col v-for="artist in props.video.artists" :key="artist.artist.id" cols="auto">
+                  <ArtistLinkChip :artist-id="artist.artist.id" :artist-name="artist.artist.name"
+                    :artist-thumbnail="artist.artist.thumbnail" />
+                </v-col>
+              </v-row>
             </td>
           </tr>
-          <tr v-if="views">
+          <tr v-if="props.video.viewCounts?.total">
             <td>Views</td>
-            <td>{{ views.toLocaleString() }}</td>
+            <td>{{ props.video.viewCounts.total.toLocaleString() }}</td>
           </tr>
           <tr>
             <td>ISRC</td>
-            <td>{{ id }}</td>
+            <td>{{ props.video.id }}</td>
           </tr>
           <tr>
             <td>Duration</td>
-            <td>{{ formatDuration(duration) }}</td>
+            <td>{{ formatDuration(props.video.duration) }}</td>
           </tr>
-          <tr v-if="date">
+          <tr v-if="props.video.created">
             <td>Release date</td>
-            <td>{{ new Date(date).toLocaleString() }}</td>
+            <td>{{ new Date(props.video.created).toLocaleString() }}</td>
           </tr>
           <tr>
             <td>Genre</td>
             <td>
-              {{ genre }}
+              {{ props.video.genre }}
             </td>
           </tr>
           <tr>
             <td>Explicit</td>
-            <td>{{ explicit ? 'Yes' : 'No' }}</td>
+            <td>{{ props.video.explicit ? 'Yes' : 'No' }}</td>
           </tr>
           <tr>
             <td>Lyric Video</td>
-            <td>{{ lyricVideo ? 'Yes' : 'No' }}</td>
+            <td>{{ props.video.lyricVideo ? 'Yes' : 'No' }}</td>
           </tr>
-          <tr v-if="copyright">
+          <tr v-if="props.video.copyright">
             <td>Copyright</td>
-            <td>{{ copyright }}</td>
+            <td>{{ props.video.copyright }}</td>
           </tr>
-          <tr v-if="copyrightYear">
+          <tr v-if="props.video.copyrightYear">
             <td>Copyright Year</td>
-            <td>{{ copyrightYear }}</td>
+            <td>{{ props.video.copyrightYear }}</td>
           </tr>
           <tr>
             <td>Label</td>
-            <td>{{ label }}</td>
+            <td>{{ props.video.label }}</td>
           </tr>
         </tbody>
       </v-table>
     </v-col>
 
-    <v-col v-if="$slots.streamurls" cols="12">
-      <slot name="streamurls" />
+    <v-col v-if="props.video.hls || props.video.mp4?.length || props.video.captions" cols="12">
+      <VideoStreamUrls :video="props.video" />
     </v-col>
   </v-row>
 </template>
-
-<script lang="ts" setup>
-const props = defineProps<{
-  id: string;
-  title: string;
-  genre: string;
-  duration: number;
-  explicit: boolean;
-  lyricVideo: boolean;
-  date: string;
-  copyright: string;
-  label: string;
-  copyrightYear: number;
-  views: number;
-}>();
-</script>
