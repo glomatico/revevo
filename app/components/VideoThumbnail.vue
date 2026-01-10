@@ -12,7 +12,7 @@ const props = defineProps<{
   duration?: number;
   views?: number;
   playlistId?: string;
-  playlistIndex?: number;
+  index?: number;
   vertical?: boolean;
   disabled?: boolean;
   tonal?: boolean;
@@ -29,11 +29,20 @@ const colsThumbnail = ref(props.vertical ? 12 : 5);
 const colsInfo = ref(props.vertical ? 12 : 7);
 const cardTextAlign = ref(props.vertical ? 'text-center' : '');
 const cardVariant = computed(() => (props.tonal ? 'tonal' : 'elevated'));
-const url = ref(
-  props.playlistId
-    ? `/video?v=${props.id}&p=${props.playlistId}&i=${props.playlistIndex || 0}`
-    : `/video?v=${props.id}`
-);
+const url = computed(() => {
+  const params = new URLSearchParams();
+  params.set('v', props.id);
+
+  if (props.playlistId) {
+    params.set('p', props.playlistId);
+  }
+
+  if (props.index) {
+    params.set('i', props.index.toString());
+  }
+
+  return `/video?${params.toString()}`;
+});
 
 const navigateToVideo = async () => {
   if (props.playlistId) {
