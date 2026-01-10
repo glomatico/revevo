@@ -1,16 +1,8 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
-
 const router = useRouter();
 
 const props = defineProps<{
-  id: string;
-  title: string;
-  created?: string;
-  thumbnailUrl: string;
-  explicit: boolean;
-  duration?: number;
-  views?: number;
+  video: any;
   playlistId?: string;
   index?: number;
   vertical?: boolean;
@@ -18,20 +10,20 @@ const props = defineProps<{
   tonal?: boolean;
 }>();
 
-const createdDate = ref(props.created ? new Date(props.created) : null);
-const isNewRelease = ref(
+const createdDate = ref<Date | null>(props.video.created ? new Date(props.video.created) : null);
+const isNewRelease = ref<boolean>(
   createdDate.value
     ? (new Date().getTime() - createdDate.value.getTime()) / (1000 * 60 * 60 * 24) <= 14
     : false
 );
+const colsThumbnail = ref<number>(props.vertical ? 12 : 5);
+const colsInfo = ref<number>(props.vertical ? 12 : 7);
+const cardTextAlign = ref<string>(props.vertical ? 'text-center' : '');
 
-const colsThumbnail = ref(props.vertical ? 12 : 5);
-const colsInfo = ref(props.vertical ? 12 : 7);
-const cardTextAlign = ref(props.vertical ? 'text-center' : '');
-const cardVariant = computed(() => (props.tonal ? 'tonal' : 'elevated'));
-const url = computed(() => {
+const cardVariant = computed<any>(() => (props.tonal ? 'tonal' : 'elevated'));
+const url = computed<string>(() => {
   const params = new URLSearchParams();
-  params.set('v', props.id);
+  params.set('v', props.video.id);
 
   if (props.playlistId) {
     params.set('p', props.playlistId);
@@ -61,15 +53,15 @@ const navigateToVideo = async () => {
   <v-card @click.prevent="navigateToVideo" :href="url" :disabled="disabled" :variant="cardVariant">
     <v-row no-gutters align="center">
       <v-col :cols="colsThumbnail">
-        <v-img :src="thumbnailUrl" :alt="`Thumbnail for ${title}`" :aspect-ratio="16 / 9" cover />
+        <v-img :src="props.video.thumbnail" :alt="`Thumbnail for ${props.video.title}`" :aspect-ratio="16 / 9" cover />
       </v-col>
 
       <v-col :cols="colsInfo">
         <v-card-item :class="cardTextAlign">
-          <p class="text-truncate" :title="title">
+          <p class="text-truncate" :title="props.video.title">
             <v-icon v-if="isNewRelease" icon="mdi-new-box" />
-            <v-icon v-if="explicit" icon="mdi-alpha-e-box" />
-            {{ title }}
+            <v-icon v-if="props.video.explicit" icon="mdi-alpha-e-box" />
+            {{ props.video.title }}
           </p>
 
           <p v-if="$slots.artists" class="text-truncate text-caption">
@@ -77,12 +69,12 @@ const navigateToVideo = async () => {
           </p>
 
           <p class="text-truncate text-caption">
-            <template v-if="duration">
-              {{ formatDuration(duration) }}
+            <template v-if="props.video.duration">
+              {{ formatDuration(props.video.duration) }}
             </template>
 
-            <template v-if="views">
-              • {{ views.toLocaleString() }} views
+            <template v-if="props.video.viewCounts?.total">
+              • {{ props.video.viewCounts.total.toLocaleString() }} views
             </template>
           </p>
         </v-card-item>

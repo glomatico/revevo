@@ -67,10 +67,7 @@ onMounted(async () => {
             <v-infinite-scroll @load="loadVideosScroll" class="overflow-x-hidden">
               <v-row>
                 <v-col v-for="video in sortedVideos" :key="video" cols="12" sm="6" md="4" lg="3">
-                  <VideoThumbnail :id="video.id" :title="video.title" :created="video.created"
-                    :thumbnail-url="video.thumbnail" :explicit="video.explicit" :duration="video.duration"
-                    :views="video.viewCounts.total" vertical>
-                  </VideoThumbnail>
+                  <VideoThumbnail :video="video" vertical />
                 </v-col>
               </v-row>
             </v-infinite-scroll>
