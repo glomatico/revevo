@@ -22,6 +22,7 @@ export const useVideo = () => {
       return video.value?.hls || '';
     }
   });
+  const routeVideoId = computed<string>(() => (route.query.v as string) || '');
 
   const getBestMp4Stream = (): string => {
     const mp4Streams = (video.value?.mp4 || []) as any[];
@@ -61,15 +62,14 @@ export const useVideo = () => {
 
   const initializeWatcher = () => {
     watch(
-      () => route.query.v,
-      async (newVideoId) => {
-        videoId.value = newVideoId as string;
+      () => routeVideoId.value, async () => {
+        videoId.value = routeVideoId.value;
         window.scrollTo(0, 0);
         await initialize();
-      },
-      { immediate: true }
-    );
+      }, { immediate: true }
+    )
   };
+
   return {
     loadingState,
     videoId,
