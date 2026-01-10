@@ -1,55 +1,62 @@
 <script lang="ts" setup>
-const route = useRoute();
-
 const {
-  loadPlaylist,
-  loadingStateGeneral,
-  playlistId,
+  mappedVideos,
+  loadingState,
   playlist,
   validPlaylist,
-  filteredPlaylistVideos,
+  loadPlaylistVideosScroll,
+  initializeFromRoute,
 } = usePlaylist();
 
-playlistId.value = route.params.id as string;
-
 onMounted(async () => {
-  loadPlaylist();
+  await initializeFromRoute();
 });
 </script>
 
 <template>
 
   <Head>
-    <Title>{{ validPlaylist ? `${playlist!.basicMeta.title} - Revevo` : 'Revevo' }}</Title>
+    <Title>
+      {{ validPlaylist ? `${playlist.title} - ` : '' }}
+      Revevo
+    </Title>
   </Head>
 
   <v-container>
-    <v-row>
-      <template v-if="loadingStateGeneral === LoadingState.IDLE" />
+    <StatusContainer :loading-state="loadingState" :empty="!validPlaylist">
+      <template #error-message>
+        Failed to load playlist.
+      </template>
 
-      <v-col v-else-if="loadingStateGeneral === LoadingState.LOADING" cols="12">
-        <LoadingSpinner />
-      </v-col>
+      <template #empty-message>
+        Playlist not found or is unavailable.
+      </template>
 
-      <v-col v-else-if="loadingStateGeneral === LoadingState.ERROR" cols="12">
-        <v-alert type="error">Failed to load playlist.</v-alert>
-      </v-col>
-
-      <template v-else>
-        <v-col v-if="!validPlaylist" cols="12">
-          <v-alert type="warning">Playlist not found or is unavailable.</v-alert>
+      <v-row>
+        <v-col cols="12" sm="5">
+          <PlaylistInfo :playlist="playlist" />
         </v-col>
 
-        <template v-else>
-          <v-col cols="12" sm="5">
-            <PlaylistInfo :playlist="playlist" />
-          </v-col>
-          <v-col cols="12" sm="7">
-            <v-alert v-if="!filteredPlaylistVideos?.length" type="info">No videos available in this playlist.</v-alert>
-            <PlaylistItems v-else :playlist="playlist!" />
-          </v-col>
-        </template>
-      </template>
-    </v-row>
+        <v-col cols="12" sm="7">
+          <StatusContainer :empty="!mappedVideos?.length">
+            <template #empty-message>
+              No videos available in this playlist.
+            </template>
+
+            <v-infinite-scroll @load="loadPlaylistVideosScroll" class="overflow-x-hidden">
+              <v-row>
+                <v-col v-for="(video, index) in mappedVideos" :key="video" cols="12">
+                  <div v-for="className in ['d-none d-sm-block', 'd-sm-none']" :class="className" :key="className">
+                    <VideoThumbnail :video="video" :vertical="className === 'd-sm-none'" :playlist-id="playlist.id"
+                      :index="index + 1">
+                    </VideoThumbnail>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-infinite-scroll>
+          </StatusContainer>
+        </v-col>
+      </v-row>
+    </StatusContainer>
   </v-container>
 </template>
