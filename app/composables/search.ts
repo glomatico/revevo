@@ -1,23 +1,22 @@
 export const useSearch = () => {
   const route = useRoute();
-  const router = useRouter();
 
   const vevoTvApi = useVevoTvApi();
   const {
     settings,
     loadSettings,
   } = useSettings();
-  loadSettings();
 
-  const allVideosLoaded = ref(false);
-  const allArtistsLoaded = ref(false);
-  const allPlaylistsLoaded = ref(false);
-
-  const loadingState = ref(LoadingState.IDLE);
-  const query = ref('');
+  const allVideosLoaded = ref<boolean>(false);
+  const allArtistsLoaded = ref<boolean>(false);
+  const allPlaylistsLoaded = ref<boolean>(false);
+  const loadingState = ref<LoadingState>(LoadingState.IDLE);
+  const query = ref<string>('');
   const videos = ref<any[]>([]);
   const artists = ref<any[]>([]);
   const playlists = ref<any[]>([]);
+
+  const routeQuery = computed<string>(() => (route.query.q as string) || '');
 
   const loadSearchData = async () => {
     const response = await vevoTvApi.search(
@@ -60,27 +59,6 @@ export const useSearch = () => {
     ) {
       allPlaylistsLoaded.value = true;
     }
-  };
-
-  const loadSearch = async () => {
-    videos.value = [];
-    artists.value = [];
-    playlists.value = [];
-    allVideosLoaded.value = false;
-    allArtistsLoaded.value = false;
-    allPlaylistsLoaded.value = false;
-
-    loadingState.value = LoadingState.LOADING;
-
-    try {
-      await loadSearchData();
-    } catch (error) {
-      console.error('Error loading search data:', error);
-      loadingState.value = LoadingState.ERROR;
-      return;
-    }
-
-    loadingState.value = LoadingState.SUCCESS;
   };
 
   const loadSearchVideoScroll = async ({ done }: any) => {
@@ -129,18 +107,43 @@ export const useSearch = () => {
     }
   };
 
+  const initialize = async () => {
+    loadSettings();
+
+    videos.value = [];
+    artists.value = [];
+    playlists.value = [];
+    allVideosLoaded.value = false;
+    allArtistsLoaded.value = false;
+    allPlaylistsLoaded.value = false;
+
+    loadingState.value = LoadingState.LOADING;
+
+    try {
+      await loadSearchData();
+    } catch (error) {
+      console.error('Error loading search data:', error);
+      loadingState.value = LoadingState.ERROR;
+      return;
+    }
+
+    loadingState.value = LoadingState.SUCCESS;
+  };
+
   const initializeWatcher = () => {
     watch(
-      () => route.query.q,
-      async (newQuery) => {
-        query.value = newQuery as string || '';
-        await loadSearch();
-      },
-      { immediate: true }
-    );
+      () => routeQuery.value, async () => {
+        query.value = routeQuery.value;
+        window.scrollTo(0, 0);
+        await initialize();
+      }, { immediate: true }
+    )
   };
 
   return {
+    allVideosLoaded,
+    allArtistsLoaded,
+    allPlaylistsLoaded,
     loadingState,
     query,
     videos,
@@ -149,6 +152,7 @@ export const useSearch = () => {
     loadSearchVideoScroll,
     loadSearchArtistScroll,
     loadSearchPlaylistScroll,
+    initialize,
     initializeWatcher,
   };
 };
