@@ -40,16 +40,8 @@ onMounted(async () => {
 
                 <v-infinite-scroll @load="loadSearchVideoScroll" class="overflow-x-hidden">
                   <v-row>
-                    <v-col v-for="item in videos" :key="item" cols="12" sm="6" md="4" lg="3">
-                      <VideoThumbnail :id="item.id" :title="item.title" :created="item.created"
-                        :thumbnail-url="item.thumbnail" :explicit="item.explicit" :duration="item.duration"
-                        :views="item.viewCounts?.total" vertical>
-                        <template #artists>
-                          <ArtistLink v-for="(artist, index) in item.artists" :key="artist.artist.id"
-                            :artist-id="artist.artist.id" :artist-name="artist.artist.name"
-                            :last="index === item.artists.length - 1" />
-                        </template>
-                      </VideoThumbnail>
+                    <v-col v-for="video in videos" :key="video" cols="12" sm="6" md="4" lg="3">
+                      <VideoThumbnail :video="video" vertical />
                     </v-col>
                   </v-row>
                 </v-infinite-scroll>
