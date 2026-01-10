@@ -2,30 +2,22 @@
 import 'vidstack/bundle';
 
 const props = defineProps<{
-  streamUrl?: string;
-  captionsUrl?: string;
-  onEnd?: () => Promise<void>;
+  videoPlayer: ReturnType<typeof useVideoPlayer>;
+  onEnd?: () => void;
 }>();
 
 const {
-  streamUrl,
-  captionsUrl,
-  videoPlayer,
+  videoPlayerElement,
   initializeWatcher,
-} = useVideoPlayer();
+} = props.videoPlayer;
 
 onMounted(async () => {
   initializeWatcher();
-
-  watch(() => [props.streamUrl, props.captionsUrl], async () => {
-    streamUrl.value = props.streamUrl!;
-    captionsUrl.value = props.captionsUrl!;
-  }, { immediate: true });
 });
 </script>
 
 <template>
-  <media-player ref="videoPlayer" playsInline @ended="props.onEnd?.()">
+  <media-player ref="videoPlayerElement" playsInline @ended="props.onEnd?.()">
     <media-provider></media-provider>
     <media-video-layout></media-video-layout>
   </media-player>

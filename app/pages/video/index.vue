@@ -13,11 +13,22 @@ const {
   initializeWatcher,
 } = useVideo(settings.value);
 
+const videoPlayer = useVideoPlayer(settings.value);
+
 const playQueue = usePlayQueue(settings.value);
 
 onMounted(async () => {
   initializeSettings();
   initializeWatcher();
+
+  watch(
+    () => [streamUrl.value, captionsUrl.value],
+    async () => {
+      videoPlayer.streamUrl.value = streamUrl.value;
+      videoPlayer.captionsUrl.value = captionsUrl.value;
+    },
+    { immediate: true }
+  );
 });
 </script>
 
@@ -31,7 +42,7 @@ onMounted(async () => {
   </Head>
 
   <ClientOnly>
-    <VideoPlayer :stream-url="streamUrl" :captions-url="captionsUrl" :on-end="playQueue.playNextVideo" />
+    <VideoPlayer :video-player="videoPlayer" :on-end="playQueue.playNextVideo" />
   </ClientOnly>
 
   <v-container>

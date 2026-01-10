@@ -1,13 +1,13 @@
 import { MediaPlayerElement } from 'vidstack/elements';
 
-export const useVideoPlayer = () => {
-  const { loadSettings, settings } = useSettings();
-
+export const useVideoPlayer = (settings: Record<string, unknown> = DEFAULT_SETTINGS) => {
   const streamUrl = ref<string | null>(null);
   const captionsUrl = ref<string | null>(null);
-  const videoPlayer = ref<MediaPlayerElement | null>(null);
+  const videoPlayerElement = ref<MediaPlayerElement | null>(null);
+  const onEnd = ref<(() => void) | null>(null);
+
   const captionsEventHandler = (e: Event) => {
-    settings.value.enableCaptions = videoPlayer.value!.textTracks[0]?.mode === 'showing';
+    settings.enableCaptions = videoPlayerElement.value!.textTracks[0]?.mode === 'showing';
   };
 
   const attachCaptions = async () => {
@@ -19,22 +19,22 @@ export const useVideoPlayer = () => {
     const blob = new Blob([await response.text()], { type: 'text/vtt' });
     const url = URL.createObjectURL(blob);
 
-    videoPlayer.value!.textTracks.add({
+    videoPlayerElement.value!.textTracks.add({
       src: url,
       kind: 'subtitles',
       label: 'Unknown Language',
     });
 
-    videoPlayer.value!.textTracks[0]?.setMode(settings.value.enableCaptions ? 'showing' : 'hidden');
-    videoPlayer.value!.addEventListener('text-track-change', captionsEventHandler);
+    videoPlayerElement.value!.textTracks[0]?.setMode(settings.enableCaptions ? 'showing' : 'hidden');
+    videoPlayerElement.value!.addEventListener('text-track-change', captionsEventHandler);
   };
 
   const attachVideo = async () => {
     if (!streamUrl.value) return;
 
-    videoPlayer.value!.src = streamUrl.value;
-    videoPlayer.value!.addEventListener('can-play', () => {
-      videoPlayer.value!.play();
+    videoPlayerElement.value!.src = streamUrl.value;
+    videoPlayerElement.value!.addEventListener('can-play', () => {
+      videoPlayerElement.value!.play();
     });
   };
 
@@ -44,13 +44,15 @@ export const useVideoPlayer = () => {
   };
 
   const unloadVideoPlayer = async () => {
-    videoPlayer.value!.removeEventListener('text-track-change', captionsEventHandler);
-    videoPlayer.value!.src = '';
-    videoPlayer.value!.textTracks.clear();
+    videoPlayerElement.value!.removeEventListener('text-track-change', captionsEventHandler);
+    videoPlayerElement.value!.src = '';
+    videoPlayerElement.value!.textTracks.clear();
   };
 
   const initialize = async () => {
-    loadSettings();
+    if (onEnd.value) {
+      videoPlayerElement.value!.addEventListener('ended', onEnd.value);
+    }
 
     await unloadVideoPlayer();
     await loadVideoPlayer();
@@ -69,7 +71,7 @@ export const useVideoPlayer = () => {
   return {
     streamUrl,
     captionsUrl,
-    videoPlayer,
+    videoPlayerElement,
     loadVideoPlayer,
     unloadVideoPlayer,
     initialize,
