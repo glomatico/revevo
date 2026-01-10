@@ -77,6 +77,7 @@ export const useVideo = () => {
     validVideo,
     captionsUrl,
     streamUrl,
+    routeVideoId,
     initialize,
     initializeWatcher,
   };
