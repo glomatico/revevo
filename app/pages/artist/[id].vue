@@ -37,8 +37,7 @@ onMounted(async () => {
 
       <v-row>
         <v-col cols="12">
-          <ArtistPageBanner :artist-avatar-url="artist.thumbnail" :artist-name="artist.name"
-            :video-count="artist.videos.itemsCount" :view-count="artist.viewCounts.total" />
+          <ArtistPageBanner :artist="artist" />
         </v-col>
 
         <v-col cols="12">
