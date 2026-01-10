@@ -22,8 +22,7 @@ const props = defineProps<{
             <td>
               <v-row dense class="my-2">
                 <v-col v-for="artist in props.video.artists" :key="artist.artist.id" cols="auto">
-                  <ArtistLinkChip :artist-id="artist.artist.id" :artist-name="artist.artist.name"
-                    :artist-thumbnail="artist.artist.thumbnail" />
+                  <ArtistLinkChip :artist="artist.artist" />
                 </v-col>
               </v-row>
             </td>

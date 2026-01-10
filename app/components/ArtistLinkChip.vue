@@ -1,25 +1,24 @@
 <script lang="ts" setup>
-defineProps<{
-  artistId: string;
-  artistName: string;
-  artistThumbnail: string;
+const props = defineProps<{
+  artist: any;
 }>();
 </script>
 
 
 <template>
-  <v-chip rounded :to="`/artist/${artistId}`">
+  <v-chip rounded :to="`/artist/${props.artist.id}`">
     <v-row dense align="center">
       <v-col>
         <v-avatar>
-          <v-img v-if="artistThumbnail" :src="artistThumbnail" :alt="`Profile avatar for ${artistName}`" />
+          <v-img v-if="props.artist.thumbnail" :src="props.artist.thumbnail"
+            :alt="`Profile avatar for ${props.artist.name}`" />
           <v-icon v-else size="26">mdi-account-circle</v-icon>
         </v-avatar>
       </v-col>
 
       <v-col>
         <p>
-          {{ artistName }}
+          {{ props.artist.name }}
         </p>
       </v-col>
     </v-row>
