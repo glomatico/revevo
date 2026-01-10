@@ -18,9 +18,7 @@ const props = defineProps<{
       <p class="text-h4 font-weight-bold">{{ props.artist.name }}</p>
 
       <p class="text-h6">
-        <template v-if="props.artist.videos.itemsCount != null">
-          {{ props.artist.videos.itemsCount.toLocaleString() }} video(s)
-        </template>
+        {{ props.artist.videos.itemsCount.toLocaleString() }} video(s)
 
         <template v-if="props.artist.viewCounts.total != null">
           • {{ props.artist.viewCounts.total.toLocaleString() }} view(s)
