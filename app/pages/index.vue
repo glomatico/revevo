@@ -1,17 +1,12 @@
 <script lang="ts" setup>
 const {
-  loadHomePage,
+  home,
   loadingState,
-  topVideosSection,
-  trendingArtistsSection,
-  playlistsSection,
-  filteredTopVideosSectionItems,
-  filteredTrendingArtistsSectionItems,
-  filteredPlaylistsSectionItems,
-} = useHomePage();
+  initialize,
+} = useHome();
 
 onMounted(async () => {
-  await loadHomePage();
+  await initialize();
 });
 
 useSeoMeta({
@@ -26,91 +21,40 @@ useSeoMeta({
 
 
 <template>
-
   <v-container>
-    <v-row>
-      <template v-if="loadingState === LoadingState.IDLE" />
-
-      <v-col v-else-if="loadingState === LoadingState.LOADING" cols="12">
-        <LoadingSpinner />
-      </v-col>
-
-      <v-col v-else-if="loadingState === LoadingState.ERROR" cols="12">
-        <v-alert type="error">Failed to load homepage data.</v-alert>
-      </v-col>
-
-      <template v-else>
-        <v-col cols="12">
-          <p class="text-h4 font-weight-bold">
-            {{ topVideosSection!.title }}
-          </p>
-        </v-col>
-
-        <v-divider thickness="2" />
-
-        <v-col cols="12">
-          <v-row>
-            <v-col v-if="!filteredTopVideosSectionItems?.length">
-              <v-alert type="info">
-                This section is empty.
-              </v-alert>
-            </v-col>
-
-            <v-col v-else v-for="(video, index) in filteredTopVideosSectionItems" :key="index" cols="12" sm="6" md="4"
-              lg="3">
-              <VideoThumbnail v-if="video" :video="video" :vertical="true" />
-            </v-col>
-          </v-row>
-        </v-col>
-
-        <v-col cols="12">
-          <p class="text-h4 font-weight-bold">
-            {{ trendingArtistsSection!.title }}
-          </p>
-        </v-col>
-
-        <v-divider thickness="2" />
-
-        <v-col cols="12">
-          <v-alert v-if="!filteredTrendingArtistsSectionItems?.length" type="info">
-            This section is empty.
-          </v-alert>
-
-          <v-row v-else>
-            <v-slide-group>
-              <v-col v-for="(artist, index) in filteredTrendingArtistsSectionItems" :key="index">
-                <v-slide-group-item>
-                  <ArtistThumbnail :artist="artist.basicMeta" />
-                </v-slide-group-item>
-              </v-col>
-            </v-slide-group>
-          </v-row>
-        </v-col>
-
-        <v-col cols="12">
-          <p class="text-h4 font-weight-bold">
-            {{ playlistsSection!.title }}
-          </p>
-        </v-col>
-
-        <v-divider thickness="2" />
-
-        <v-col cols="12">
-          <v-alert v-if="!filteredPlaylistsSectionItems?.length" type="info">
-            This section is empty.
-          </v-alert>
-
-          <v-row v-else>
-            <v-slide-group>
-              <v-col v-for="(playlist, index) in filteredPlaylistsSectionItems" :key="index">
-                <v-slide-group-item>
-                  <PlaylistThumbnail :playlist="playlist" :id="playlist.id!" />
-                </v-slide-group-item>
-              </v-col>
-            </v-slide-group>
-          </v-row>
-        </v-col>
+    <StatusContainer :loading-state="loadingState" :empty="!home?.items?.length">
+      <template #error-message>
+        Failed to load home page.
       </template>
-    </v-row>
+
+      <template #empty-message>
+        No content available.
+      </template>
+
+      <v-row>
+        <v-col v-for="(section, index) in home?.items" :key="section" cols="12" class="mb-8">
+          <v-row>
+            <v-col cols="12">
+              <p class="text-h4 font-weight-bold">{{ section.container.title }}</p>
+            </v-col>
+
+            <v-divider thickness="2" />
+
+            <v-col v-if="section.container.type === 'video'" v-for="item in section.container.items" :key="item"
+              cols="12" sm="6" md="4" lg="3">
+              <VideoThumbnail :video="item.video" vertical />
+            </v-col>
+
+            <v-slide-group v-else-if="section.container.type === 'playlist'" cols="12">
+              <v-col v-for="(playlist, index) in section.container.items" :key="playlist" cols="auto">
+                <v-slide-group-item>
+                  <PlaylistThumbnail :playlist="playlist.container" :index="index" :width="300" />
+                </v-slide-group-item>
+              </v-col>
+            </v-slide-group>
+          </v-row>
+        </v-col>
+      </v-row>
+    </StatusContainer>
   </v-container>
 </template>
