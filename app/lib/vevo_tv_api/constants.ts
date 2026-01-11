@@ -307,55 +307,40 @@ query GetContainerVideos(
 `;
 
 export const QUERY_GET_HOME = `
-query GetHome($explicit: Boolean, $offset: Int, $limit: Int) {
+query GetHome($explicit: Boolean, $limit: Int) {
   home {
-    id
-    type
-    title
-    description
-    thumbnail
-    items(explicit: $explicit, offset: $offset, limit: $limit) {
-      id
-      position
-      video {
-        id
-        title
-        thumbnail
-        genre
-        artists {
-          role
-          artist {
-            id
-            name
-            thumbnail
-          }
-        }
-        explicit
-        duration
-        viewCounts {
-          total
-          month
-          week
-          day
-        }
-        created
-      }
+    items {
       container {
         id
         title
         type
         thumbnail
+        items(explicit: $explicit, limit: $limit) {
+          id
+          position
+          video {
+            id
+            title
+            created
+            thumbnail
+            explicit
+            lyricVideo
+            duration
+            viewCounts {
+              total
+            }
+            artists {
+              role
+              artist {
+                id
+                name
+                thumbnail
+              }
+            }
+          }
+        }
       }
-      channel {
-        id
-        name
-      }
-      created
-      updated
     }
-    itemsCount
-    created
-    updated
   }
 }
 `;

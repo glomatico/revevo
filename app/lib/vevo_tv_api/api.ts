@@ -132,12 +132,10 @@ export class VevoTvApi {
     }
 
     async getHome(
-        offset = 0,
         limit = 32,
         explicit = true,
     ): Promise<any> {
         return this.request(QUERY_GET_HOME, {
-            offset,
             limit,
             explicit,
         });
