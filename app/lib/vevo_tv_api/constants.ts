@@ -305,3 +305,57 @@ query GetContainerVideos(
   }
 }
 `;
+
+export const QUERY_GET_HOME = `
+query GetHome($explicit: Boolean, $offset: Int, $limit: Int) {
+  home {
+    id
+    type
+    title
+    description
+    thumbnail
+    items(explicit: $explicit, offset: $offset, limit: $limit) {
+      id
+      position
+      video {
+        id
+        title
+        thumbnail
+        genre
+        artists {
+          role
+          artist {
+            id
+            name
+            thumbnail
+          }
+        }
+        explicit
+        duration
+        viewCounts {
+          total
+          month
+          week
+          day
+        }
+        created
+      }
+      container {
+        id
+        title
+        type
+        thumbnail
+      }
+      channel {
+        id
+        name
+      }
+      created
+      updated
+    }
+    itemsCount
+    created
+    updated
+  }
+}
+`;
