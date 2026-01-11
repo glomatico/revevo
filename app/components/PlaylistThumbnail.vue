@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 const props = defineProps<{
   playlist: any;
+  width?: number;
 }>();
 </script>
 
 <template>
-  <v-card :to="`/playlist/${props.playlist.id}`">
+  <v-card :to="`/playlist/${props.playlist.id}`" :width="width || 'auto'">
     <v-row no-gutters align="center">
       <v-col cols="12">
         <v-img :src="props.playlist.thumbnail" :alt="`Thumbnail for ${props.playlist.title}`" :aspect-ratio="16 / 9"
