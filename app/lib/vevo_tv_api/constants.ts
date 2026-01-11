@@ -311,13 +311,15 @@ query GetHome($explicit: Boolean, $limit: Int) {
   home {
     items {
       container {
-        id
         title
         type
-        thumbnail
         items(explicit: $explicit, limit: $limit) {
-          id
-          position
+          container {
+            id
+            title
+            type
+            thumbnail
+          }
           video {
             id
             title
