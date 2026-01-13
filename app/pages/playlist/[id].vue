@@ -49,17 +49,8 @@ onMounted(async () => {
               No videos available in this playlist.
             </template>
 
-            <v-infinite-scroll @load="loadPlaylistVideosScroll" class="overflow-x-hidden">
-              <v-row>
-                <v-col v-for="(video, index) in mappedVideos" :key="video" cols="12">
-                  <div v-for="className in ['d-none d-sm-block', 'd-sm-none']" :class="className" :key="className">
-                    <VideoThumbnail :video="video" :vertical="className === 'd-sm-none'" :playlist-id="playlist.id"
-                      :index="index + 1">
-                    </VideoThumbnail>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-infinite-scroll>
+            <VideoList :videos="mappedVideos" :playlist-id="playlist.id" :load-videos-scroll="loadPlaylistVideosScroll"
+              add-index />
           </StatusContainer>
         </v-col>
       </v-row>

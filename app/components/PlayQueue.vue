@@ -28,21 +28,17 @@ onMounted(async () => {
       No videos found in the play queue.
     </template>
 
-    <v-infinite-scroll @load="scrollPlayQueue" class="overflow-x-hidden">
-      <v-row>
-        <v-col cols="12">
-          <p class="text-h6">
-            {{ title }}
-          </p>
-        </v-col>
+    <v-row>
+      <v-col cols="12">
+        <p class="text-h6">
+          {{ title }}
+        </p>
+      </v-col>
 
-        <v-col v-for="(item, index) in mappedVideos" :key="item" cols="12">
-          <div v-for="className in ['d-none d-sm-block', 'd-sm-none']" :class="className" :key="className">
-            <VideoThumbnail :video="item" :tonal="index === videoIndex" :vertical="className === 'd-sm-none'"
-              :playlist-id="playlistId" :index="playlistId ? index + 1 : undefined" @click="videoIndex = index" />
-          </div>
-        </v-col>
-      </v-row>
-    </v-infinite-scroll>
+      <v-col cols="12">
+        <VideoList :videos="mappedVideos" :playlist-id="playlistId" :load-videos-scroll="scrollPlayQueue"
+          :add-index="playlistId == null" v-model:video-index="videoIndex" />
+      </v-col>
+    </v-row>
   </StatusContainer>
 </template>
