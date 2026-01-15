@@ -38,29 +38,15 @@ onMounted(async () => {
                 No extra info available.
               </template>
 
-              <!-- <div v-if="extraInfo?.basicMetaV3?.credits?.length">
-                <p class="text-subtitle-1">Credits:</p>
-                <v-list dense>
-                  <v-list-item v-for="credit in extraInfo.basicMetaV3.credits" :key="credit.role + credit.name">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ credit.role }}: {{ credit.name }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </div>
-
-              <div v-if="extraInfo?.views?.youTubeId">
-                <p class="text-subtitle-1">YouTube ID:</p>
-                <p>{{ extraInfo.views.youTubeId }}</p>
-              </div> -->
-              <v-table class="rounded-lg" v-if="extraInfo?.basicMetaV3?.credits?.length">
+              <v-table class="rounded-lg">
                 <tbody>
                   <tr v-if="extraInfo?.views?.youTubeId">
                     <td>YouTube URL</td>
                     <td><a :href="`https://www.youtube.com/watch?v=${extraInfo.views.youTubeId}`" target="_blank">{{
                       `https://www.youtube.com/watch?v=${extraInfo.views.youTubeId}` }}</a></td>
                   </tr>
-                  <tr v-for="credit in extraInfo.basicMetaV3.credits" :key="credit.role + credit.name">
+                  <tr v-if="extraInfo?.basicMetaV3?.credits?.length" v-for="credit in extraInfo.basicMetaV3.credits"
+                    :key="credit">
                     <td>{{ credit.role }}</td>
                     <td>{{ credit.name }}</td>
                   </tr>
