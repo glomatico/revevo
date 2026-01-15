@@ -1,4 +1,7 @@
-export const useVideo = (settings: Record<string, unknown> = DEFAULT_SETTINGS) => {
+export const useVideo = (
+  settings: Record<string, unknown> = DEFAULT_SETTINGS,
+  videoPlayer: null | ReturnType<typeof useVideoPlayer> = null,
+) => {
   const route = useRoute();
 
   const vevoTvApi = useVevoTvApi();
@@ -56,12 +59,21 @@ export const useVideo = (settings: Record<string, unknown> = DEFAULT_SETTINGS) =
 
   const initializeWatcher = () => {
     watch(
+      () => [streamUrl.value, captionsUrl.value], () => {
+        if (videoPlayer) {
+          videoPlayer.streamUrl.value = streamUrl.value;
+          videoPlayer.captionsUrl.value = captionsUrl.value;
+        }
+      }, { immediate: true }
+    );
+
+    watch(
       () => routeVideoId.value, async () => {
         videoId.value = routeVideoId.value;
         window.scrollTo(0, 0);
         await initialize();
       }, { immediate: true }
-    )
+    );
   };
 
   return {

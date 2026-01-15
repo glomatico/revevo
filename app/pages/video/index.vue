@@ -4,6 +4,8 @@ const {
   initialize: initializeSettings,
 } = useSettings();
 
+const videoPlayer = useVideoPlayer(settings.value);
+
 const {
   loadingState,
   video,
@@ -11,24 +13,13 @@ const {
   streamUrl,
   captionsUrl,
   initializeWatcher,
-} = useVideo(settings.value);
-
-const videoPlayer = useVideoPlayer(settings.value);
+} = useVideo(settings.value, videoPlayer);
 
 const playQueue = usePlayQueue(settings.value);
 
 onMounted(async () => {
   initializeSettings();
   initializeWatcher();
-
-  watch(
-    () => [streamUrl.value, captionsUrl.value],
-    async () => {
-      videoPlayer.streamUrl.value = streamUrl.value;
-      videoPlayer.captionsUrl.value = captionsUrl.value;
-    },
-    { immediate: true }
-  );
 });
 </script>
 
