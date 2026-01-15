@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-const router = useRouter();
-
 const props = defineProps<{
   video: any;
   playlistId?: string;
@@ -9,6 +7,8 @@ const props = defineProps<{
   disabled?: boolean;
   tonal?: boolean;
 }>();
+
+const router = useRouter();
 
 const createdDate = ref<Date | null>(props.video.created ? new Date(props.video.created) : null);
 const isNewRelease = ref<boolean>(
@@ -23,7 +23,6 @@ const cardTextAlign = ref<string>(props.vertical ? 'text-center' : '');
 const cardVariant = computed<any>(() => (props.tonal ? 'tonal' : 'elevated'));
 const url = computed<string>(() => {
   const params = new URLSearchParams();
-  params.set('v', props.video.id);
 
   if (props.playlistId) {
     params.set('p', props.playlistId);
@@ -33,24 +32,12 @@ const url = computed<string>(() => {
     params.set('i', props.index.toString());
   }
 
-  return `/video?${params.toString()}`;
+  return `/video/${props.video.id}${params.toString() ? `?${params.toString()}` : ''}`;
 });
-
-const navigateToVideo = async () => {
-  if (props.playlistId) {
-    const query = router.resolve(url.value).query;
-    await router.push({
-      path: '/video',
-      query,
-    });
-  } else {
-    navigateTo(url.value);
-  }
-};
 </script>
 
 <template>
-  <v-card @click.prevent="navigateToVideo" :href="url" :disabled="disabled" :variant="cardVariant">
+  <v-card @click.prevent="!disabled && router.push(url)" :href="url" :disabled="disabled" :variant="cardVariant">
     <v-row no-gutters align="center">
       <v-col :cols="colsThumbnail">
         <v-img :src="props.video.thumbnail" :alt="`Thumbnail for ${props.video.title}`" :aspect-ratio="16 / 9" cover />
