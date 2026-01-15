@@ -12,7 +12,7 @@ export const usePlayQueue = (settings: Record<string, unknown> = DEFAULT_SETTING
   const title = ref<string>('');
   const videoIndex = ref<number>(0);
 
-  const routeVideoId = computed<string>(() => (route.query.v as string) || '');
+  const routeVideoId = computed<string>(() => (route.params.id as string) || '');
   const routePlaylistId = computed<string>(() => (route.query.p as string) || '');
   const routeVideoIndex = computed<number>(() => parseInt((route.query.i as string) || '1', 10));
   const mappedVideos = computed<any[]>(() => videos.value.map((item: any) => item.video));
@@ -105,11 +105,12 @@ export const usePlayQueue = (settings: Record<string, unknown> = DEFAULT_SETTING
 
     videoIndex.value += 1;
 
+    const nextVideoId = videos.value[videoIndex.value].video.id;
     router.replace({
+      path: `/video/${nextVideoId}`,
       query: {
-        ...route.query,
+        p: route.query.p,
         i: `${videoIndex.value + 1}`,
-        v: videos.value[videoIndex.value].video.id,
       },
     });
   };

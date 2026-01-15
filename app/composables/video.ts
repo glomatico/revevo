@@ -21,7 +21,7 @@ export const useVideo = (
       return video.value?.hls || '';
     }
   });
-  const routeVideoId = computed<string>(() => (route.query.v as string) || '');
+  const routeVideoId = computed<string>(() => (route.params.id as string) || '');
 
   const getBestMp4Stream = (): string => {
     const mp4Streams = (video.value?.mp4 || []) as any[];
