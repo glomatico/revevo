@@ -37,7 +37,7 @@ onMounted(async () => {
 
       <v-col cols="12">
         <VideoList :videos="mappedVideos" :playlist-id="playlistId" :load-videos-scroll="scrollPlayQueue"
-          :add-index="playlistId == null" v-model:video-index="videoIndex" />
+          :add-index="Boolean(playlistId)" v-model:video-index="videoIndex" />
       </v-col>
     </v-row>
   </StatusContainer>
