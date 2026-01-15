@@ -73,8 +73,12 @@ const props = defineProps<{
       </v-table>
     </v-col>
 
-    <v-col v-if="props.video.hls || props.video.mp4?.length || props.video.captions" cols="12">
+    <v-col v-if="props.video.hls || props.video.mp4?.length || props.video.captions" cols="12" md="6">
       <VideoStreamUrls :video="props.video" />
+    </v-col>
+
+    <v-col cols="12" md="6">
+      <VideoExtraInfo :video="props.video" />
     </v-col>
   </v-row>
 </template>
