@@ -6,13 +6,14 @@ const props = defineProps<{
 
 
 <template>
-  <v-chip rounded :to="`/artist/${props.artist.id}`">
+  <v-chip rounded :to="`/artist/${props.artist.id}`" variant="outlined">
     <v-row dense align="center">
       <v-col>
         <v-avatar>
           <v-img v-if="props.artist.thumbnail" :src="props.artist.thumbnail"
             :alt="`Profile avatar for ${props.artist.name}`" />
-          <v-icon v-else size="26">mdi-account-circle</v-icon>
+
+          <v-icon v-else size="26" icon="mdi-account-circle" />
         </v-avatar>
       </v-col>
 
