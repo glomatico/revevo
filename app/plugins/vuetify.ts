@@ -11,7 +11,6 @@ export default defineNuxtPlugin((app) => {
         theme: {
             defaultTheme: 'dark',
         },
-        blueprint: md3,
     })
     app.vueApp.use(vuetify)
 })
