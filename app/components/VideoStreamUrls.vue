@@ -27,7 +27,7 @@ const dialogVisible = ref(false);
                   </td>
                 </tr>
                 <tr v-for="mp4Item in props.video.mp4" :key="mp4Item.quality">
-                  <td>MP4 {{ mp4Item.quality }}</td>
+                  <td>MP4 ({{ mp4Item.quality }})</td>
                   <td>
                     <CopyableReadOnlyField :value="mp4Item.url" />
                   </td>
