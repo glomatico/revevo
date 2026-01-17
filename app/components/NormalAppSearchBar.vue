@@ -17,12 +17,12 @@ const search = async () => {
 </script>
 
 <template>
-  <v-row align="center">
+  <v-row>
     <v-col align="center">
-      <v-text-field rounded label="Search" variant="solo" single-line density="compact" outlined dense hide-details
+      <v-text-field rounded label="Search" variant="outlined" single-line density="compact" hide-details
         @keyup.enter="search" v-model="searchQuery" max-width="600">
         <template #append-inner>
-          <v-btn size="small" variant="text" @click="search" icon="mdi-send" />
+          <v-btn size="small" @click="search" icon="mdi-send" />
         </template>
       </v-text-field>
     </v-col>
