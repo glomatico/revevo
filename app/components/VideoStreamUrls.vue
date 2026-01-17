@@ -7,7 +7,8 @@ const dialogVisible = ref(false);
 </script>
 
 <template>
-  <v-btn block variant="outlined" class="text-none" @click="dialogVisible = true">Show Stream URLs</v-btn>
+  <v-btn block variant="outlined" class="text-none" @click="dialogVisible = true" rounded>Show Stream
+    URLs</v-btn>
 
   <v-dialog v-model="dialogVisible" max-width="600px">
     <v-card>
@@ -55,7 +56,7 @@ const dialogVisible = ref(false);
           </v-col>
 
           <v-col cols="12" align="end">
-            <v-btn variant="outlined" class="text-none" @click="dialogVisible = false">Close</v-btn>
+            <v-btn rounded variant="outlined" class="text-none" @click="dialogVisible = false">Close</v-btn>
           </v-col>
         </v-row>
       </v-card-item>
