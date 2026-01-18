@@ -7,7 +7,7 @@ const dialogVisible = ref(false);
 </script>
 
 <template>
-  <v-btn block variant="outlined" class="text-none" @click="dialogVisible = true" rounded>Show Stream
+  <v-btn block variant="outlined" class="text-none" @click="dialogVisible = true" rounded>Stream
     URLs</v-btn>
 
   <v-dialog v-model="dialogVisible" max-width="600px">

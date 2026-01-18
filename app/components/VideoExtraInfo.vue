@@ -18,7 +18,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-btn block variant="outlined" class="text-none" @click="dialogVisible = true" rounded>Show Extra Info</v-btn>
+  <v-btn block variant="outlined" class="text-none" @click="dialogVisible = true" rounded>Extra Info</v-btn>
 
   <v-dialog v-model="dialogVisible" max-width="600px">
     <v-card>
