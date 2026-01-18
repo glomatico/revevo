@@ -30,7 +30,7 @@ onMounted(async () => {
 
     <v-row>
       <v-col cols="12">
-        <p class="text-h6">
+        <p class="text-h6 font-weight-bold">
           {{ title }}
         </p>
       </v-col>

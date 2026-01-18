@@ -7,7 +7,7 @@ const props = defineProps<{
 <template>
   <v-row>
     <v-col cols="12">
-      <p class="text-h4 text-wrap text-break">
+      <p class="text-h4 text-wrap text-break font-weight-bold">
         {{ props.video.title }}
       </p>
     </v-col>
