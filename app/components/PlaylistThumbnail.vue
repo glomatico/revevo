@@ -13,9 +13,11 @@ const props = defineProps<{
           cover />
       </v-col>
 
-      <v-col cols="12">
+      <v-col class="pa-2">
         <v-card-item>
-          <p class="text-center text-truncate">{{ props.playlist.title }}</p>
+          <p class="text-center text-truncate font-weight-bold">
+            {{ props.playlist.title }}
+          </p>
         </v-card-item>
       </v-col>
     </v-row>

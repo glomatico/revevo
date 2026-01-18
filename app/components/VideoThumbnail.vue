@@ -42,7 +42,7 @@ const url = computed<string>(() => {
       </v-col>
 
       <v-col :cols="colsInfo" align-self="center" class="pa-2">
-        <p class="text-truncate">
+        <p class="text-truncate font-weight-bold">
           <v-icon v-if="isNewRelease" icon="mdi-new-box" />
           <v-icon v-if="props.video.explicit" icon="mdi-alpha-e-box" />
           {{ video.title }}
