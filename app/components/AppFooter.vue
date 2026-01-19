@@ -1,10 +1,14 @@
+<script lang="ts" setup>
+</script>
+
 <template>
   <v-footer color="surface" class="app-footer">
     <v-container>
       <v-row align="center">
         <v-col>
           <p>Made by Glomatico </p>
-          <p>This project is not affiliated with or endorsed by Vevo</p>
+
+          <p class="text-caption">This project is not affiliated with or endorsed by Vevo</p>
         </v-col>
 
         <v-col align="right">
@@ -15,9 +19,6 @@
     </v-container>
   </v-footer>
 </template>
-
-<script lang="ts" setup>
-</script>
 
 <style scoped>
 .app-footer {
