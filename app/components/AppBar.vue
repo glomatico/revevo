@@ -14,9 +14,9 @@ const appMenu = ref();
 
         <v-col cols="auto">
           <v-toolbar-title>
-            <NuxtLink class="font-weight-bold text-decoration-none text-white" to="/">
-              Revevo
-            </NuxtLink>
+            <AppLink to="/">
+              <span class="font-weight-bold">Revevo</span>
+            </AppLink>
           </v-toolbar-title>
         </v-col>
 
