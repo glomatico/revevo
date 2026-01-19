@@ -11,17 +11,21 @@ const props = defineProps<{
         <v-img :src="props.playlist.thumbnail" :aspect-ratio="16 / 9" />
       </v-col>
 
-      <v-col class="pa-2">
-        <p class="text-h4 font-weight-bold text-center">{{ props.playlist.title }}</p>
+      <v-row class="pa-2">
+        <v-col cols="12">
+          <p class="text-h4 font-weight-bold text-center">{{ props.playlist.title }}</p>
 
-        <p v-if="props.playlist.description">
-          {{ props.playlist.description }}
-        </p>
+          <p class="text-caption text-center">
+            {{ props.playlist.itemsCount }} video{{ props.playlist.itemsCount !== 1 ? 's' : '' }}
+          </p>
+        </v-col>
 
-        <p>
-          {{ props.playlist.itemsCount }} video{{ props.playlist.itemsCount !== 1 ? 's' : '' }}
-        </p>
-      </v-col>
+        <v-col cols="12">
+          <p v-if="props.playlist.description">
+            {{ props.playlist.description }}
+          </p>
+        </v-col>
+      </v-row>
     </v-row>
   </v-card>
 </template>
