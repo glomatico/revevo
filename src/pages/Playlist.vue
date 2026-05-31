@@ -17,9 +17,8 @@ const {
   watchRoute,
 } = usePlaylist();
 
-const videoProps = (_video: any, index: number) => ({
+const videoProps = () => ({
   playlistId: playlistId.value,
-  index: index + 1,
 });
 
 usePageTitle(computed(() =>

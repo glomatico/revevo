@@ -9,7 +9,6 @@ import AppLink from './AppLink.vue';
 const props = defineProps<{
   video: any;
   playlistId?: string;
-  index?: number;
   vertical?: boolean;
   disabled?: boolean;
 }>();
@@ -41,10 +40,6 @@ const url = computed(() => {
 
   if (props.playlistId) {
     params.set('p', props.playlistId);
-  }
-
-  if (props.index) {
-    params.set('i', props.index.toString());
   }
 
   return `/video/${props.video.id}${params.toString() ? `?${params.toString()}` : ''}`;

@@ -32,10 +32,6 @@ export const usePlayQueue = () => {
     const id = route.query.p;
     return typeof id === "string" ? id : "";
   });
-  const routeVideoIndex = computed(() => {
-    const index = Number.parseInt(String(route.query.i || "1"), 10);
-    return Number.isNaN(index) || index < 1 ? 1 : index;
-  });
   const mappedVideos = computed(() => videos.value.map((item) => item.video));
   const currentVideo = computed(() => mappedVideos.value[videoIndex.value] || null);
   const validCurrentVideo = computed(() => isVideoValid(currentVideo.value));
@@ -106,16 +102,30 @@ export const usePlayQueue = () => {
     await loadContinuousPlayData();
   };
 
+  const findRouteVideoIndex = () => {
+    return mappedVideos.value.findIndex((video) => video?.id === videoId.value);
+  };
+
+  const syncVideoIndexFromRoute = () => {
+    const index = findRouteVideoIndex();
+
+    if (index >= 0) {
+      videoIndex.value = index;
+    }
+  };
+
   const initialize = async () => {
     videos.value = [];
     title.value = "";
     allVideosLoaded.value = false;
+    videoIndex.value = 0;
     loadingState.value = LoadingState.LOADING;
 
     try {
-      while (!allVideosLoaded.value && videos.value.length < videoIndex.value + 1) {
+      do {
         await loadPlayQueueData();
-      }
+        syncVideoIndexFromRoute();
+      } while (videoId.value && findRouteVideoIndex() < 0 && !allVideosLoaded.value);
     } catch (error) {
       console.error("Error loading play queue:", error);
       loadingState.value = LoadingState.ERROR;
@@ -125,21 +135,9 @@ export const usePlayQueue = () => {
     loadingState.value = LoadingState.SUCCESS;
   };
 
-  const syncVideoIndexFromRoute = () => {
-    const index = mappedVideos.value.findIndex((video) => video?.id === routeVideoId.value);
-
-    if (index >= 0) {
-      videoIndex.value = index;
-      return;
-    }
-
-    videoIndex.value = routeVideoIndex.value - 1;
-  };
-
   const initializeFromRoute = async () => {
     playlistId.value = routePlaylistId.value;
     videoId.value = routeVideoId.value;
-    syncVideoIndexFromRoute();
 
     await initialize();
   };
@@ -161,8 +159,15 @@ export const usePlayQueue = () => {
 
     watch(
       () => routeVideoId.value,
-      () => {
-        syncVideoIndexFromRoute();
+      async () => {
+        videoId.value = routeVideoId.value;
+
+        if (findRouteVideoIndex() >= 0) {
+          syncVideoIndexFromRoute();
+          return;
+        }
+
+        await initialize();
       },
     );
   };
@@ -200,9 +205,7 @@ export const usePlayQueue = () => {
 
     await router.replace({
       path: `/video/${nextVideo.id}`,
-      query: playlistId.value
-        ? { p: playlistId.value, i: `${videoIndex.value + 1}` }
-        : {},
+      query: playlistId.value ? { p: playlistId.value } : {},
     });
   };
 
@@ -211,7 +214,7 @@ export const usePlayQueue = () => {
 
     await router.push({
       path: `/video/${video.id}`,
-      query: playlistId.value ? { p: playlistId.value, i: `${index + 1}` } : {},
+      query: playlistId.value ? { p: playlistId.value } : {},
     });
   };
 
@@ -240,7 +243,6 @@ export const usePlayQueue = () => {
     videoIndex,
     routeVideoId,
     routePlaylistId,
-    routeVideoIndex,
     mappedVideos,
     currentVideo,
     validCurrentVideo,

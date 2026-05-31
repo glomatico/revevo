@@ -23,9 +23,8 @@ const {
 } = props.playQueue;
 
 const videoProps = computed(() =>
-  mappedVideos.value.map((_video: any, index: number) => ({
+  mappedVideos.value.map(() => ({
     playlistId: playlistId.value || undefined,
-    index: playlistId.value ? index + 1 : undefined,
     vertical: smAndDown.value,
   })),
 );

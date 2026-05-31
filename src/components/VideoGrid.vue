@@ -5,7 +5,6 @@ import VideoThumbnail from './VideoThumbnail.vue';
 
 type VideoThumbnailProps = {
   playlistId?: string;
-  index?: number;
   vertical?: boolean;
   disabled?: boolean;
 };
