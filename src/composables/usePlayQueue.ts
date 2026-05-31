@@ -22,7 +22,6 @@ export const usePlayQueue = () => {
   const videoId = ref("");
   const loadingState = ref(LoadingState.IDLE);
   const title = ref("");
-  const videoIndex = ref(0);
 
   const routeVideoId = computed(() => {
     const id = route.params.id;
@@ -33,7 +32,9 @@ export const usePlayQueue = () => {
     return typeof id === "string" ? id : "";
   });
   const mappedVideos = computed(() => videos.value.map((item) => item.video));
-  const currentVideo = computed(() => mappedVideos.value[videoIndex.value] || null);
+  const currentVideo = computed(() =>
+    mappedVideos.value.find((video) => video?.id === routeVideoId.value) || null,
+  );
   const validCurrentVideo = computed(() => isVideoValid(currentVideo.value));
   const captionsUrl = computed(() => currentVideo.value?.captions?.vtt?.url || "");
   const streamUrl = computed(() => {
@@ -102,30 +103,16 @@ export const usePlayQueue = () => {
     await loadContinuousPlayData();
   };
 
-  const findRouteVideoIndex = () => {
-    return mappedVideos.value.findIndex((video) => video?.id === videoId.value);
-  };
-
-  const syncVideoIndexFromRoute = () => {
-    const index = findRouteVideoIndex();
-
-    if (index >= 0) {
-      videoIndex.value = index;
-    }
-  };
-
   const initialize = async () => {
     videos.value = [];
     title.value = "";
     allVideosLoaded.value = false;
-    videoIndex.value = 0;
     loadingState.value = LoadingState.LOADING;
 
     try {
       do {
         await loadPlayQueueData();
-        syncVideoIndexFromRoute();
-      } while (videoId.value && findRouteVideoIndex() < 0 && !allVideosLoaded.value);
+      } while (videoId.value && !currentVideo.value && !allVideosLoaded.value);
     } catch (error) {
       console.error("Error loading play queue:", error);
       loadingState.value = LoadingState.ERROR;
@@ -162,8 +149,7 @@ export const usePlayQueue = () => {
       async () => {
         videoId.value = routeVideoId.value;
 
-        if (findRouteVideoIndex() >= 0) {
-          syncVideoIndexFromRoute();
+        if (currentVideo.value) {
           return;
         }
 
@@ -187,21 +173,27 @@ export const usePlayQueue = () => {
   };
 
   const playNextVideo = async () => {
-    while (!videos.value[videoIndex.value + 1] && !allVideosLoaded.value) {
+    let currentIndex = mappedVideos.value.findIndex(
+      (video) => video?.id === routeVideoId.value,
+    );
+
+    while (!videos.value[currentIndex + 1] && !allVideosLoaded.value) {
       try {
         await loadMoreVideos();
       } catch (error) {
         console.error("Error loading next play queue video:", error);
         return;
       }
+
+      currentIndex = mappedVideos.value.findIndex(
+        (video) => video?.id === routeVideoId.value,
+      );
     }
 
-    const nextVideo = videos.value[videoIndex.value + 1]?.video;
+    const nextVideo = videos.value[currentIndex + 1]?.video;
     if (!nextVideo) {
       return;
     }
-
-    videoIndex.value += 1;
 
     await router.replace({
       path: `/video/${nextVideo.id}`,
@@ -209,9 +201,7 @@ export const usePlayQueue = () => {
     });
   };
 
-  const playVideo = async (video: any, index: number) => {
-    videoIndex.value = index;
-
+  const playVideo = async (video: any) => {
     await router.push({
       path: `/video/${video.id}`,
       query: playlistId.value ? { p: playlistId.value } : {},
@@ -240,7 +230,6 @@ export const usePlayQueue = () => {
     videoId,
     loadingState,
     title,
-    videoIndex,
     routeVideoId,
     routePlaylistId,
     mappedVideos,
