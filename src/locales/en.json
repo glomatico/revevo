@@ -1,0 +1,107 @@
+{
+  "app": {
+    "menu": {
+      "home": "Home",
+      "settings": "Settings"
+    },
+    "search": "Search videos, artists, and playlists",
+    "title": "Revevo"
+  },
+  "common": {
+    "close": "Close",
+    "no": "No",
+    "yes": "Yes"
+  },
+  "artist": {
+    "error": "Failed to load artist.",
+    "notFound": "Artist not found or unavailable.",
+    "sort": {
+      "a-z": "A-Z",
+      "date": "Release date",
+      "original": "Original order",
+      "sortBy": "Sort by",
+      "views": "Views"
+    },
+    "videos": "videos",
+    "videosError": "Failed to load artist videos.",
+    "views": "views"
+  },
+  "footer": {
+    "createdBy": "Created by {name}.",
+    "notAffiliated": "Not affiliated with Vevo."
+  },
+  "loading": {
+    "error": "Something went wrong.",
+    "noMore": "No more results."
+  },
+  "home": {
+    "empty": "No content available.",
+    "error": "Failed to load home page."
+  },
+  "settings": {
+    "disableAutoplay": "Disable autoplay",
+    "disableAutoplayHint": "Stop the player from moving to the next video automatically.",
+    "enableCaptions": "Enable captions",
+    "enableCaptionsHint": "Show captions by default when a video has them.",
+    "hideExplicit": "Hide explicit videos",
+    "hideExplicitHint": "Filter explicit videos from API results where supported.",
+    "playbackMethod": "Playback method",
+    "reset": "Reset",
+    "title": "Settings"
+  },
+  "playQueue": {
+    "empty": "No videos found in the play queue.",
+    "error": "Failed to load play queue.",
+    "title": "Play queue"
+  },
+  "notFound": {
+    "goHome": "Go home",
+    "message": "The page you are looking for does not exist.",
+    "title": "Page not found"
+  },
+  "playlist": {
+    "error": "Failed to load playlist.",
+    "noVideos": "No videos available in this playlist.",
+    "notFound": "Playlist not found or unavailable.",
+    "videoCount": "{count} video | {count} videos",
+    "videosError": "Failed to load playlist videos."
+  },
+  "video": {
+    "error": "Failed to load video.",
+    "notFound": "Video not found or unavailable."
+  },
+  "videoGrid": {
+    "noVideos": "No videos found."
+  },
+  "videoInfo": {
+    "artists": "Artists",
+    "captionsSrt": "Captions (SRT)",
+    "captionsTtml": "Captions (TTML)",
+    "captionsVtt": "Captions (VTT)",
+    "copyright": "Copyright",
+    "copyUrl": "Copy URL",
+    "download": "Download",
+    "downloadErrorGeneric": "Failed to download video.",
+    "downloadErrorTitle": "Download failed",
+    "duration": "Duration",
+    "explicit": "Explicit",
+    "genre": "Genre",
+    "isrc": "ISRC",
+    "label": "Label",
+    "lyricVideo": "Lyric video",
+    "releaseDate": "Release date",
+    "showStreams": "Show streams",
+    "streams": "Streams",
+    "views": "Views"
+  },
+  "videoThumbnail": {
+    "copyUrl": "Copy URL",
+    "download": "Download",
+    "error": {
+      "close": "Close",
+      "generic": "Failed to download video.",
+      "title": "Download failed"
+    },
+    "views": "views"
+  }
+}
