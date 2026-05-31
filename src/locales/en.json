@@ -90,9 +90,17 @@
     "label": "Label",
     "lyricVideo": "Lyric video",
     "releaseDate": "Release date",
+    "showExtraInfo": "Show extra info",
     "showStreams": "Show streams",
     "streams": "Streams",
     "views": "Views"
+  },
+  "videoExtraInfo": {
+    "artists": "Artists",
+    "credits": "Credits",
+    "empty": "No extra info available.",
+    "error": "Failed to load extra info.",
+    "title": "Extra info"
   },
   "videoThumbnail": {
     "copyUrl": "Copy URL",

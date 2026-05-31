@@ -4,6 +4,7 @@ import { useDownloadManager } from '@/composables/useDownloadManager';
 import { createLoadResult, formatDuration } from '@/composables/utils';
 import { computed, ref, watch } from 'vue';
 import CopyableReadOnlyField from './CopyableReadOnlyField.vue';
+import VideoExtraInfo from './VideoExtraInfo.vue';
 
 const props = defineProps<{
   video: any;
@@ -13,6 +14,7 @@ const { download } = useDownloadManager();
 const downloadRef = ref(createLoadResult<Blob>());
 const isDownloadErrorDialogVisible = ref(false);
 const isStreamsDialogVisible = ref(false);
+const isExtraInfoDialogVisible = ref(false);
 
 const hasStreams = computed(() => {
   return Boolean(
@@ -116,6 +118,8 @@ watch(
     </v-card>
   </v-dialog>
 
+  <VideoExtraInfo v-model:visible="isExtraInfoDialogVisible" :video="props.video" />
+
   <v-row>
     <v-col cols="12">
       <v-row dense align="center" class="mb-2">
@@ -153,6 +157,16 @@ watch(
 
                 <v-list-item-title>
                   {{ $t('videoInfo.showStreams') }}
+                </v-list-item-title>
+              </v-list-item>
+
+              <v-list-item @click="isExtraInfoDialogVisible = true">
+                <template #prepend>
+                  <v-icon icon="mdi-information-outline" />
+                </template>
+
+                <v-list-item-title>
+                  {{ $t('videoInfo.showExtraInfo') }}
                 </v-list-item-title>
               </v-list-item>
 

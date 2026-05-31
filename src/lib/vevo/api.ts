@@ -1,15 +1,14 @@
 import { $fetch } from "ofetch";
 import {
-  QUERY_GET_VIDEOS,
   VEVO_AUTH_API_BODY,
   VEVO_AUTH_API_URL,
-  VEVO_BASE_API_URL,
+  VEVO_LEGACY_API_BASE_URL,
 } from "./constants";
 import type { TokenData } from "./types";
 import { useCookies } from "@vueuse/integrations/useCookies";
 
 export class VevoApi {
-  private constructor(private tokenData: TokenData | null = null) {}
+  constructor(private tokenData: TokenData | null = null) {}
 
   private get expiredToken(): boolean {
     if (!this.tokenData) return true;
@@ -17,24 +16,21 @@ export class VevoApi {
     return now >= this.tokenData.expiresAt;
   }
 
-  private async request(query: string, variables: any): Promise<any> {
+  private async request(path: string): Promise<any> {
     if (!this.tokenData || this.expiredToken) {
       await this.setupToken();
     }
 
-    const response = (await $fetch(VEVO_BASE_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.tokenData?.token}`,
-      },
-      body: {
-        query,
-        variables,
+    const response = (await $fetch(`${VEVO_LEGACY_API_BASE_URL}/${path}`, {
+      query: {
+        token: this.tokenData?.token,
       },
     })) as any;
-    if (response?.errors) {
-      throw new Error(response.errors.message);
+
+    if (response?.errors?.length) {
+      throw new Error(
+        response.errors.map((error: any) => error.message).join(", "),
+      );
     }
 
     return response;
@@ -54,7 +50,7 @@ export class VevoApi {
 
   private async getTokenDataCookie(): Promise<TokenData | null> {
     const cookies = useCookies();
-    return cookies.get("token_data") as TokenData | null;
+    return cookies.get("legacy_token_data") as TokenData | null;
   }
 
   private async setTokenDataCookie(
@@ -62,7 +58,7 @@ export class VevoApi {
     maxAge: number,
   ): Promise<void> {
     const cookies = useCookies();
-    cookies.set("token_data", tokenData, { maxAge });
+    cookies.set("legacy_token_data", tokenData, { maxAge });
   }
 
   private async setupToken(): Promise<void> {
@@ -74,9 +70,13 @@ export class VevoApi {
     }
 
     const authData = await this.getAuthData();
-    const token = authData.access_token;
+    const token = authData.legacy_token;
     const expiresIn = authData.expires_in;
     const expiresAt = Math.floor(Date.now() / 1000) + expiresIn - 60;
+
+    if (!token) {
+      throw new Error("Vevo auth response did not include a legacy token.");
+    }
 
     this.tokenData = {
       token,
@@ -85,7 +85,11 @@ export class VevoApi {
     await this.setTokenDataCookie(this.tokenData, expiresIn - 60);
   }
 
-  async getVideos(ids: string[]): Promise<any> {
-    return this.request(QUERY_GET_VIDEOS, { ids });
+  async getVideo(id: string): Promise<any> {
+    return this.request(`video/${encodeURIComponent(id)}`);
+  }
+
+  async getVideoStreams(id: string): Promise<any> {
+    return this.request(`video/${encodeURIComponent(id)}/streams`);
   }
 }
